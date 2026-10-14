@@ -54,7 +54,7 @@ defineProps({
 
 .base-page-title__title {
   margin: 0;
-  font-size: 34px;
+  font-size: var(--mealie-text-large-title);
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.1;
@@ -63,7 +63,7 @@ defineProps({
 .base-page-title__subtitle {
   max-width: 680px;
   margin: 8px 0 0;
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   line-height: 1.5;
   color: var(--mealie-text-secondary);
 }
@@ -75,7 +75,7 @@ defineProps({
 
 @media (max-width: 600px) {
   .base-page-title__title {
-    font-size: 28px;
+    font-size: var(--mealie-text-title1);
   }
 }
 </style>

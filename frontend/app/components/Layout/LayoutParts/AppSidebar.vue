@@ -159,7 +159,7 @@
         >
           <span class="mealie-sidebar__item-label">
             <v-icon size="16" class="mealie-sidebar__icon">{{ $globals.icons.bullhornVariant }}</v-icon>
-            {{ $t('announcements.announcements') }}
+            <span class="mealie-sidebar__truncate">{{ $t('announcements.announcements') }}</span>
           </span>
           <span v-if="newAnnouncements.length" class="mealie-sidebar__badge">{{ newAnnouncements.length }}</span>
         </button>
@@ -384,7 +384,7 @@ async function logout() {
 }
 
 .mealie-sidebar__brand-name {
-  font-size: 17px;
+  font-size: var(--mealie-text-body);
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -420,18 +420,19 @@ async function logout() {
   justify-content: space-between;
   gap: 10px;
   width: 100%;
-  height: 34px;
-  padding: 0 10px;
+  min-height: 34px;
+  padding: 4px 10px;
   border: 0;
   border-radius: 8px;
   background: transparent;
   color: var(--mealie-ink-secondary);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 500;
   text-align: left;
   text-decoration: none;
-  white-space: nowrap;
+  /* labels wrap at large text sizes rather than being cut off by the sidebar's width */
+  white-space: normal;
   cursor: pointer;
   box-sizing: border-box;
 }
@@ -448,7 +449,7 @@ async function logout() {
 }
 
 .mealie-sidebar__item--compact {
-  height: 32px;
+  min-height: 32px;
   font-weight: 400;
 }
 
@@ -456,7 +457,7 @@ async function logout() {
 @media (pointer: coarse) {
   .mealie-sidebar__item,
   .mealie-sidebar__item--compact {
-    height: 44px;
+    min-height: 44px;
   }
 }
 
@@ -472,6 +473,9 @@ async function logout() {
   align-items: center;
   gap: 10px;
   min-width: 0;
+  /* at large text sizes a label can outgrow the sidebar; it is cut short rather than
+     running under the badge beside it */
+  overflow: hidden;
 }
 
 .mealie-sidebar__truncate {
@@ -506,7 +510,7 @@ async function logout() {
 
 .mealie-sidebar__section {
   padding: 22px 10px 6px;
-  font-size: 11px;
+  font-size: var(--mealie-text-caption);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -521,21 +525,23 @@ async function logout() {
 }
 
 .mealie-sidebar__count {
-  font-size: 12px;
+  font-size: var(--mealie-text-caption);
   font-weight: 400;
   color: var(--mealie-text-tertiary);
 }
 
 .mealie-sidebar__badge {
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 9px;
+  flex-shrink: 0;
+  /* sized in em so the badge grows with its count's text size */
+  min-width: 1.5em;
+  height: 1.5em;
+  padding: 0 0.4em;
+  border-radius: 0.75em;
   background: rgb(var(--v-theme-primary));
   color: rgb(var(--v-theme-on-primary));
-  font-size: 11px;
+  font-size: var(--mealie-text-caption);
   font-weight: 600;
-  line-height: 18px;
+  line-height: 1.5em;
   text-align: center;
 }
 
@@ -581,7 +587,7 @@ async function logout() {
   border-radius: 14px;
   background: var(--mealie-avatar);
   color: var(--mealie-avatar-ink);
-  font-size: 11px;
+  font-size: var(--mealie-text-caption);
   font-weight: 600;
 }
 
@@ -600,7 +606,7 @@ async function logout() {
 }
 
 .mealie-sidebar__user-name {
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -608,7 +614,7 @@ async function logout() {
 }
 
 .mealie-sidebar__user-household {
-  font-size: 12px;
+  font-size: var(--mealie-text-caption);
   color: var(--mealie-text-tertiary);
   overflow: hidden;
   text-overflow: ellipsis;

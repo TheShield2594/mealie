@@ -296,7 +296,7 @@ function isTitle(str: number | string) {
   background: transparent;
   color: var(--mealie-ink);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
 }
 
 .organizer-search__input::placeholder {
@@ -312,7 +312,7 @@ function isTitle(str: number | string) {
   margin-bottom: 10px;
   padding-bottom: 6px;
   border-bottom: 1px solid var(--mealie-hairline);
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   font-weight: 600;
   letter-spacing: 0.06em;
   color: var(--mealie-text-tertiary);
@@ -392,12 +392,12 @@ function isTitle(str: number | string) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 600;
 }
 
 .organizer-tile__count {
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   color: var(--mealie-text-tertiary);
 }
 

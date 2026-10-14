@@ -61,17 +61,17 @@ defineProps({
   align-items: center;
   gap: 8px;
   margin: 0;
-  font-size: 20px;
+  font-size: var(--mealie-text-title3);
   font-weight: 700;
   letter-spacing: -0.015em;
 }
 
 .base-section-title--medium .base-section-title__title {
-  font-size: 17px;
+  font-size: var(--mealie-text-body);
 }
 
 .base-section-title--small .base-section-title__title {
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
 }
 
 .base-section-title__icon {
@@ -81,7 +81,7 @@ defineProps({
 .base-section-title__text {
   max-width: 680px;
   margin: 6px 0 0;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   line-height: 1.5;
   color: var(--mealie-text-secondary);
 }

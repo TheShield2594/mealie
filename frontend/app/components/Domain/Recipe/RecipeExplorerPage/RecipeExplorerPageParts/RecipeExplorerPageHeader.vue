@@ -104,7 +104,7 @@ function onEnter() {
 }
 
 .library-header__title {
-  font-size: 34px;
+  font-size: var(--mealie-text-large-title);
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.1;
@@ -148,7 +148,7 @@ function onEnter() {
   background: transparent;
   color: var(--mealie-ink);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
 }
 
 .library-search__input::placeholder {
@@ -175,7 +175,7 @@ function onEnter() {
 
 @media (max-width: 600px) {
   .library-header__title {
-    font-size: 28px;
+    font-size: var(--mealie-text-title1);
   }
 
   .library-header__actions,

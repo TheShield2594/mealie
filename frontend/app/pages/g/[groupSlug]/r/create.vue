@@ -159,12 +159,12 @@ const subpage = computed(() => route.path.split("/").pop() ?? "url");
 }
 
 .create-method__title {
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 600;
 }
 
 .create-method__desc {
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   line-height: 1.35;
   color: var(--mealie-text-tertiary);
 }
@@ -199,7 +199,7 @@ const subpage = computed(() => route.path.split("/").pop() ?? "url");
 /* The importer subpages share one shape: a headline, some text, filled fields and a
    submit button. Restyled here once rather than in each of them. */
 .create-panel .v-card-title.headline {
-  font-size: 22px;
+  font-size: var(--mealie-text-title2);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--mealie-ink);
@@ -207,7 +207,7 @@ const subpage = computed(() => route.path.split("/").pop() ?? "url");
 }
 
 .create-panel .v-card-text {
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   line-height: 1.5;
   color: var(--mealie-text-secondary);
 }
@@ -236,7 +236,7 @@ const subpage = computed(() => route.path.split("/").pop() ?? "url");
   border-radius: 999px !important;
   box-shadow: 0 8px 20px rgba(var(--v-theme-primary), 0.25) !important;
   height: 44px;
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 600;
   letter-spacing: 0;
 }
@@ -248,7 +248,7 @@ const subpage = computed(() => route.path.split("/").pop() ?? "url");
   color: rgb(var(--v-theme-primary)) !important;
   border-radius: 999px !important;
   height: 44px;
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 600;
   letter-spacing: 0;
 }

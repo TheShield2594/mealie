@@ -299,24 +299,29 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  height: 56px;
-  padding: 0 32px;
+  /* at large text sizes the actions wrap onto a second row rather than running off-screen */
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  min-height: 56px;
+  padding: 6px 32px;
   border-bottom: 1px solid var(--mealie-hairline);
   white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .recipe-toolbar__back {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   color: rgb(var(--v-theme-primary));
   text-decoration: none;
 }
 
 .recipe-toolbar__actions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   align-items: center;
   gap: 8px;
 }
@@ -358,14 +363,14 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 }
 
 .recipe-hero__eyebrow {
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   font-weight: 600;
   color: rgb(var(--v-theme-primary));
 }
 
 .recipe-hero__title {
   margin-top: 8px;
-  font-size: 44px;
+  font-size: var(--mealie-text-display-m);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.05;
@@ -376,7 +381,7 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 .recipe-hero__description {
   margin-top: 12px;
   max-width: 440px;
-  font-size: 17px;
+  font-size: var(--mealie-text-body);
   line-height: 1.45;
   color: var(--mealie-text-secondary);
   text-wrap: pretty;
@@ -403,7 +408,7 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 }
 
 .recipe-hero__stat-label {
-  font-size: 11px;
+  font-size: var(--mealie-text-caption);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -411,7 +416,7 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 }
 
 .recipe-hero__stat-value {
-  font-size: 17px;
+  font-size: var(--mealie-text-body);
   font-weight: 600;
   color: var(--mealie-ink);
 }
@@ -446,13 +451,13 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
   }
 
   .recipe-hero__title {
-    font-size: 36px;
+    font-size: var(--mealie-text-large-title);
   }
 }
 
 @media (max-width: 800px) {
   .recipe-toolbar {
-    padding: 0 16px;
+    padding: 6px 16px;
   }
 
   .recipe-hero {
@@ -466,7 +471,7 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
   }
 
   .recipe-hero__title {
-    font-size: 30px;
+    font-size: var(--mealie-text-title1);
   }
 
   .recipe-hero__stat {

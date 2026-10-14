@@ -83,7 +83,7 @@ const ratingDisplay = computed<Star[]>(
   gap: 1px;
 
   .star {
-    font-size: 18px;
+    font-size: var(--mealie-text-body);
     transition: color 0.2s ease;
     user-select: none;
     position: relative;

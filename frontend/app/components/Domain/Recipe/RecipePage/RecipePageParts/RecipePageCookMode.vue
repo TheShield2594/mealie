@@ -664,7 +664,7 @@ onBeforeUnmount(() => {
   background: var(--cook-fill);
   color: var(--cook-ink);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 500;
   cursor: pointer;
 }
@@ -690,12 +690,12 @@ onBeforeUnmount(() => {
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 600;
 }
 
 .cook-bar__meta {
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   color: var(--cook-muted);
 }
 
@@ -758,7 +758,7 @@ onBeforeUnmount(() => {
   background: var(--cook-fill-subtle);
   color: var(--cook-soft);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   font-variant-numeric: tabular-nums;
   cursor: pointer;
 }
@@ -770,7 +770,7 @@ onBeforeUnmount(() => {
 }
 
 .cook-stage__eyebrow {
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -786,19 +786,19 @@ onBeforeUnmount(() => {
 }
 
 .cook-stage__text--lg {
-  font-size: 52px;
+  font-size: var(--mealie-text-display-l);
   letter-spacing: -0.028em;
   line-height: 1.15;
 }
 
 .cook-stage__text--md {
-  font-size: 38px;
+  font-size: var(--mealie-text-display-s);
   letter-spacing: -0.022em;
   line-height: 1.2;
 }
 
 .cook-stage__text--sm {
-  font-size: 28px;
+  font-size: var(--mealie-text-title1);
   letter-spacing: -0.015em;
   line-height: 1.3;
 }
@@ -834,7 +834,7 @@ onBeforeUnmount(() => {
   padding: 0 18px;
   border-radius: 20px;
   background: var(--cook-fill-subtle);
-  font-size: 17px;
+  font-size: var(--mealie-text-body);
 }
 
 .cook-uses__amount {
@@ -860,13 +860,13 @@ onBeforeUnmount(() => {
   background: #1f1e1c;
   box-shadow: inset 0 0 0 1px var(--cook-hairline);
   color: var(--cook-soft);
-  font-size: 16px;
+  font-size: var(--mealie-text-callout);
   line-height: 1.45;
 }
 
 .cook-notes__title {
   margin-bottom: 4px;
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -898,7 +898,7 @@ onBeforeUnmount(() => {
 }
 
 .cook-timer__label {
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -910,7 +910,7 @@ onBeforeUnmount(() => {
 }
 
 .cook-timer__time {
-  font-size: 56px;
+  font-size: var(--mealie-text-display-l);
   font-weight: 300;
   letter-spacing: -0.02em;
   line-height: 1;
@@ -934,7 +934,7 @@ onBeforeUnmount(() => {
   background: rgba(224, 104, 60, 0.18);
   color: var(--cook-accent-text);
   font: inherit;
-  font-size: 17px;
+  font-size: var(--mealie-text-body);
   font-weight: 600;
   cursor: pointer;
 }
@@ -972,7 +972,7 @@ onBeforeUnmount(() => {
   background: var(--cook-fill);
   color: var(--cook-ink);
   font: inherit;
-  font-size: 16px;
+  font-size: var(--mealie-text-callout);
   font-weight: 600;
   cursor: pointer;
 }
@@ -990,7 +990,7 @@ onBeforeUnmount(() => {
 
 .cook-nav__hint {
   margin-left: 8px;
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   color: var(--cook-faint);
 }
 
@@ -1025,7 +1025,7 @@ onBeforeUnmount(() => {
 }
 
 .cook-panel__title {
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1047,7 +1047,7 @@ onBeforeUnmount(() => {
 
 .cook-steps__section {
   padding: 14px 14px 4px;
-  font-size: 12px;
+  font-size: var(--mealie-text-caption);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1064,7 +1064,7 @@ onBeforeUnmount(() => {
   background: transparent;
   color: var(--cook-soft);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   line-height: 1.4;
   text-align: left;
   cursor: pointer;
@@ -1197,7 +1197,7 @@ onBeforeUnmount(() => {
     background: var(--cook-fill);
     color: var(--cook-ink);
     font: inherit;
-    font-size: 15px;
+    font-size: var(--mealie-text-subheadline);
     font-weight: 600;
     cursor: pointer;
   }
@@ -1226,21 +1226,21 @@ onBeforeUnmount(() => {
   }
 
   .cook-stage__text--lg {
-    font-size: 32px;
+    font-size: var(--mealie-text-large-title);
   }
 
   .cook-stage__text--md {
-    font-size: 26px;
+    font-size: var(--mealie-text-title1);
   }
 
   .cook-stage__text--sm {
-    font-size: 21px;
+    font-size: var(--mealie-text-title3);
   }
 
   .cook-uses__chip {
     min-height: 36px;
     padding: 0 14px;
-    font-size: 15px;
+    font-size: var(--mealie-text-subheadline);
   }
 
   .cook-timer {
@@ -1249,7 +1249,7 @@ onBeforeUnmount(() => {
   }
 
   .cook-timer__time {
-    font-size: 40px;
+    font-size: var(--mealie-text-display-s);
   }
 
   .cook-timer__toggle {

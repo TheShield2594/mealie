@@ -86,12 +86,12 @@ defineProps({
   background: rgb(var(--v-theme-primary));
   box-shadow: 0 12px 28px rgba(var(--v-theme-primary), 0.3);
   color: rgb(var(--v-theme-on-primary));
-  font-size: 28px;
+  font-size: var(--mealie-text-title1);
   font-weight: 700;
 }
 
 .auth-shell__name {
-  font-size: 22px;
+  font-size: var(--mealie-text-title2);
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -107,7 +107,7 @@ defineProps({
 
 .auth-shell__title {
   margin: 0;
-  font-size: 26px;
+  font-size: var(--mealie-text-title1);
   font-weight: 700;
   letter-spacing: -0.02em;
   text-align: center;
@@ -115,7 +115,7 @@ defineProps({
 
 .auth-shell__subtitle {
   margin: 6px 0 0;
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   line-height: 1.45;
   text-align: center;
   color: var(--mealie-text-secondary);
@@ -126,7 +126,7 @@ defineProps({
   flex-wrap: wrap;
   justify-content: center;
   gap: 4px 12px;
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   color: var(--mealie-text-tertiary);
 }
 

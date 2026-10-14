@@ -507,7 +507,7 @@ watch(isSearching, (searching) => {
   align-items: center;
   gap: 8px;
   margin-bottom: 4px;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   color: rgb(var(--v-theme-primary));
   text-decoration: none;
 }
@@ -537,7 +537,7 @@ watch(isSearching, (searching) => {
     min-height: 30px !important;
     padding: 2px 12px;
     border-radius: 10px !important;
-    font-size: 13px;
+    font-size: var(--mealie-text-footnote);
     font-weight: 700;
     letter-spacing: 0.02em;
   }

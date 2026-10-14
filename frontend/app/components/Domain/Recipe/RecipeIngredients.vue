@@ -140,13 +140,15 @@ function setChecked(index: number, value: boolean) {
 <style>
 .ingredients-header {
   display: flex;
+  /* at large text sizes the actions drop below the title rather than overflowing the column */
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px 12px;
 }
 
 .ingredients-header__title {
-  font-size: 22px;
+  font-size: var(--mealie-text-title2);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--mealie-ink);
@@ -154,6 +156,7 @@ function setChecked(index: number, value: boolean) {
 
 .ingredients-header__actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 4px;
 }
@@ -165,7 +168,7 @@ function setChecked(index: number, value: boolean) {
 .ingredients-list__section {
   margin-top: 18px;
   padding-bottom: 6px;
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -217,7 +220,7 @@ function setChecked(index: number, value: boolean) {
 .ingredient-row__text {
   flex: 1;
   min-width: 0;
-  font-size: 15px !important;
+  font-size: var(--mealie-text-subheadline) !important;
   color: var(--mealie-ink);
   transition: color 0.15s ease;
 }

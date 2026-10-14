@@ -104,7 +104,7 @@ const deleteDialog = ref(false);
 }
 
 .edit-bar__eyebrow {
-  font-size: 11px;
+  font-size: var(--mealie-text-caption);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -114,7 +114,7 @@ const deleteDialog = ref(false);
 .edit-bar__name {
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 600;
   color: var(--mealie-ink);
 }

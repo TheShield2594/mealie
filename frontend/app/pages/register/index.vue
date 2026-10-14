@@ -472,7 +472,7 @@ async function submitRegistration() {
 
 .register-initial__title {
   margin: 0;
-  font-size: 26px;
+  font-size: var(--mealie-text-title1);
   font-weight: 700;
   letter-spacing: -0.02em;
   text-align: center;
@@ -525,7 +525,7 @@ async function submitRegistration() {
 }
 
 .register-choice__title {
-  font-size: 16px;
+  font-size: var(--mealie-text-callout);
   font-weight: 600;
 }
 
@@ -548,7 +548,7 @@ async function submitRegistration() {
 
 /* the later steps keep their card titles and dividers, sized to the shell */
 .register :deep(.v-card-title) {
-  font-size: 20px;
+  font-size: var(--mealie-text-title3);
   font-weight: 700;
   letter-spacing: -0.01em;
   white-space: normal;

@@ -102,7 +102,7 @@ function editMeal(mealplan: ReadPlanEntry) {
 
 .plan-section {
   padding: 12px 2px 8px;
-  font-size: 11px;
+  font-size: var(--mealie-text-caption);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -111,7 +111,7 @@ function editMeal(mealplan: ReadPlanEntry) {
 
 .plan-day-empty {
   padding: 18px 2px 8px;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   color: var(--mealie-text-tertiary);
 }
 </style>

@@ -135,12 +135,12 @@ const buttons = [
 
 <style scoped>
 h1 {
-  font-size: 20px;
+  font-size: var(--mealie-text-title3);
 }
 
 p {
   padding-bottom: 0 !important;
   margin-bottom: 0 !important;
-  font-size: 200px;
+  font-size: 12.5rem;
 }
 </style>

@@ -244,7 +244,7 @@ const cursor = computed(() => showRecipeContent.value ? "pointer" : "auto");
 }
 
 .mealie-row-card__title {
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -255,7 +255,7 @@ const cursor = computed(() => showRecipeContent.value ? "pointer" : "auto");
   -webkit-line-clamp: 2;
   line-clamp: 2;
   overflow: hidden;
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   color: var(--mealie-text-tertiary);
   opacity: 1;
 }

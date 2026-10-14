@@ -205,7 +205,7 @@ const eventImageUrl = computed<string>(() => {
 }
 
 .timeline-card :deep(.v-card-title) {
-  font-size: 16px;
+  font-size: var(--mealie-text-callout);
   font-weight: 600;
 }
 

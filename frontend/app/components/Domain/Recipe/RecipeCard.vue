@@ -217,7 +217,7 @@ const cursor = computed(() => showRecipeContent.value ? "pointer" : "auto");
   transform: translateY(-2px);
 }
 .mealie-recipe-card__title {
-  font-size: 16px;
+  font-size: var(--mealie-text-callout);
   font-weight: 600;
   letter-spacing: -0.01em;
 }

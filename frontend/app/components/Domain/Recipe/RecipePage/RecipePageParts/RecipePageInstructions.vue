@@ -1129,7 +1129,7 @@ function openImageUpload(index: number) {
   display: flex;
   align-items: center;
   height: 30px;
-  font-size: 22px;
+  font-size: var(--mealie-text-title2);
   font-weight: 700;
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -1157,7 +1157,7 @@ function openImageUpload(index: number) {
   background: none;
   padding: 0;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1184,7 +1184,7 @@ function openImageUpload(index: number) {
   background: rgba(var(--v-theme-primary), 0.1);
   color: rgb(var(--v-theme-primary));
   font: inherit;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 700;
   cursor: pointer;
   transition:
@@ -1216,12 +1216,12 @@ function openImageUpload(index: number) {
 }
 
 .method-step__summary {
-  font-size: 16px;
+  font-size: var(--mealie-text-callout);
   font-weight: 600;
 }
 
 .method-step__text {
-  font-size: 16px;
+  font-size: var(--mealie-text-callout);
   line-height: 1.5;
   text-wrap: pretty;
   color: var(--mealie-ink);
@@ -1244,7 +1244,7 @@ function openImageUpload(index: number) {
   background: var(--mealie-fill-subtle);
   color: var(--mealie-icon);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   font-weight: 600;
   white-space: nowrap;
 }

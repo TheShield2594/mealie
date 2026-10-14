@@ -143,13 +143,18 @@ async function logout() {
   display: flex;
   align-items: center;
   gap: 10px;
+  /* gives way to the bar's buttons when large text leaves too little room */
+  min-width: 0;
   padding-left: 6px;
   color: inherit;
   text-decoration: none;
 }
 
 .mealie-app-bar__title {
-  font-size: 17px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--mealie-text-body);
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -159,7 +164,7 @@ async function logout() {
   align-items: center;
   gap: 8px;
   width: 240px;
-  height: 32px;
+  min-height: 32px;
   padding: 0 10px 0 12px;
   margin-right: 8px;
   border: 0;
@@ -167,7 +172,7 @@ async function logout() {
   background: var(--mealie-fill);
   color: var(--mealie-text-tertiary);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   cursor: pointer;
 }
 
@@ -188,6 +193,7 @@ async function logout() {
   border-radius: 8px;
   background: rgb(var(--v-theme-primary));
   color: rgb(var(--v-theme-on-primary));
+  /* the logo keeps its size; only text follows the reader's text size */
   font-size: 15px;
   font-weight: 700;
   line-height: 1;
@@ -195,7 +201,7 @@ async function logout() {
 
 .mealie-kbd {
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--mealie-text-caption);
   color: var(--mealie-text-tertiary);
   padding: 1px 6px;
   border-radius: 5px;

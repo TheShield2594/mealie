@@ -45,7 +45,7 @@ const weekday = computed(() =>
 }
 
 .plan-day-header__weekday {
-  font-size: 12px;
+  font-size: var(--mealie-text-caption);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -57,7 +57,7 @@ const weekday = computed(() =>
 }
 
 .plan-day-header__date {
-  font-size: 17px;
+  font-size: var(--mealie-text-body);
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--mealie-ink);

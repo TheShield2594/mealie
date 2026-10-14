@@ -131,7 +131,7 @@
         class="mb-2"
       >
         <v-col cols="auto">
-          <div class="text-caption font-weight-light font-italic">
+          <div class="text-caption">
             {{ $t("shopping-list.completed-on", {
               date: listItem.updatedAt ? $d(new Date(listItem.updatedAt)) : '',
             }) }}

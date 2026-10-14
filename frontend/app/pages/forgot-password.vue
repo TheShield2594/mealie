@@ -98,7 +98,7 @@ async function requestLink() {
 
 .auth-form__hint {
   margin: -4px 0 18px;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   line-height: 1.45;
   text-align: center;
   color: var(--mealie-text-secondary);
@@ -107,7 +107,7 @@ async function requestLink() {
 .auth-back {
   margin-top: 18px;
   text-align: center;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
 }
 
 .auth-back a {

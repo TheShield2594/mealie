@@ -345,7 +345,7 @@ function alertOnError(error: any) {
 }
 
 .login-form__link {
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   color: rgb(var(--v-theme-primary));
   text-decoration: none;
   white-space: nowrap;
@@ -360,7 +360,7 @@ function alertOnError(error: any) {
   align-items: center;
   gap: 12px;
   margin: 18px 0;
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   color: var(--mealie-text-tertiary);
 }
 
@@ -375,7 +375,7 @@ function alertOnError(error: any) {
 .login-signup {
   margin-top: 18px;
   text-align: center;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   color: var(--mealie-text-tertiary);
 }
 
@@ -384,7 +384,7 @@ function alertOnError(error: any) {
   border-radius: 18px;
   background: rgba(var(--v-theme-primary), 0.08);
   box-shadow: inset 0 0 0 1px rgba(var(--v-theme-primary), 0.2);
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   line-height: 1.45;
   color: var(--mealie-ink);
 }

@@ -484,7 +484,7 @@ p {
 .ingredient-body,
 .recipe-step-body,
 .note-body {
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
 }
 
 .ingredient-cell {
@@ -492,7 +492,7 @@ p {
 }
 
 .substitution-body {
-  font-size: 12px;
+  font-size: var(--mealie-text-caption);
   line-height: 1.3;
   opacity: 0.7;
 }
@@ -520,7 +520,7 @@ li {
   padding: 6px 10px;
   text-align: left;
   vertical-align: top;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
 }
 
 .nutrition-table th {
@@ -541,6 +541,6 @@ li {
 .nutrition-table td {
   padding: 2px;
   text-align: left;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
 }
 </style>

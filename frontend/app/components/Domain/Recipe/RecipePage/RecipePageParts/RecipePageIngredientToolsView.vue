@@ -108,7 +108,7 @@ function updateTool(index: number) {
 <style scoped>
 .required-tools__title {
   margin-top: 28px;
-  font-size: 17px;
+  font-size: var(--mealie-text-body);
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--mealie-ink);

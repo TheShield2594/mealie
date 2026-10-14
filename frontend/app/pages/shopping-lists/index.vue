@@ -368,7 +368,7 @@ async function deleteOne() {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 16px;
+  font-size: var(--mealie-text-callout);
   font-weight: 600;
 }
 

@@ -463,7 +463,7 @@ function toggleMobileCards() {
 
 <style>
 .recipe-card-section__title {
-  font-size: 22px;
+  font-size: var(--mealie-text-title2);
   font-weight: 700;
   letter-spacing: -0.02em;
 }

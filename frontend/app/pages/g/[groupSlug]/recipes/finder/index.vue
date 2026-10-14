@@ -723,7 +723,7 @@ function saveQueryFilter() {
 .finder-page__intro {
   max-width: 640px;
   margin-top: 8px;
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   line-height: 1.5;
   color: var(--mealie-text-secondary);
 }
@@ -734,7 +734,7 @@ function saveQueryFilter() {
 
 .finder-panel :deep(.v-card-title),
 .finder-page :deep(.v-card-title) {
-  font-size: 17px;
+  font-size: var(--mealie-text-body);
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--mealie-ink);

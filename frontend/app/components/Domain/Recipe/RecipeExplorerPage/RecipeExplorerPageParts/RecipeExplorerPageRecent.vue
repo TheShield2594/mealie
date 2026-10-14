@@ -90,7 +90,7 @@ function meta(recipe: RecipeSummary) {
 }
 
 .recent__title {
-  font-size: 22px;
+  font-size: var(--mealie-text-title2);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--mealie-ink);
@@ -101,7 +101,7 @@ function meta(recipe: RecipeSummary) {
   background: none;
   padding: 0;
   font: inherit;
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   color: rgb(var(--v-theme-primary));
   cursor: pointer;
 }
@@ -148,7 +148,7 @@ function meta(recipe: RecipeSummary) {
 }
 
 .recent-card__name {
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -156,7 +156,7 @@ function meta(recipe: RecipeSummary) {
 }
 
 .recent-card__meta {
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   color: var(--mealie-text-tertiary);
 }
 

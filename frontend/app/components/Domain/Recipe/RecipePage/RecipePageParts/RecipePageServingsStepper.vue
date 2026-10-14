@@ -66,7 +66,7 @@ function step(direction: 1 | -1) {
 .servings-stepper {
   display: inline-flex;
   align-items: center;
-  height: 30px;
+  min-height: 30px;
   border-radius: 15px;
   background: var(--mealie-fill);
   white-space: nowrap;
@@ -81,7 +81,7 @@ function step(direction: 1 | -1) {
   background: transparent;
   color: rgb(var(--v-theme-primary));
   font: inherit;
-  font-size: 18px;
+  font-size: var(--mealie-text-body);
   line-height: 1;
   cursor: pointer;
 }
@@ -105,7 +105,7 @@ function step(direction: 1 | -1) {
   padding: 0 2px;
   color: var(--mealie-ink);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   font-weight: 600;
   cursor: pointer;
 }

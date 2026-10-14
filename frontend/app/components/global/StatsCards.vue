@@ -78,7 +78,7 @@ const activeIcon = computed(() => {
 }
 
 .stats-tile__value {
-  font-size: 20px;
+  font-size: var(--mealie-text-title3);
   font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.1;
@@ -86,7 +86,7 @@ const activeIcon = computed(() => {
 }
 
 .stats-tile__label {
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   color: var(--mealie-text-tertiary);
   white-space: nowrap;
 }

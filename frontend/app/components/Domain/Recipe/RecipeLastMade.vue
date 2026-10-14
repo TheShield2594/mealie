@@ -118,7 +118,7 @@
                 variant="outlined"
                 size="large"
                 v-bind="tooltipProps"
-                class="font-weight-400"
+                class="font-weight-400 last-made-btn"
                 style="border-color: rgb(var(--v-theme-primary));"
                 @click="madeThisDialog = true"
               >
@@ -351,3 +351,13 @@ async function createTimelineEvent() {
   emit("eventCreated", newEvent);
 }
 </script>
+
+<style scoped>
+/* two lines of text: the button grows with them instead of clipping at Vuetify's fixed height */
+.last-made-btn {
+  height: auto;
+  min-height: 44px;
+  padding-block: 6px;
+  line-height: 1.3;
+}
+</style>

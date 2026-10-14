@@ -191,7 +191,11 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 
 .tonight-hero {
   position: relative;
-  height: 280px;
+  /* the text sits in the flow at the bottom, so the card grows when large text needs more room */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 280px;
   border-radius: 24px;
   overflow: hidden;
 }
@@ -211,10 +215,8 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 }
 
 .tonight-hero__content {
-  position: absolute;
-  left: 28px;
-  right: 28px;
-  bottom: 24px;
+  position: relative;
+  margin: 24px 28px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -230,7 +232,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 }
 
 .tonight-hero__eyebrow {
-  font-size: 12px;
+  font-size: var(--mealie-text-caption);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -238,7 +240,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 }
 
 .tonight-hero__title {
-  font-size: 32px;
+  font-size: var(--mealie-text-large-title);
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.1;
@@ -248,7 +250,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 }
 
 .tonight-hero__meta {
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   color: rgba(255, 255, 255, 0.85);
 }
 
@@ -268,7 +270,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 .week {
   display: flex;
   flex-direction: column;
-  height: 280px;
+  min-height: 280px;
   padding: 20px 22px;
   border-radius: 24px;
   background: var(--mealie-surface);
@@ -278,20 +280,22 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 
 .week__header {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
+  gap: 0 12px;
   white-space: nowrap;
 }
 
 .week__title {
-  font-size: 17px;
+  font-size: var(--mealie-text-body);
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--mealie-ink);
 }
 
 .week__link {
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   color: rgb(var(--v-theme-primary));
   text-decoration: none;
 }
@@ -306,7 +310,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
   display: flex;
   align-items: center;
   gap: 14px;
-  height: 42px;
+  min-height: 42px;
   border-bottom: 1px solid var(--mealie-hairline);
   white-space: nowrap;
 }
@@ -316,9 +320,10 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 }
 
 .week__day-name {
-  width: 34px;
+  /* in em so the column widens with the day names' text size */
+  width: 3em;
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: var(--mealie-text-caption);
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--mealie-text-tertiary);
@@ -333,7 +338,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 14px;
+  font-size: var(--mealie-text-subheadline);
   font-weight: 500;
   color: var(--mealie-ink);
   text-decoration: none;
@@ -349,7 +354,7 @@ a.week__meal:hover {
 }
 
 .week__more {
-  font-size: 12px;
+  font-size: var(--mealie-text-caption);
   color: var(--mealie-text-tertiary);
 }
 
@@ -365,19 +370,17 @@ a.week__meal:hover {
 
 @media (max-width: 600px) {
   .tonight-hero {
-    height: 240px;
+    min-height: 240px;
   }
 
   .tonight-hero__content {
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
+    margin: 20px;
     flex-direction: column;
     align-items: flex-start;
   }
 
   .tonight-hero__title {
-    font-size: 26px;
+    font-size: var(--mealie-text-title1);
   }
 }
 </style>

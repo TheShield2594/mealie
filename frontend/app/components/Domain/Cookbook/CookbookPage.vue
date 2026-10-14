@@ -130,7 +130,7 @@ useSeoMeta({
 .cookbook-description {
   max-width: 640px;
   margin-top: 8px;
-  font-size: 17px;
+  font-size: var(--mealie-text-body);
   line-height: 1.45;
   color: var(--mealie-text-secondary);
 }

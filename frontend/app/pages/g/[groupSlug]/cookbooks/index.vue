@@ -250,7 +250,7 @@ onBeforeUnmount(() => {
 .cookbooks-intro {
   max-width: 640px;
   margin-top: 12px;
-  font-size: 15px;
+  font-size: var(--mealie-text-subheadline);
   line-height: 1.5;
   color: var(--mealie-text-secondary);
 }
@@ -262,7 +262,7 @@ onBeforeUnmount(() => {
 
 .cookbooks-preference__hint {
   margin-left: 40px;
-  font-size: 13px;
+  font-size: var(--mealie-text-footnote);
   color: var(--mealie-text-tertiary);
 }
 
@@ -287,7 +287,7 @@ onBeforeUnmount(() => {
 
 .cookbooks-list__title {
   min-height: 60px;
-  font-size: 16px;
+  font-size: var(--mealie-text-callout);
   font-weight: 600;
   color: var(--mealie-ink);
 }

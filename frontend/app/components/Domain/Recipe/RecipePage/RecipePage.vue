@@ -496,7 +496,7 @@ function chipClicked(item: RecipeTag | RecipeCategory | RecipeTool, itemType: st
 
 .recipe-edit__heading {
   margin: 0 0 16px;
-  font-size: 22px;
+  font-size: var(--mealie-text-title2);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--mealie-ink);
@@ -605,7 +605,7 @@ function chipClicked(item: RecipeTag | RecipeCategory | RecipeTool, itemType: st
 /* the editors' own headings, matched to the cards' */
 .recipe-edit h2.text-h5,
 .recipe-edit .method-title {
-  font-size: 22px !important;
+  font-size: var(--mealie-text-title2) !important;
   font-weight: 700 !important;
   letter-spacing: -0.02em;
   opacity: 1 !important;
