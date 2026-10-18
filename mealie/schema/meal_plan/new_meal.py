@@ -9,7 +9,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.interfaces import LoaderOption
 
 from mealie.db.models.household import GroupMealPlan
-from mealie.db.models.recipe import RecipeModel
+from mealie.db.models.recipe import RecipeModel, Tool
 from mealie.db.models.users.users import User
 from mealie.schema._mealie import MealieModel
 from mealie.schema.recipe.recipe import RecipeSummary
@@ -67,9 +67,9 @@ class ReadPlanEntry(UpdatePlanEntry):
     @classmethod
     def loader_options(cls) -> list[LoaderOption]:
         return [
-            selectinload(GroupMealPlan.recipe).joinedload(RecipeModel.recipe_category),
-            selectinload(GroupMealPlan.recipe).joinedload(RecipeModel.tags),
-            selectinload(GroupMealPlan.recipe).joinedload(RecipeModel.tools),
+            selectinload(GroupMealPlan.recipe).selectinload(RecipeModel.recipe_category),
+            selectinload(GroupMealPlan.recipe).selectinload(RecipeModel.tags),
+            selectinload(GroupMealPlan.recipe).selectinload(RecipeModel.tools).selectinload(Tool.households_with_tool),
             selectinload(GroupMealPlan.user).load_only(User.household_id),
         ]
 
