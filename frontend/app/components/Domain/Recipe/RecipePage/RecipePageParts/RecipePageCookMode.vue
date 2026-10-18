@@ -134,7 +134,18 @@
                     </v-icon>
                   </button>
                   <button
-                    v-if="!timerState(current, index).done"
+                    v-if="timerState(current, index).ringing"
+                    type="button"
+                    class="cook-timer__toggle"
+                    @click="stopAlarm(current, index)"
+                  >
+                    <v-icon size="18">
+                      {{ $globals.icons.bellOff }}
+                    </v-icon>
+                    {{ $t("cook-mode.stop-alarm") }}
+                  </button>
+                  <button
+                    v-else-if="!timerState(current, index).done"
                     type="button"
                     class="cook-timer__toggle"
                     @click="toggleTimer(current, index, timer.seconds)"
@@ -441,7 +452,13 @@ interface TimerState {
   started: boolean;
   done: boolean;
   endsAt: number;
+  /** the alarm repeats until it's stopped (or gives up after ALARM_MAX_MS) */
+  ringing: boolean;
+  doneAt: number;
 }
+
+const ALARM_INTERVAL_MS = 1500;
+const ALARM_MAX_MS = 2 * 60 * 1000;
 
 const stepTimers = computed(() => parseStepTimers(step.value?.text));
 const timers = reactive<Record<string, TimerState>>({});
@@ -456,12 +473,16 @@ function timerState(stepIndex: number, index: number): TimerState {
     return existing;
   }
   const seconds = parseStepTimers(steps.value[stepIndex]?.text)[index]?.seconds ?? 0;
-  return { total: seconds, remaining: seconds, running: false, started: false, done: false, endsAt: 0 };
+  return newTimer(seconds);
+}
+
+function newTimer(seconds: number): TimerState {
+  return { total: seconds, remaining: seconds, running: false, started: false, done: false, endsAt: 0, ringing: false, doneAt: 0 };
 }
 
 function toggleTimer(stepIndex: number, index: number, seconds: number) {
   const key = timerKey(stepIndex, index);
-  const timer = timers[key] ?? { total: seconds, remaining: seconds, running: false, started: false, done: false, endsAt: 0 };
+  const timer = timers[key] ?? newTimer(seconds);
   if (timer.running) {
     timer.remaining = Math.max(0, (timer.endsAt - Date.now()) / 1000);
     timer.running = false;
@@ -475,15 +496,27 @@ function toggleTimer(stepIndex: number, index: number, seconds: number) {
   timers[key] = timer;
 }
 
+function stopAlarm(stepIndex: number, index: number) {
+  const timer = timers[timerKey(stepIndex, index)];
+  if (timer) {
+    timer.ringing = false;
+  }
+}
+
 function resetTimer(stepIndex: number, index: number) {
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete timers[timerKey(stepIndex, index)];
 }
 
+let nextChimeAt = 0;
+
 // timers count down from a wall-clock deadline, so a backgrounded tab doesn't fall behind
 useIntervalFn(() => {
   const now = Date.now();
   for (const timer of Object.values(timers)) {
+    if (timer.ringing && now - timer.doneAt > ALARM_MAX_MS) {
+      timer.ringing = false;
+    }
     if (!timer.running) {
       continue;
     }
@@ -491,8 +524,15 @@ useIntervalFn(() => {
     if (timer.remaining === 0) {
       timer.running = false;
       timer.done = true;
-      chime();
+      timer.ringing = true;
+      timer.doneAt = now;
+      nextChimeAt = now;
     }
+  }
+
+  if (now >= nextChimeAt && Object.values(timers).some(timer => timer.ringing)) {
+    chime();
+    nextChimeAt = now + ALARM_INTERVAL_MS;
   }
 }, 250);
 
@@ -506,29 +546,38 @@ let audio: AudioContext | null = null;
 
 /** browsers only allow sound after a gesture, so the context is created when a timer starts */
 function unlockAudio() {
+  // Safari otherwise treats web audio as ambient sound, which the iPhone's silent switch mutes;
+  // "playback" lets the alarm ring with the phone on silent, like a media app would
+  const audioSession = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
+  if (audioSession) {
+    audioSession.type = "playback";
+  }
   if (!audio && typeof AudioContext !== "undefined") {
     audio = new AudioContext();
   }
   audio?.resume();
 }
 
+/** one burst of the alarm: four beeps alternating between two pitches */
 function chime() {
   navigator.vibrate?.([200, 100, 200]);
   if (!audio) {
     return;
   }
+  // a phone can suspend the context while the timer runs
+  audio.resume();
   const start = audio.currentTime;
-  [0, 0.35, 0.7].forEach((offset) => {
+  [0, 0.2, 0.4, 0.6].forEach((offset, i) => {
     const osc = audio!.createOscillator();
     const gain = audio!.createGain();
-    osc.type = "sine";
-    osc.frequency.value = 880;
+    osc.type = "triangle";
+    osc.frequency.value = i % 2 ? 1320 : 880;
     gain.gain.setValueAtTime(0.0001, start + offset);
-    gain.gain.exponentialRampToValueAtTime(0.3, start + offset + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.3);
+    gain.gain.exponentialRampToValueAtTime(0.7, start + offset + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.17);
     osc.connect(gain).connect(audio!.destination);
     osc.start(start + offset);
-    osc.stop(start + offset + 0.32);
+    osc.stop(start + offset + 0.18);
   });
 }
 

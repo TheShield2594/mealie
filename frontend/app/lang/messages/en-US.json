@@ -1293,6 +1293,7 @@
     "pause": "Pause",
     "resume": "Resume",
     "timer-done": "Timer done",
+    "stop-alarm": "Stop",
     "keyboard-hint": "Use ← → to move between steps",
     "no-steps": "This recipe has no steps yet."
   },
