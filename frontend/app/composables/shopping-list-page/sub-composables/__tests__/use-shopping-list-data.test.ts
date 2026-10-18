@@ -101,6 +101,32 @@ describe("use-shopping-list-data", () => {
       expect(shoppingList.value).toEqual(MOCK_SHOPPING_LIST);
       expect(consoleError).toHaveBeenCalled();
     });
+    test("keeps the current object for items the server returned unchanged", async () => {
+      const unchanged = { ...MOCK_ITEM, id: "unchanged", position: 7 };
+      const changed = { ...MOCK_ITEM, id: "changed" };
+      shoppingList.value = { ...list, listItems: [unchanged, changed] };
+      // processing the queue can also fetch the list, so don't rely on a one-off response
+      getOne.mockResolvedValue({
+        data: {
+          ...MOCK_SHOPPING_LIST,
+          listItems: [
+            { ...unchanged, position: 2 },
+            { ...changed, checked: true },
+            { ...MOCK_ITEM, id: "new" },
+          ],
+        },
+      });
+
+      await refresh(mockUpdate);
+      getOne.mockResolvedValue({ data: MOCK_SHOPPING_LIST });
+
+      const items = shoppingList.value?.listItems ?? [];
+      expect(toRaw(items[0])).toBe(unchanged);
+      expect(items[0]?.position).toBe(2);
+      expect(toRaw(items[1])).not.toBe(changed);
+      expect(items[1]?.checked).toBe(true);
+      expect(items[2]?.id).toBe("new");
+    });
     test("only update the list with the new value if we're not loading, to prevent UI jitter", async () => {
       loadingCounter.value += 1;
       await refresh(mockUpdate);
