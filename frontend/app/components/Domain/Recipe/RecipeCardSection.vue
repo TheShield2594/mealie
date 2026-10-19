@@ -152,7 +152,10 @@
           </v-col>
         </v-row>
       </div>
+      <!-- keyed so each added page gets a fresh observer: one that never stops intersecting
+           (a screen taller than the list) would otherwise never report again -->
       <v-card
+        :key="recipes.length"
         v-intersect="{ handler: onSentinelIntersect, options: { rootMargin: '0px 0px 600px 0px' } }"
         variant="flat"
       />
@@ -367,7 +370,9 @@ const infiniteScroll = useThrottleFn(async () => {
   savePosition(route.path, page.value);
 
   loading.value = false;
-}, 500);
+  // trailing: the fresh sentinel can report itself still in view within the throttle window,
+  // and that call must run afterwards rather than be dropped
+}, 500, true);
 
 async function sortRecipes(sortType: string) {
   if (sortLoading.value || loading.value) {
