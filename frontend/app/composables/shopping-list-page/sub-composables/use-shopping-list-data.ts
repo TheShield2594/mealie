@@ -1,5 +1,5 @@
 import { useOnline, useIdle } from "@vueuse/core";
-import type { ShoppingListOut } from "~/lib/api/types/household";
+import type { ShoppingListItemOut, ShoppingListOut } from "~/lib/api/types/household";
 import { useShoppingListItemActions } from "~/composables/shopping-list-page/sub-composables/use-shopping-list-item-actions";
 
 /**
@@ -14,6 +14,24 @@ export function useShoppingListData(
   const isOffline = computed(() => useOnline().value === false);
   const { idle } = useIdle(5 * 60 * 1000); // 5 minutes
   const shoppingListItemActions = useShoppingListItemActions(listId);
+
+  // keep the current object for every item the server returned unchanged, so the page
+  // only re-renders the rows that actually changed. Sorting renumbers positions locally,
+  // and position isn't shown in a row, so it's compared separately and taken from the server.
+  function reuseUnchangedItems(newList: ShoppingListOut) {
+    const currentItems = new Map<string, ShoppingListItemOut>(
+      (shoppingList.value?.listItems ?? []).map(item => [item.id, item]),
+    );
+    newList.listItems = newList.listItems?.map((item) => {
+      const current = currentItems.get(item.id);
+      if (!current || JSON.stringify({ ...toRaw(current), position: item.position }) !== JSON.stringify(item)) {
+        return item;
+      }
+
+      current.position = item.position;
+      return current;
+    });
+  }
 
   async function fetchShoppingList() {
     const data = await shoppingListItemActions.getList();
@@ -53,6 +71,7 @@ export function useShoppingListData(
 
     // if we're not connected to the network, this will be null, so we don't want to clear the list
     if (newListValue) {
+      reuseUnchangedItems(newListValue);
       shoppingList.value = newListValue;
     }
 

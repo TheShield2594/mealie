@@ -1,9 +1,14 @@
 from typing import cast
 
 from pydantic import UUID4
-from sqlalchemy import select
+from sqlalchemy import or_, select
 
 from mealie.core.exceptions import UnexpectedNone
+from mealie.db.models.household.shopping_list import (
+    ShoppingListItem,
+    ShoppingListItemRecipeReference,
+    ShoppingListRecipeReference,
+)
 from mealie.db.models.recipe.ingredient import RecipeIngredientModel
 from mealie.repos.all_repositories import get_repositories
 from mealie.repos.repository_factory import AllRepositories
@@ -130,21 +135,27 @@ class ShoppingListService:
         return to_item.cast(ShoppingListItemUpdate, recipe_references=list(updated_refs.values()))
 
     def remove_unused_recipe_references(self, shopping_list_id: UUID4) -> None:
-        shopping_list = cast(ShoppingListOut, self.shopping_lists.get_one(shopping_list_id))
+        # this runs on every item update, so query just the ids rather than loading the whole list
 
-        recipe_ids_to_keep: set[UUID4] = set()
-        for item in shopping_list.list_items:
-            # checked items keep their recipe references so they can be restored if the item is unchecked,
-            # but they shouldn't keep the list-level references alive
-            if item.checked:
-                continue
-
-            recipe_ids_to_keep.update([ref.recipe_id for ref in item.recipe_references])
-
-        list_refs_to_delete: set[UUID4] = set()
-        for list_ref in shopping_list.recipe_references:
-            if list_ref.recipe_id not in recipe_ids_to_keep:
-                list_refs_to_delete.add(list_ref.id)
+        # checked items keep their recipe references so they can be restored if the item is unchecked,
+        # but they shouldn't keep the list-level references alive
+        recipe_ids_to_keep = (
+            select(ShoppingListItemRecipeReference.recipe_id)
+            .join(ShoppingListItem, ShoppingListItem.id == ShoppingListItemRecipeReference.shopping_list_item_id)
+            .where(
+                ShoppingListItem.shopping_list_id == shopping_list_id,
+                or_(ShoppingListItem.checked.is_(None), ShoppingListItem.checked.is_(False)),
+                ShoppingListItemRecipeReference.recipe_id.is_not(None),
+            )
+        )
+        stmt = select(ShoppingListRecipeReference.id).where(
+            ShoppingListRecipeReference.shopping_list_id == shopping_list_id,
+            or_(
+                ShoppingListRecipeReference.recipe_id.is_(None),
+                ShoppingListRecipeReference.recipe_id.not_in(recipe_ids_to_keep),
+            ),
+        )
+        list_refs_to_delete: set[UUID4] = set(self.repos.session.execute(stmt).scalars().all())
 
         if list_refs_to_delete:
             self.list_refs.delete_many(list_refs_to_delete)
@@ -338,7 +349,8 @@ class ShoppingListService:
         filtered_update_items: list[ShoppingListItemUpdateBulk] = []
         existing_items_map: dict[UUID4, list[ShoppingListItemOut]] = {}
         for update_item in update_items:
-            if update_item.shopping_list_id not in existing_items_map:
+            # checked items never merge, so don't load the list's unchecked items just to compare against them
+            if not update_item.checked and update_item.shopping_list_id not in existing_items_map:
                 query = PaginationQuery(
                     per_page=-1, query_filter=f"shopping_list_id={update_item.shopping_list_id} AND checked=false"
                 )
@@ -346,7 +358,8 @@ class ShoppingListService:
                 existing_items_map[update_item.shopping_list_id] = items_data.items
 
             merged = False
-            for existing_item in existing_items_map[update_item.shopping_list_id]:
+            existing_items = [] if update_item.checked else existing_items_map[update_item.shopping_list_id]
+            for existing_item in existing_items:
                 if existing_item.id in delete_items or existing_item.id == update_item.id:
                     continue
 

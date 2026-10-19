@@ -239,29 +239,27 @@
                   @update:model-value="updateIndexUncheckedByLabel(key.toString(), $event)"
                 >
                   <TransitionGroup name="scroll-x-transition">
-                    <template v-for="(item, index) in value" :key="item.id">
+                    <!--
+                      Vue always re-renders a component that is a direct child of a TransitionGroup,
+                      so each row gets a plain wrapper; with plain-function handlers (not inline arrows),
+                      Vue can then skip re-rendering rows whose item hasn't changed
+                    -->
+                    <div v-for="item in value.filter(matchesSearch)" :key="item.id">
                       <ShoppingListItem
-                        v-if="matchesSearch(item)"
-                        v-model="value[index]"
+                        :model-value="item"
                         class="my-2 w-auto shopping-list-item-row"
                         :edit="editingItem === item.id"
                         :labels="allLabels || []"
                         :units="allUnits || []"
                         :foods="allFoods || []"
                         :recipes="recipeMap"
-                        @checked="(item) => {
-                          saveListItem(item);
-                          itemCheckedToast(item);
-                        }"
-                        @save="(item) => {
-                          editingItem = undefined;
-                          saveListItem(item);
-                        }"
-                        @delete="deleteListItem(item)"
-                        @view="editingItem = undefined"
-                        @edit="editingItem = item.id"
+                        @checked="onItemChecked"
+                        @save="onItemSaved"
+                        @delete="deleteListItem"
+                        @view="onItemView"
+                        @edit="onItemEdit"
                       />
-                    </template>
+                    </div>
                   </TransitionGroup>
                 </VueDraggable>
               </v-expansion-panel-text>
@@ -302,16 +300,16 @@
           </v-expansion-panel-title>
           <v-expansion-panel-text eager>
             <TransitionGroup name="scroll-x-transition">
-              <div v-for="(item, idx) in listItems.checked" v-show="matchesSearch(item)" :key="item.id">
+              <div v-for="item in listItems.checked" v-show="matchesSearch(item)" :key="item.id">
                 <ShoppingListItem
-                  v-model="listItems.checked[idx]"
+                  :model-value="item"
                   class="strike-through-note shopping-list-item-row"
                   :labels="allLabels || []"
                   :units="allUnits || []"
                   :foods="allFoods || []"
                   @checked="saveListItem"
                   @save="saveListItem"
-                  @delete="deleteListItem(item)"
+                  @delete="deleteListItem"
                 />
               </div>
             </TransitionGroup>
@@ -424,6 +422,24 @@ const shoppingListPage = useShoppingListPage(id);
 const { store: allLabels } = useLabelStore();
 const { store: allUnits } = useUnitStore();
 const { store: allFoods } = useFoodStore();
+
+function onItemChecked(item: ShoppingListItemOut) {
+  saveListItem(item);
+  itemCheckedToast(item);
+}
+
+function onItemSaved(item: ShoppingListItemOut) {
+  editingItem.value = undefined;
+  saveListItem(item);
+}
+
+function onItemEdit(item: ShoppingListItemOut) {
+  editingItem.value = item.id;
+}
+
+function onItemView() {
+  editingItem.value = undefined;
+}
 
 function itemCheckedToast(item: ShoppingListItemOut) {
   setTimeout(() => {

@@ -13,7 +13,13 @@ from mealie.db.models.household import (
     ShoppingListMultiPurposeLabel,
     ShoppingListRecipeReference,
 )
-from mealie.db.models.recipe import IngredientFoodModel, IngredientFoodSubstitutionModel, RecipeModel
+from mealie.db.models.recipe import (
+    IngredientFoodModel,
+    IngredientFoodSubstitutionModel,
+    IngredientUnitModel,
+    RecipeModel,
+    Tool,
+)
 from mealie.db.models.users.users import User
 from mealie.schema._mealie import MealieModel
 from mealie.schema._mealie.mealie_model import UpdatedAtField
@@ -137,8 +143,10 @@ class ShoppingListItemOut(ShoppingListItemBase):
             selectinload(ShoppingListItem.food)
             .selectinload(IngredientFoodModel.substitutions)
             .joinedload(IngredientFoodSubstitutionModel.substitute_food),
+            selectinload(ShoppingListItem.food).selectinload(IngredientFoodModel.aliases),
+            selectinload(ShoppingListItem.food).selectinload(IngredientFoodModel.households_with_ingredient_food),
             joinedload(ShoppingListItem.label),
-            joinedload(ShoppingListItem.unit),
+            joinedload(ShoppingListItem.unit).selectinload(IngredientUnitModel.aliases),
             selectinload(ShoppingListItem.recipe_references),
             joinedload(ShoppingListItem.shopping_list)
             .joinedload(ShoppingList.user)
@@ -235,7 +243,8 @@ class ShoppingListSummary(ShoppingListSave):
             .joinedload(RecipeModel.tags),
             selectinload(ShoppingList.recipe_references)
             .joinedload(ShoppingListRecipeReference.recipe)
-            .joinedload(RecipeModel.tools),
+            .joinedload(RecipeModel.tools)
+            .selectinload(Tool.households_with_tool),
             selectinload(ShoppingList.label_settings).joinedload(ShoppingListMultiPurposeLabel.label),
             joinedload(ShoppingList.user).load_only(User.household_id, User.group_id),
         ]
@@ -275,8 +284,16 @@ class ShoppingListOut(ShoppingListUpdate):
             .joinedload(ShoppingListItem.food)
             .selectinload(IngredientFoodModel.substitutions)
             .joinedload(IngredientFoodSubstitutionModel.substitute_food),
+            selectinload(ShoppingList.list_items)
+            .joinedload(ShoppingListItem.food)
+            .selectinload(IngredientFoodModel.aliases),
+            selectinload(ShoppingList.list_items)
+            .joinedload(ShoppingListItem.food)
+            .selectinload(IngredientFoodModel.households_with_ingredient_food),
             selectinload(ShoppingList.list_items).joinedload(ShoppingListItem.label),
-            selectinload(ShoppingList.list_items).joinedload(ShoppingListItem.unit),
+            selectinload(ShoppingList.list_items)
+            .joinedload(ShoppingListItem.unit)
+            .selectinload(IngredientUnitModel.aliases),
             selectinload(ShoppingList.list_items).joinedload(ShoppingListItem.recipe_references),
             selectinload(ShoppingList.recipe_references)
             .joinedload(ShoppingListRecipeReference.recipe)
@@ -286,7 +303,8 @@ class ShoppingListOut(ShoppingListUpdate):
             .joinedload(RecipeModel.tags),
             selectinload(ShoppingList.recipe_references)
             .joinedload(ShoppingListRecipeReference.recipe)
-            .joinedload(RecipeModel.tools),
+            .joinedload(RecipeModel.tools)
+            .selectinload(Tool.households_with_tool),
             selectinload(ShoppingList.label_settings).joinedload(ShoppingListMultiPurposeLabel.label),
             joinedload(ShoppingList.user).load_only(User.household_id, User.group_id),
         ]

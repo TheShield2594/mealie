@@ -80,7 +80,7 @@
                   variant="text"
                   class="ml-2"
                   icon
-                  @click="$emit('edit')"
+                  @click="$emit('edit', listItem)"
                 >
                   <v-icon>
                     {{ $globals.icons.edit }}
@@ -103,7 +103,7 @@
                   v-for="action in contextMenu"
                   :key="action.event"
                   density="compact"
-                  @click="$emit(action.event as any)"
+                  @click="$emit(action.event as any, listItem)"
                 >
                   <v-list-item-title>
                     {{ action.text }}
@@ -150,8 +150,8 @@
         :foods="foods"
         class="ma-2"
         @save="save"
-        @cancel="$emit('view')"
-        @delete="$emit('delete')"
+        @cancel="$emit('view', listItem)"
+        @delete="$emit('delete', listItem)"
       />
     </div>
   </div>
@@ -162,6 +162,7 @@ import { useOnline } from "@vueuse/core";
 import RecipeIngredientListItem from "../Recipe/RecipeIngredientListItem.vue";
 import ShoppingListItemEditor from "./ShoppingListItemEditor.vue";
 import RecipeList from "~/components/Domain/Recipe/RecipeList.vue";
+import { useStableVuetifyDefaults } from "~/composables/use-stable-vuetify-defaults";
 import type { ShoppingListItemOut } from "~/lib/api/types/household";
 import type { MultiPurposeLabelOut } from "~/lib/api/types/labels";
 import type { IngredientUnit, IngredientFood, RecipeSummary } from "~/lib/api/types/recipe";
@@ -191,10 +192,15 @@ const props = defineProps({
   },
 });
 
+// every event carries the item, so the page can use the same handler for every row
+// (a new inline handler per row would make Vue re-render every row whenever the page does)
 const emit = defineEmits<{
-  (e: "checked" | "save", item: ShoppingListItemOut): void;
-  (e: "delete" | "edit" | "view"): void;
+  (e: "checked" | "save" | "delete" | "edit" | "view", item: ShoppingListItemOut): void;
 }>();
+
+// the list's expansion panels would otherwise re-render every row's Vuetify components
+// each time the list changes
+useStableVuetifyDefaults();
 
 const SWIPE_THRESHOLD = 50;
 

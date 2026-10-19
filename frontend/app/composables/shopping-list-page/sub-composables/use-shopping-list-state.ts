@@ -1,4 +1,5 @@
 import type { ShoppingListOut, ShoppingListItemOut } from "~/lib/api/types/household";
+import type { RecipeSummary } from "~/lib/api/types/recipe";
 
 /**
  * Composable for managing shopping list state and reactive data
@@ -45,10 +46,19 @@ export function useShoppingListState() {
     { immediate: true },
   );
 
-  const recipeMap = computed(() => new Map(
-    (shoppingList.value?.recipeReferences?.map(ref => ref.recipe) ?? [])
-      .map(recipe => [recipe.id || "", recipe])),
-  );
+  // every list item gets this map, and the list is replaced on every refresh, so keep the
+  // previous map when its recipes haven't changed; a new map would re-render every item
+  const recipeMap = computed<Map<string, RecipeSummary>>((previous) => {
+    const next = new Map(
+      (shoppingList.value?.recipeReferences?.map(ref => ref.recipe) ?? [])
+        .map(recipe => [recipe.id || "", recipe]),
+    );
+    if (previous && JSON.stringify([...previous]) === JSON.stringify([...next])) {
+      return previous;
+    }
+
+    return next;
+  });
 
   const recipeList = computed(() => Array.from(recipeMap.value.values()));
 
