@@ -113,13 +113,13 @@ The About page under Admin Settings checks this fork's releases, not upstream's,
 
 To cut a release:
 
-1. Bump the version in a pull request: `task fork:version -- 3.28.0+redesign.2`
+1. Bump the version in a pull request, where `N` is one more than the latest release: `task fork:version -- 3.28.0+redesign.N`
 2. Once it is merged, create the tag on `mealie-next` in either of two ways:
-   - On GitHub, open **Releases → Draft a new release**, type the new tag (`v3.28.0-redesign.2`), pick `mealie-next` as the target, generate the release notes and publish.
+   - On GitHub, open **Releases → Draft a new release**, type the new tag (`v3.28.0-redesign.N`), pick `mealie-next` as the target, generate the release notes and publish.
    - From a clone:
      ```bash
-     git tag v3.28.0-redesign.2
-     git push origin v3.28.0-redesign.2
+     git tag v3.28.0-redesign.N
+     git push origin v3.28.0-redesign.N
      ```
 
 The [Fork Release](.github/workflows/fork-release.yml) workflow then checks that the tag matches the version, runs the tests and publishes the image to `ghcr.io/theshield2594/mealie`. It then adds the image to the release notes, or creates the release with generated notes if you pushed only a tag.
