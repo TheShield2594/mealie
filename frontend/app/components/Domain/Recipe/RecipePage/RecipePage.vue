@@ -14,7 +14,9 @@
         {{ $t("general.discard-changes-description") }}
       </v-card-text>
     </BaseDialog>
+    <!-- mounted on first use: it loads every food and unit, which viewing a recipe doesn't need -->
     <RecipePageParseDialog
+      v-if="parseDialogUsed"
       :model-value="isParsing"
       :ingredients="recipe.recipeIngredient"
       :width="$vuetify.display.smAndDown ? '100%' : '80%'"
@@ -32,7 +34,7 @@
       />
       <div class="recipe-edit__body d-print-none">
         <section v-if="isEditJSON" class="recipe-edit__card mealie-card">
-          <RecipeJsonEditor
+          <LazyRecipeJsonEditor
             v-model="recipe"
             mode="text"
             :main-menu-bar="false"
@@ -170,18 +172,12 @@
 import type { ComponentPublicInstance } from "vue";
 import { invoke, until } from "@vueuse/core";
 import type { RouteLocationNormalized } from "vue-router";
-import RecipePageEditorToolbar from "./RecipePageParts/RecipePageEditorToolbar.vue";
 import RecipePageFooter from "./RecipePageParts/RecipePageFooter.vue";
-import RecipePageIngredientEditor from "./RecipePageParts/RecipePageIngredientEditor.vue";
 import RecipePageIngredientToolsView from "./RecipePageParts/RecipePageIngredientToolsView.vue";
 import RecipePageInstructions from "./RecipePageParts/RecipePageInstructions.vue";
 import RecipePageOrganizers from "./RecipePageParts/RecipePageOrganizers.vue";
-import RecipePageParseDialog from "./RecipePageParts/RecipeParseDialog/RecipePageParseDialog.vue";
-import RecipePageInfoEditor from "./RecipePageParts/RecipePageInfoEditor.vue";
 import RecipePageComments from "./RecipePageParts/RecipePageComments.vue";
-import RecipePageCookMode from "./RecipePageParts/RecipePageCookMode.vue";
 import RecipePageHero from "./RecipePageParts/RecipePageHero.vue";
-import RecipePageEditBar from "./RecipePageParts/RecipePageEditBar.vue";
 import RecipePageServingsStepper from "./RecipePageParts/RecipePageServingsStepper.vue";
 import RecipeUnitSystemButton from "~/components/Domain/Recipe/RecipeUnitSystemButton.vue";
 import RecipePrintContainer from "~/components/Domain/Recipe/RecipePrintContainer.vue";
@@ -196,12 +192,21 @@ import type { Recipe, RecipeCategory, RecipeIngredient, RecipeTag, RecipeTool } 
 import { useRouteQuery } from "~/composables/use-router";
 import { useStaticRoutes, useUserApi } from "~/composables/api";
 import { uuid4, deepCopy } from "~/composables/use-utils";
-import RecipeDialogBulkAdd from "~/components/Domain/Recipe/RecipeDialogBulkAdd.vue";
 import RecipeNotes from "~/components/Domain/Recipe/RecipeNotes.vue";
 import { useLoggedInState } from "~/composables/use-logged-in-state";
 import { useNavigationWarning } from "~/composables/use-navigation-warning";
 import { useUnitConversion, useUnitSystem } from "~/composables/recipes";
 import { useHouseholdSelf } from "~/composables/use-households";
+
+// edit mode, cook mode and the parse dialog are loaded on demand, so viewing a recipe doesn't
+// download the editors (and their dependencies)
+const RecipePageEditorToolbar = defineAsyncComponent(() => import("./RecipePageParts/RecipePageEditorToolbar.vue"));
+const RecipePageIngredientEditor = defineAsyncComponent(() => import("./RecipePageParts/RecipePageIngredientEditor.vue"));
+const RecipePageParseDialog = defineAsyncComponent(() => import("./RecipePageParts/RecipeParseDialog/RecipePageParseDialog.vue"));
+const RecipePageInfoEditor = defineAsyncComponent(() => import("./RecipePageParts/RecipePageInfoEditor.vue"));
+const RecipePageCookMode = defineAsyncComponent(() => import("./RecipePageParts/RecipePageCookMode.vue"));
+const RecipePageEditBar = defineAsyncComponent(() => import("./RecipePageParts/RecipePageEditBar.vue"));
+const RecipeDialogBulkAdd = defineAsyncComponent(() => import("~/components/Domain/Recipe/RecipeDialogBulkAdd.vue"));
 
 const recipe = defineModel<NoUndefinedField<Recipe>>({ required: true });
 
@@ -224,6 +229,12 @@ const router = useRouter();
 const api = useUserApi();
 const { pageMode, setMode, isEditJSON, isCookMode, isEditMode, isParsing, toggleIsParsing, imageKey }
   = usePageState(recipe.value.slug);
+const parseDialogUsed = ref(false);
+watch(isParsing, (parsing) => {
+  if (parsing) {
+    parseDialogUsed.value = true;
+  }
+}, { immediate: true });
 const { recipeImage } = useStaticRoutes();
 const editImageFailed = ref(false);
 watch(() => [recipe.value.image, imageKey.value], () => {

@@ -98,11 +98,12 @@ const {
   parseIngredients,
 } = dialogState;
 
+// immediate, since the recipe page only mounts this dialog when it's first opened
 watch(() => props.modelValue, () => {
   if (!props.modelValue) {
     return;
   }
 
   parseIngredients();
-});
+}, { immediate: true });
 </script>
