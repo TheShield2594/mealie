@@ -1,5 +1,5 @@
 export default defineI18nLocale(async () => {
-  const { hr: $vuetify } = await import("vuetify/locale");
+  const { default: $vuetify } = await import("vuetify/lib/locale/hr.js");
   const { default: hrHR } = await import("../messages/hr-HR.json");
   const { default: unitNames } = await import(
     "../../../../mealie/repos/seed/resources/units/locales/hr-HR.json",

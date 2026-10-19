@@ -23,11 +23,13 @@ from mealie.schema.response.pagination import PaginationBase
 from ...db.models.recipe import (
     IngredientFoodModel,
     IngredientFoodSubstitutionModel,
+    IngredientUnitModel,
     RecipeComment,
     RecipeIngredientModel,
     RecipeIngredientSubstitutionModel,
     RecipeInstruction,
     RecipeModel,
+    Tool,
 )
 from .recipe_asset import RecipeAsset
 from .recipe_comments import RecipeCommentOut
@@ -228,10 +230,11 @@ class RecipeSummary(MealieModel):
 
     @classmethod
     def loader_options(cls) -> list[LoaderOption]:
+        # selectinload avoids a categories x tags x tools cartesian product on paginated lists
         return [
-            joinedload(RecipeModel.recipe_category),
-            joinedload(RecipeModel.tags),
-            joinedload(RecipeModel.tools),
+            selectinload(RecipeModel.recipe_category),
+            selectinload(RecipeModel.tags),
+            selectinload(RecipeModel.tools).selectinload(Tool.households_with_tool),
             joinedload(RecipeModel.user).load_only(User.household_id),
         ]
 
@@ -371,11 +374,19 @@ class Recipe(RecipeSummary):
             selectinload(RecipeModel.extras),
             joinedload(RecipeModel.recipe_category),
             selectinload(RecipeModel.tags),
-            selectinload(RecipeModel.tools),
-            selectinload(RecipeModel.recipe_ingredient).joinedload(RecipeIngredientModel.unit),
+            selectinload(RecipeModel.tools).selectinload(Tool.households_with_tool),
+            selectinload(RecipeModel.recipe_ingredient)
+            .joinedload(RecipeIngredientModel.unit)
+            .selectinload(IngredientUnitModel.aliases),
             selectinload(RecipeModel.recipe_ingredient)
             .joinedload(RecipeIngredientModel.food)
             .joinedload(IngredientFoodModel.extras),
+            selectinload(RecipeModel.recipe_ingredient)
+            .joinedload(RecipeIngredientModel.food)
+            .selectinload(IngredientFoodModel.aliases),
+            selectinload(RecipeModel.recipe_ingredient)
+            .joinedload(RecipeIngredientModel.food)
+            .selectinload(IngredientFoodModel.households_with_ingredient_food),
             selectinload(RecipeModel.recipe_ingredient)
             .joinedload(RecipeIngredientModel.food)
             .joinedload(IngredientFoodModel.label),

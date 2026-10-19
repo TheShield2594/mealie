@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import UUID4
 from starlette.responses import FileResponse
 
@@ -10,6 +10,11 @@ from mealie.schema.recipe.recipe_timeline_events import RecipeTimelineEventOut
 router = APIRouter(prefix="/recipes")
 
 
+# a new image key is generated whenever a recipe image changes, and the frontend
+# puts it in the URL, so a versioned URL always points at the same bytes
+VERSIONED_IMAGE_CACHE_CONTROL = "public, max-age=31536000, immutable"
+
+
 class ImageType(StrEnum):
     original = "original.webp"
     small = "min-original.webp"
@@ -17,7 +22,7 @@ class ImageType(StrEnum):
 
 
 @router.get("/{recipe_id}/images/{file_name}")
-async def get_recipe_img(recipe_id: UUID4, file_name: ImageType = ImageType.original):
+async def get_recipe_img(request: Request, recipe_id: UUID4, file_name: ImageType = ImageType.original):
     """
     Takes in a recipe id, returns the static image. This route is proxied in the docker image
     and should not hit the API in production
@@ -25,7 +30,8 @@ async def get_recipe_img(recipe_id: UUID4, file_name: ImageType = ImageType.orig
     recipe_image = Recipe.directory_from_id(recipe_id).joinpath("images", file_name.value)
 
     if recipe_image.exists():
-        return FileResponse(recipe_image, media_type="image/webp")
+        headers = {"Cache-Control": VERSIONED_IMAGE_CACHE_CONTROL} if request.query_params.get("version") else None
+        return FileResponse(recipe_image, media_type="image/webp", headers=headers)
     else:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 

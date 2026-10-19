@@ -152,7 +152,13 @@
           </v-col>
         </v-row>
       </div>
-      <v-card v-intersect="infiniteScroll" variant="flat" />
+      <!-- keyed so each added page gets a fresh observer: one that never stops intersecting
+           (a screen taller than the list) would otherwise never report again -->
+      <v-card
+        :key="recipes.length"
+        v-intersect="{ handler: onSentinelIntersect, options: { rootMargin: '0px 0px 600px 0px' } }"
+        variant="flat"
+      />
     </div>
     <v-fade-transition>
       <AppLoader
@@ -234,7 +240,7 @@ const route = useRoute();
 const groupSlug = computed(() => route.params.groupSlug as string || auth.user.value?.groupSlug || "");
 
 const page = ref(1);
-const perPage = 32;
+const perPage = 24;
 const hasMore = ref(true);
 const ready = ref(false);
 const loading = ref(false);
@@ -284,7 +290,7 @@ onMounted(async () => {
   loading.value = true;
   const savedPage = getSavedPage(route.path);
 
-  if (savedPage && savedPage > 2) {
+  if (savedPage && savedPage > 1) {
     page.value = 1;
     hasMore.value = true;
     const newRecipes = await fetchRecipes(savedPage);
@@ -327,17 +333,22 @@ async function initRecipes() {
   page.value = 1;
   hasMore.value = true;
 
-  // we double-up the first call to avoid a bug with large screens that render
-  // the entire first page without scrolling, preventing additional loading
-  const newRecipes = await fetchRecipes(page.value + 1);
+  // if the first page doesn't fill a large screen, the scroll sentinel stays
+  // visible and the intersection observer loads the next page on its own
+  const newRecipes = await fetchRecipes();
   if (newRecipes.length < perPage) {
     hasMore.value = false;
   }
 
-  // since we doubled the first call, we also need to advance the page
-  page.value = page.value + 1;
-
   emit(REPLACE_RECIPES_EVENT, newRecipes);
+}
+
+// v-intersect also calls its handler when it starts observing (with isIntersecting
+// false), so only load more when the sentinel is actually near the viewport
+function onSentinelIntersect(isIntersecting: boolean) {
+  if (isIntersecting) {
+    infiniteScroll();
+  }
 }
 
 const infiniteScroll = useThrottleFn(async () => {
@@ -359,7 +370,9 @@ const infiniteScroll = useThrottleFn(async () => {
   savePosition(route.path, page.value);
 
   loading.value = false;
-}, 500);
+  // trailing: the fresh sentinel can report itself still in view within the throttle window,
+  // and that call must run afterwards rather than be dropped
+}, 500, true);
 
 async function sortRecipes(sortType: string) {
   if (sortLoading.value || loading.value) {

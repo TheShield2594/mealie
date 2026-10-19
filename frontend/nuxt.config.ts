@@ -240,7 +240,8 @@ export default defineNuxtConfig({
       navigateFallback: "/",
       navigateFallbackAllowlist: [/^(?!\/api|\/docs)/],
       globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
-      globIgnores: ["404.html", "200.html", "index.html"],
+      // screenshots are only for the install prompt, which the browser fetches itself
+      globIgnores: ["404.html", "200.html", "index.html", "screenshots/**"],
       cleanupOutdatedCaches: true,
       skipWaiting: true,
       clientsClaim: true,
