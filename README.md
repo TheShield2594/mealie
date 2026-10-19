@@ -84,7 +84,7 @@ Each [release](https://github.com/TheShield2594/mealie/releases) publishes a Doc
 ```yaml
 services:
   mealie:
-    image: ghcr.io/theshield2594/mealie:v3.28.0-redesign.1 # or :latest
+    image: ghcr.io/theshield2594/mealie:v3.28.0-redesign.3 # or :latest
 ```
 
 Follow the upstream [installation guide](https://docs.mealie.io/documentation/getting-started/installation/installation-checklist/) and swap in this image. Configuration, environment variables and backups work the same as upstream. The upstream images (`hkotel/mealie` and `ghcr.io/mealie-recipes/mealie`) run the original design, not this one.

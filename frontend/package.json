@@ -1,6 +1,6 @@
 {
   "name": "mealie",
-  "version": "3.28.0+redesign.2",
+  "version": "3.28.0+redesign.3",
   "private": true,
   "scripts": {
     "dev": "nuxt dev",
