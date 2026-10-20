@@ -188,32 +188,18 @@
         :labels="allLabels || []"
         :units="allUnits || []"
         :foods="allFoods || []"
-        @cancel="createEditorOpen = false"
         @save="createListItem"
       />
 
-      <div v-else class="mb-3">
-        <ShoppingListItemEditor
-          v-if="createEditorOpen"
-          v-model="createListItemData"
-          class="my-4"
-          :labels="allLabels || []"
-          :units="allUnits || []"
-          :foods="allFoods || []"
-          :allow-delete="false"
-          @delete="createEditorOpen = false"
-          @cancel="createEditorOpen = false"
-          @save="createListItem"
-        />
-        <InputLabelType
-          v-else
-          :items="allFoods"
-          :label="$t('shopping-list.add-item')"
-          :icon="$globals.icons.foods"
-          search
-          @focus="createEditorOpen = true"
-        />
-      </div>
+      <ShoppingListQuickAdd
+        v-else
+        v-model="createListItemData"
+        class="mb-3"
+        :foods="allFoods || []"
+        :labels="allLabels || []"
+        :units="allUnits || []"
+        @save="createListItem"
+      />
 
       <TransitionGroup name="scroll-x-transition">
         <template v-for="(value, key) in itemsByLabel" :key="key">
@@ -397,8 +383,8 @@ import { VueDraggable } from "vue-draggable-plus";
 import RecipeList from "~/components/Domain/Recipe/RecipeList.vue";
 import MultiPurposeLabelSection from "~/components/Domain/ShoppingList/MultiPurposeLabelSection.vue";
 import ShoppingListAddItemForm from "~/components/Domain/ShoppingList/ShoppingListAddItemForm.vue";
+import ShoppingListQuickAdd from "~/components/Domain/ShoppingList/ShoppingListQuickAdd.vue";
 import ShoppingListItem from "~/components/Domain/ShoppingList/ShoppingListItem.vue";
-import ShoppingListItemEditor from "~/components/Domain/ShoppingList/ShoppingListItemEditor.vue";
 import { useShoppingListPage } from "~/composables/shopping-list-page/use-shopping-list-page";
 import { useLabelStore, useUnitStore, useFoodStore } from "~/composables/store";
 import { alert } from "~/composables/use-toast";
@@ -477,7 +463,6 @@ const {
   copyListItems,
   toggleReorderLabelsDialog,
   isOffline,
-  createEditorOpen,
   createListItemData,
   createListItem,
   itemsByLabel,

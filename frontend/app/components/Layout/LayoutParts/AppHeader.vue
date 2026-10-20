@@ -9,7 +9,7 @@
     <slot />
     <RouterLink :to="routerLink" class="mealie-app-bar__brand">
       <AppBrandLogo />
-      <span class="mealie-app-bar__title">Mealie</span>
+      <span class="mealie-app-bar__title">{{ $appInfo.brandingName }}</span>
     </RouterLink>
 
     <v-spacer />

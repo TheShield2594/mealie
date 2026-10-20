@@ -3,7 +3,7 @@
     <div class="auth-shell__column" :class="{ 'auth-shell__column--wide': wide }">
       <div class="auth-shell__brand">
         <span class="auth-shell__mark">M</span>
-        <span class="auth-shell__name">Mealie</span>
+        <span class="auth-shell__name">{{ $appInfo.brandingName }}</span>
       </div>
 
       <slot name="above" />

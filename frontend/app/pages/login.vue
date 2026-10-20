@@ -1,5 +1,12 @@
 <template>
-  <AppAuthShell :title="$t('user.sign-in')">
+  <div v-if="reverseProxyLoggingIn" class="login-proxy">
+    <v-progress-circular
+      indeterminate
+      color="primary"
+      size="64"
+    />
+  </div>
+  <AppAuthShell v-else :title="$t('user.sign-in')">
     <template #above>
       <div v-if="isFirstLogin" class="login-first-time">
         <p>
@@ -234,6 +241,7 @@ whenever(
 
 const loggingIn = ref(false);
 const oidcLoggingIn = ref(false);
+const reverseProxyLoggingIn = ref($appInfo.enableReverseProxyAuth && !isDirectLogin());
 
 const { passwordIcon, inputType, togglePasswordShow } = usePasswordField();
 
@@ -246,7 +254,20 @@ whenever(
 onBeforeMount(async () => {
   if (isCallback()) {
     await oidcAuthenticate(true);
+    // Failed callback redirects to ?direct=1 without reloading, so clear the spinner ourselves
+    reverseProxyLoggingIn.value = false;
+    return;
   }
+
+  if ($appInfo.enableReverseProxyAuth && !isDirectLogin() && !loggedIn.value) {
+    try {
+      await auth.reverseProxySignIn();
+    }
+    catch {
+      // Header missing/invalid - fall back to the regular login form
+    }
+  }
+  reverseProxyLoggingIn.value = false;
 });
 
 function isCallback() {
@@ -330,6 +351,14 @@ function alertOnError(error: any) {
 </style>
 
 <style lang="css" scoped>
+.login-proxy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--mealie-canvas);
+}
+
 .login-form {
   display: flex;
   flex-direction: column;

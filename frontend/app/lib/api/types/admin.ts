@@ -16,9 +16,12 @@ export interface AdminAboutInfo {
   enableOidc: boolean;
   oidcRedirect: boolean;
   oidcProviderName: string;
+  enableReverseProxyAuth: boolean;
   tokenTime: number;
   allowedIframeHosts?: string[];
   customLogoVersion?: string | null;
+  brandingName?: string;
+  brandingLogoUrl?: string | null;
   versionLatest: string;
   apiPort: number;
   apiDocs: boolean;
@@ -49,9 +52,12 @@ export interface AppInfo {
   enableOidc: boolean;
   oidcRedirect: boolean;
   oidcProviderName: string;
+  enableReverseProxyAuth: boolean;
   tokenTime: number;
   allowedIframeHosts?: string[];
   customLogoVersion?: string | null;
+  brandingName?: string;
+  brandingLogoUrl?: string | null;
 }
 export interface AppStartupInfo {
   isFirstLogin: boolean;
@@ -95,6 +101,8 @@ export interface CheckAppConfig {
   ldapDisabled: boolean;
   oidcReady: boolean;
   oidcDisabled: boolean;
+  reverseProxyAuthReady: boolean;
+  reverseProxyAuthDisabled: boolean;
   baseUrlSet: boolean;
   isUpToDate: boolean;
 }

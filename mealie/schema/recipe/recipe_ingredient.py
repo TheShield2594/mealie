@@ -239,6 +239,7 @@ class IngredientFood(CreateIngredientFood):
         return [
             selectinload(IngredientFoodModel.aliases),
             selectinload(IngredientFoodModel.households_with_ingredient_food),
+            selectinload(IngredientFoodModel.aliases),
             joinedload(IngredientFoodModel.extras),
             joinedload(IngredientFoodModel.label),
             selectinload(IngredientFoodModel.substitutions).joinedload(IngredientFoodSubstitutionModel.substitute_food),
@@ -297,6 +298,10 @@ class IngredientUnit(CreateIngredientUnit):
     id: UUID4
     aliases: list[IngredientUnitAlias] = []
 
+    @classmethod
+    def loader_options(cls) -> list[LoaderOption]:
+        return [selectinload(IngredientUnitModel.aliases)]
+
     created_at: datetime.datetime | None = None
     updated_at: datetime.datetime | None = UpdatedAtField(None)
 
@@ -308,10 +313,6 @@ class IngredientUnit(CreateIngredientUnit):
     ]
     _normalize_search: ClassVar[bool] = True
     model_config = ConfigDict(from_attributes=True)
-
-    @classmethod
-    def loader_options(cls) -> list[LoaderOption]:
-        return [selectinload(IngredientUnitModel.aliases)]
 
 
 class RecipeIngredientBase(MealieModel):

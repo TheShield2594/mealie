@@ -31,8 +31,7 @@
 <script setup lang="ts">
 withDefaults(defineProps<{ size?: number }>(), { size: 75 });
 
-const { brandingUrl } = useBranding();
-const logoUrl = brandingUrl("logo.png");
+const { logoUrl } = useBranding();
 </script>
 
 <style scoped>
