@@ -1,6 +1,6 @@
 import mimetypes
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, Response
 from fastapi.responses import FileResponse
 from sqlalchemy.orm.session import Session
 
@@ -87,7 +87,7 @@ def get_branding_file(filename: str):
     branding = get_branding()
     path = branding.get_file(filename) if branding else None
     if path is None or not path.is_file():
-        raise HTTPException(status_code=404)
+        raise not_found()
 
     # clients request these with ?v=<branding.version>, so a new logo gets a new URL
     return FileResponse(path, headers={"Cache-Control": "public, max-age=31536000, immutable"})
