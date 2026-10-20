@@ -1,5 +1,5 @@
 <template>
-  <!-- decorative: it always sits next to the "Mealie" name -->
+  <!-- decorative: it always sits next to the app name -->
   <img
     v-if="logoUrl"
     :src="logoUrl"
@@ -22,8 +22,7 @@
 <script setup lang="ts">
 withDefaults(defineProps<{ size?: number }>(), { size: 28 });
 
-const { brandingUrl } = useBranding();
-const logoUrl = brandingUrl("logo.png");
+const { logoUrl } = useBranding();
 </script>
 
 <style scoped>

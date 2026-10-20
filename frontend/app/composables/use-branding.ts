@@ -11,5 +11,8 @@ export function useBranding() {
     return version ? `/api/app/about/branding/${filename}?v=${version}` : null;
   }
 
-  return { hasCustomLogo: !!version, brandingUrl };
+  // a logo in the data folder wins over one set with BRANDING_LOGO_PATH
+  const logoUrl = brandingUrl("logo.png") ?? $appInfo?.brandingLogoUrl ?? null;
+
+  return { hasCustomLogo: !!version, brandingUrl, logoUrl };
 }

@@ -19,6 +19,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from mealie.core.config import get_app_settings
 from mealie.core.root_logger import get_logger
+from mealie.core.settings import branding
 from mealie.core.settings.static import APP_VERSION
 from mealie.middleware.locale_context import LocaleContextMiddleware
 from mealie.routes import router, spa, utility_routes
@@ -69,8 +70,8 @@ async def lifespan_fn(_: FastAPI) -> AsyncGenerator[None]:
 
     await start_scheduler()
 
-    if branding := get_branding():
-        logger.info(f"using custom logo (version {branding.version})")
+    if custom_logo := get_branding():
+        logger.info(f"using custom logo (version {custom_logo.version})")
 
     logger.info("-----SYSTEM STARTUP-----")
     logger.info("------APP SETTINGS------")
@@ -93,6 +94,12 @@ async def lifespan_fn(_: FastAPI) -> AsyncGenerator[None]:
     logger.info("--------==OIDC==--------")
     logger.info(settings.OIDC_FEATURE)
     logger.info("------------------------")
+
+    if settings.branding.logo_path and not settings.branding.logo_file:
+        logger.warning(
+            f'BRANDING_LOGO_PATH="{settings.branding.logo_path}" is not a readable image file '
+            f"({', '.join(sorted(branding.ALLOWED_IMAGE_SUFFIXES))}); falling back to the default logo"
+        )
 
     yield
 

@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+import mimetypes
+
+from fastapi import APIRouter, Depends, Response
 from fastapi.responses import FileResponse
 from sqlalchemy.orm.session import Session
 
@@ -7,6 +9,7 @@ from mealie.core.settings.static import APP_VERSION
 from mealie.db.db_setup import generate_session
 from mealie.db.models.users.users import User
 from mealie.repos.all_repositories import get_repositories
+from mealie.routes._base.permissions import not_found
 from mealie.schema.admin.about import AppInfo, AppStartupInfo, AppTheme
 from mealie.services.branding.branding_service import get_branding
 
@@ -43,10 +46,13 @@ def get_app_info(session: Session = Depends(generate_session)):
         enable_oidc=settings.OIDC_READY,
         oidc_redirect=settings.OIDC_AUTO_REDIRECT,
         oidc_provider_name=settings.OIDC_PROVIDER_NAME,
+        enable_reverse_proxy_auth=settings.REVERSE_PROXY_AUTH_READY,
         allow_password_login=settings.ALLOW_PASSWORD_LOGIN,
         token_time=settings.TOKEN_TIME,
         allowed_iframe_hosts=settings.allowed_iframe_hosts,
         custom_logo_version=branding.version if (branding := get_branding()) else None,
+        branding_name=settings.branding.name,
+        branding_logo_url="/api/app/about/branding-logo" if settings.branding.logo_file else None,
     )
 
 
@@ -81,7 +87,20 @@ def get_branding_file(filename: str):
     branding = get_branding()
     path = branding.get_file(filename) if branding else None
     if path is None or not path.is_file():
-        raise HTTPException(status_code=404)
+        raise not_found()
 
     # clients request these with ?v=<branding.version>, so a new logo gets a new URL
     return FileResponse(path, headers={"Cache-Control": "public, max-age=31536000, immutable"})
+
+
+@router.get("/branding-logo", response_class=FileResponse)
+def get_app_branding_logo():
+    """Get's the custom branding logo, if configured"""
+    settings = get_app_settings()
+
+    logo_file = settings.branding.logo_file
+    if logo_file is None:
+        raise not_found()
+
+    media_type = mimetypes.guess_type(logo_file)[0]
+    return FileResponse(logo_file, media_type=media_type, headers={"Cache-Control": "public, max-age=604800"})

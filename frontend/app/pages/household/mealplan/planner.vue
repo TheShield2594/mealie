@@ -5,7 +5,9 @@
       v-model="shoppingListDialog"
       :recipes="weekRecipesWithScales"
       :shopping-lists="shoppingLists"
+      @list-created="addShoppingList"
     />
+    <GroupMealPlanCalendarDialog v-model="calendarDialog" />
     <header class="mealie-page__header">
       <div class="mealie-page__titles">
         <div class="mealie-eyebrow">
@@ -130,6 +132,11 @@
               @click="addAllToList"
             />
             <v-list-item
+              :prepend-icon="$globals.icons.calendar"
+              :title="$t('meal-plan.calendar-feed')"
+              @click="calendarDialog = true"
+            />
+            <v-list-item
               :prepend-icon="$globals.icons.cog"
               :title="$t('general.settings')"
               to="/household/mealplan/settings"
@@ -149,9 +156,10 @@
 
 <script setup lang="ts">
 import { addDays, differenceInCalendarDays, format, isSameDay, isValid, parseISO } from "date-fns";
+import GroupMealPlanCalendarDialog from "~/components/Domain/Household/GroupMealPlanCalendarDialog.vue";
 import RecipeDialogAddToShoppingList from "~/components/Domain/Recipe/RecipeDialogAddToShoppingList.vue";
 import { useAddToShoppingListDialog } from "~/composables/shopping-list-page/use-add-to-shopping-list-dialog";
-import { useMealplans } from "~/composables/use-group-mealplan";
+import { getScaledRecipes, useMealplans } from "~/composables/use-group-mealplan";
 import { useHouseholdSelf } from "~/composables/use-households";
 import { useUserMealPlanPreferences } from "~/composables/use-users/preferences";
 
@@ -168,7 +176,8 @@ const route = useRoute();
 const router = useRouter();
 const i18n = useI18n();
 const { household, actions: householdActions } = useHouseholdSelf();
-const { shoppingLists, open: shoppingListDialog, addAllToList } = useAddToShoppingListDialog();
+const { shoppingLists, open: shoppingListDialog, addAllToList, addShoppingList } = useAddToShoppingListDialog();
+const calendarDialog = ref(false);
 
 useSeoMeta({
   title: i18n.t("meal-plan.dinner-this-week"),
@@ -315,11 +324,7 @@ const hasRecipes = computed(() => {
 });
 
 const weekRecipesWithScales = computed(() => {
-  return mealsByDate.value
-    .flatMap(({ meals }) => meals)
-    .map(({ recipe }) => recipe)
-    .filter(recipe => recipe)
-    .map(recipe => ({ scale: 1, ...recipe }));
+  return getScaledRecipes(mealsByDate.value.flatMap(({ meals }) => meals));
 });
 </script>
 
