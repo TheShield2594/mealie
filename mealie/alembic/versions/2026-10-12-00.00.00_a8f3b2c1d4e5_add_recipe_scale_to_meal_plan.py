@@ -1,7 +1,7 @@
 """add recipe_scale to group_meal_plans
 
 Revision ID: a8f3b2c1d4e5
-Revises: 27621d27c7e1
+Revises: dca4a6fd2469
 Create Date: 2026-10-12 00:00:00.000000
 
 """
@@ -11,7 +11,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "a8f3b2c1d4e5"
-down_revision: str | None = "27621d27c7e1"
+down_revision: str | None = "dca4a6fd2469"
 branch_labels: str | tuple[str, ...] | None = None
 depends_on: str | tuple[str, ...] | None = None
 
