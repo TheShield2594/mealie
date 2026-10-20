@@ -107,13 +107,13 @@ To run it for development, see the [Contributors Guide](https://nightly.mealie.i
 
 ## Versioning and Releases
 
-Versions follow the upstream release they are based on, plus a redesign number: `v3.28.0-redesign.1` is the first release of the redesign on top of Mealie v3.28.0. The number resets when the fork is updated to a new upstream release. The Python package uses `3.28.0+redesign.1`, because Python versions can't contain `-redesign`.
+Versions follow the upstream release they are based on, plus a redesign number: `v3.29.0-redesign.1` is the first release of the redesign on top of Mealie v3.29.0. The number resets when the fork is updated to a new upstream release. The Python package uses `3.29.0+redesign.1`, because Python versions can't contain `-redesign`.
 
 The About page under Admin Settings checks this fork's releases, not upstream's, to tell you whether an update is available.
 
 To cut a release:
 
-1. Bump the version in a pull request, where `N` is one more than the latest release: `task fork:version -- 3.29.0+redesign.N`
+1. Bump the version in a pull request, where `N` is one more than the latest release on the same upstream version, or 1 for the first release on a new one: `task fork:version -- 3.29.0+redesign.N`
 2. Once it is merged, create the tag on `mealie-next` in either of two ways:
    - On GitHub, open **Releases → Draft a new release**, type the new tag (`v3.29.0-redesign.N`), pick `mealie-next` as the target, generate the release notes and publish.
    - From a clone:
