@@ -191,7 +191,6 @@ const {
   initialize,
 } = useRecipeExplorerSearch(groupSlug);
 
-const { isOwnGroup } = useLoggedInState();
 const categoryStore = isOwnGroup.value ? useCategoryStore() : usePublicCategoryStore(groupSlug.value);
 
 /** the most used categories, offered as one-tap filters */
