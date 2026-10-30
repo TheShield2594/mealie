@@ -22,6 +22,12 @@
               persistent-hint
               rows="4"
             />
+            <RecipePantryUsage
+              v-if="madeThisDialog && recipe.slug"
+              ref="pantryUsage"
+              :recipe-slug="recipe.slug"
+              :scale="scale"
+            />
             <div v-if="childRecipes?.length">
               <v-card-text class="pt-6 pb-0 text-title-medium">
                 {{ $t('recipe.include-linked-recipes') }}
@@ -151,8 +157,9 @@ import { alert } from "~/composables/use-toast";
 import { useHouseholdSelf } from "~/composables/use-households";
 import type { Recipe, RecipeTimelineEventIn, RecipeTimelineEventOut } from "~/lib/api/types/recipe";
 import type { VForm } from "~/types/auto-forms";
+import RecipePantryUsage from "~/components/Domain/Recipe/RecipePantryUsage.vue";
 
-const props = defineProps<{ recipe: Recipe }>();
+const props = withDefaults(defineProps<{ recipe: Recipe; scale?: number }>(), { scale: 1 });
 const emit = defineEmits<{
   eventCreated: [event: RecipeTimelineEventOut];
 }>();
@@ -163,6 +170,7 @@ const { household } = useHouseholdSelf();
 const i18n = useI18n();
 const auth = useMealieAuth();
 const domMadeThisForm = ref<VForm>();
+const pantryUsage = ref<InstanceType<typeof RecipePantryUsage>>();
 const newTimelineEvent = ref<RecipeTimelineEventIn>({
   subject: "",
   eventType: "comment",
@@ -276,6 +284,15 @@ async function createTimelineEvent() {
     return;
   }
 
+  let pantryError = false;
+  try {
+    pantryError = !(await pantryUsage.value?.apply() ?? true);
+  }
+  catch (error) {
+    pantryError = true;
+    console.error("Failed to update the pantry:", error);
+  }
+
   // we also update the recipe's last made value
   if (!lastMade.value || newTimelineEvent.value.timestamp > lastMade.value) {
     try {
@@ -339,6 +356,9 @@ async function createTimelineEvent() {
   }
   if (imageError) {
     alert.error(i18n.t("recipe.added-to-timeline-but-failed-to-add-image"));
+  }
+  else if (pantryError) {
+    alert.error(i18n.t("pantry.failed-to-update-pantry"));
   }
   else {
     alert.success(i18n.t("recipe.added-to-timeline"));

@@ -150,6 +150,12 @@ const topLinks = computed<SideBarLink[]>(() => [
     restricted: true,
   },
   {
+    icon: $globals.icons.fridge,
+    title: i18n.t("pantry.pantry"),
+    to: "/pantry",
+    restricted: true,
+  },
+  {
     icon: $globals.icons.search,
     to: `/g/${groupSlug.value}/recipes/finder`,
     title: i18n.t("recipe-finder.recipe-finder"),

@@ -4,6 +4,7 @@ from pydantic import UUID4
 from sqlalchemy import func, select, update
 from sqlalchemy.orm import joinedload, with_expression
 
+from mealie.db.models.household.pantry import HouseholdPantryItem
 from mealie.db.models.household.shopping_list import ShoppingListItem
 from mealie.db.models.recipe.ingredient import (
     IngredientFoodModel,
@@ -143,6 +144,11 @@ class RepositoryFood(GroupRepositoryGeneric[IngredientFood, IngredientFoodModel]
         self.session.execute(
             update(ShoppingListItem).where(ShoppingListItem.food_id == from_food).values(food_id=to_food)
         )
+        # likewise pantry items, which would otherwise be deleted along with the food
+        self.session.execute(
+            update(HouseholdPantryItem).where(HouseholdPantryItem.food_id == from_food).values(food_id=to_food)
+        )
+        self.session.expire(from_model, ["pantry_items"])
 
         try:
             self.session.delete(from_model)

@@ -22,6 +22,7 @@ from .preferences import GroupPreferencesModel
 if TYPE_CHECKING:
     from ..household import Household
     from ..household.events import GroupEventNotifierModel
+    from ..household.pantry import HouseholdPantryItem
     from ..household.recipe_action import GroupRecipeAction
     from ..household.shopping_list import ShoppingList
     from ..recipe import IngredientFoodModel, IngredientUnitModel, RecipeModel, Tag, Tool
@@ -80,6 +81,7 @@ class Group(SqlAlchemyBase, BaseMixins):
     )
     webhooks: Mapped[list[GroupWebhooksModel]] = orm.relationship(GroupWebhooksModel, **common_args)
     recipe_actions: Mapped[list[GroupRecipeAction]] = orm.relationship("GroupRecipeAction", **common_args)
+    pantry_items: Mapped[list[HouseholdPantryItem]] = orm.relationship("HouseholdPantryItem", **common_args)
     cookbooks: Mapped[list[CookBook]] = orm.relationship(CookBook, **common_args)
     server_tasks: Mapped[list[ServerTaskModel]] = orm.relationship("ServerTaskModel", **common_args)
     data_exports: Mapped[list[GroupDataExportsModel]] = orm.relationship("GroupDataExportsModel", **common_args)
@@ -100,6 +102,7 @@ class Group(SqlAlchemyBase, BaseMixins):
             "users",
             "webhooks",
             "recipe_actions",
+            "pantry_items",
             "shopping_lists",
             "cookbooks",
             "preferences",

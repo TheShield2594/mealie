@@ -117,6 +117,14 @@ households_mealplans_today = "/api/households/mealplans/today"
 """`/api/households/mealplans/today`"""
 households_members = "/api/households/members"
 """`/api/households/members`"""
+households_pantry = "/api/households/pantry"
+"""`/api/households/pantry`"""
+households_pantry_from_shopping_list = "/api/households/pantry/from-shopping-list"
+"""`/api/households/pantry/from-shopping-list`"""
+households_pantry_refill = "/api/households/pantry/refill"
+"""`/api/households/pantry/refill`"""
+households_pantry_use = "/api/households/pantry/use"
+"""`/api/households/pantry/use`"""
 households_permissions = "/api/households/permissions"
 """`/api/households/permissions`"""
 households_preferences = "/api/households/preferences"
@@ -423,6 +431,16 @@ def households_mealplans_item_id(item_id):
 def households_mealplans_rules_item_id(item_id):
     """`/api/households/mealplans/rules/{item_id}`"""
     return f"{prefix}/households/mealplans/rules/{item_id}"
+
+
+def households_pantry_item_id(item_id):
+    """`/api/households/pantry/{item_id}`"""
+    return f"{prefix}/households/pantry/{item_id}"
+
+
+def households_pantry_usage_recipe_slug(recipe_slug):
+    """`/api/households/pantry/usage/{recipe_slug}`"""
+    return f"{prefix}/households/pantry/usage/{recipe_slug}"
 
 
 def households_recipe_actions_item_id(item_id):

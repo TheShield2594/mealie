@@ -1,5 +1,7 @@
 import json
 
+from sqlalchemy import Date
+
 from mealie.core.config import get_app_settings
 from mealie.db.models._model_base import SqlAlchemyBase
 from mealie.db.models._model_utils.datetime import NaiveDateTime
@@ -35,4 +37,20 @@ def test_every_datetime_column_survives_a_backup():
     assert not unregistered, (
         f"datetime columns missing from AlchemyExporter.look_for_datetime: {sorted(unregistered)}. "
         "Add them, or they will restore as strings."
+    )
+
+
+def test_every_date_column_survives_a_backup():
+    """Like datetimes, dates are rebuilt by column name, and an unregistered one fails the restore."""
+    date_columns = {
+        column.name
+        for table in SqlAlchemyBase.metadata.tables.values()
+        for column in table.columns
+        if isinstance(column.type, Date)
+    }
+
+    unregistered = date_columns - AlchemyExporter.look_for_date
+    assert not unregistered, (
+        f"date columns missing from AlchemyExporter.look_for_date: {sorted(unregistered)}. "
+        "Add them, or restoring a backup will fail."
     )

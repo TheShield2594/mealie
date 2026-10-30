@@ -22,6 +22,7 @@ if TYPE_CHECKING:
         GroupInviteToken,
         GroupRecipeAction,
         GroupWebhooksModel,
+        HouseholdPantryItem,
         HouseholdPreferencesModel,
     )
 
@@ -59,6 +60,7 @@ class Household(SqlAlchemyBase, BaseMixins):
     }
 
     recipe_actions: Mapped[list[GroupRecipeAction]] = orm.relationship("GroupRecipeAction", **COMMON_ARGS)
+    pantry_items: Mapped[list[HouseholdPantryItem]] = orm.relationship("HouseholdPantryItem", **COMMON_ARGS)
     cookbooks: Mapped[list[CookBook]] = orm.relationship("CookBook", **COMMON_ARGS)
 
     webhooks: Mapped[list[GroupWebhooksModel]] = orm.relationship("GroupWebhooksModel", **COMMON_ARGS)
@@ -83,6 +85,7 @@ class Household(SqlAlchemyBase, BaseMixins):
             "users",
             "webhooks",
             "recipe_actions",
+            "pantry_items",
             "cookbooks",
             "preferences",
             "invite_tokens",

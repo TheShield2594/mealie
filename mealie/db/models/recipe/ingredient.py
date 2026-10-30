@@ -16,7 +16,7 @@ from .._model_utils.guid import GUID
 
 if TYPE_CHECKING:
     from ..group import Group
-    from ..household import Household
+    from ..household import Household, HouseholdPantryItem
     from .recipe import RecipeModel
 
 households_to_ingredient_foods = sa.Table(
@@ -105,6 +105,8 @@ class IngredientUnitModel(SqlAlchemyBase, BaseMixins):
     fraction: FilterableColumn[bool | None] = mapped_column(Boolean, default=True)
 
     ingredients: Mapped[list[RecipeIngredientModel]] = orm.relationship("RecipeIngredientModel", back_populates="unit")
+    # no delete cascade: deleting a unit leaves the pantry items without one
+    pantry_items: Mapped[list[HouseholdPantryItem]] = orm.relationship("HouseholdPantryItem", back_populates="unit")
     aliases: Mapped[list[IngredientUnitAliasModel]] = orm.relationship(
         "IngredientUnitAliasModel",
         back_populates="unit",
@@ -226,6 +228,9 @@ class IngredientFoodModel(SqlAlchemyBase, BaseMixins):
     recipe_count: Mapped[int] = query_expression(default_expr=literal(0))
 
     ingredients: Mapped[list[RecipeIngredientModel]] = orm.relationship("RecipeIngredientModel", back_populates="food")
+    pantry_items: Mapped[list[HouseholdPantryItem]] = orm.relationship(
+        "HouseholdPantryItem", back_populates="food", cascade="all, delete-orphan"
+    )
     aliases: Mapped[list[IngredientFoodAliasModel]] = orm.relationship(
         "IngredientFoodAliasModel",
         back_populates="food",

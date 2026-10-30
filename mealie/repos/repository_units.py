@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from pydantic import UUID4, BaseModel
 from sqlalchemy import select, update
 
+from mealie.db.models.household.pantry import HouseholdPantryItem
 from mealie.db.models.household.shopping_list import ShoppingListItem
 from mealie.db.models.recipe.ingredient import IngredientUnitModel
 from mealie.lang.providers import get_locale_context
@@ -127,6 +128,11 @@ class RepositoryUnit(GroupRepositoryGeneric[IngredientUnit, IngredientUnitModel]
         self.session.execute(
             update(ShoppingListItem).where(ShoppingListItem.unit_id == from_unit).values(unit_id=to_unit)
         )
+        # likewise pantry items, which would otherwise lose their unit along with this one
+        self.session.execute(
+            update(HouseholdPantryItem).where(HouseholdPantryItem.unit_id == from_unit).values(unit_id=to_unit)
+        )
+        self.session.expire(from_model, ["pantry_items"])
 
         try:
             self.session.delete(from_model)
