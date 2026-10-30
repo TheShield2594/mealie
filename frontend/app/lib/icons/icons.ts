@@ -153,6 +153,7 @@ import {
   mdiTimerOutline,
   mdiPause,
   mdiRestart,
+  mdiFridgeOutline,
 } from "@mdi/js";
 
 export const icons = {
@@ -320,6 +321,7 @@ export const icons = {
   viewGrid: mdiViewGrid,
   calendarBlankOutline: mdiCalendarBlankOutline,
   formatListBulleted: mdiFormatListBulleted,
+  fridge: mdiFridgeOutline,
   timerOutline: mdiTimerOutline,
   pause: mdiPause,
   restart: mdiRestart,

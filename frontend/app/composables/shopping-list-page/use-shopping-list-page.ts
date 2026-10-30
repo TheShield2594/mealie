@@ -7,6 +7,7 @@ import { useShoppingListCopy } from "~/composables/shopping-list-page/sub-compos
 import { useShoppingListCrud } from "~/composables/shopping-list-page/sub-composables/use-shopping-list-crud";
 import { useShoppingListRecipes } from "~/composables/shopping-list-page/sub-composables/use-shopping-list-recipes";
 import { useShoppingListSearch } from "~/composables/shopping-list-page/sub-composables/use-shopping-list-search";
+import { useShoppingListPantry } from "~/composables/shopping-list-page/sub-composables/use-shopping-list-pantry";
 
 /**
  * Main composable that orchestrates all shopping list page functionality
@@ -90,6 +91,9 @@ export function useShoppingListPage(listId: string) {
     sortCheckedItems,
     updateListItemOrder,
   );
+
+  // Initialize moving checked items into the pantry
+  const pantry = useShoppingListPantry(shoppingList, refresh, crud.deleteListItems);
 
   // Initialize recipe management
   const recipes = useShoppingListRecipes(
@@ -199,6 +203,7 @@ export function useShoppingListPage(listId: string) {
     ...labels,
     ...crud,
     ...recipes,
+    ...pantry,
 
     // Specialized functions
     updateIndexUncheckedByLabel,

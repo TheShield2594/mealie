@@ -272,6 +272,12 @@
                       disabled: isSearching,
                     },
                     {
+                      icon: $globals.icons.fridge,
+                      text: $t('pantry.move-checked-to-pantry'),
+                      event: 'pantry',
+                      disabled: isSearching || isOffline || movingToPantry,
+                    },
+                    {
                       icon: $globals.icons.delete,
                       text: $t('shopping-list.delete-checked'),
                       event: 'delete',
@@ -279,6 +285,7 @@
                     },
                   ]"
                   @uncheck="openUncheckAll"
+                  @pantry="moveCheckedToPantry"
                   @delete="openDeleteChecked"
                 />
               </div>
@@ -475,6 +482,8 @@ const {
   listItems,
   openUncheckAll,
   openDeleteChecked,
+  movingToPantry,
+  moveCheckedToPantry,
   recipeList,
   removeRecipeReferenceToList,
   addRecipeReferenceToList,

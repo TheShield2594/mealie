@@ -164,6 +164,7 @@
         <RecipeLastMade
           v-if="isOwnGroup"
           :recipe="recipe"
+          :scale="scale"
           class="recipe-hero__last-made d-print-none"
         />
       </div>

@@ -58,6 +58,14 @@ vi.mock("../sub-composables/use-shopping-list-crud", () => ({
   useShoppingListCrud: () => crud,
 }));
 
+const pantry = {
+  movingToPantry: ref(false),
+  moveCheckedToPantry: vi.fn(),
+};
+vi.mock("../sub-composables/use-shopping-list-pantry", () => ({
+  useShoppingListPantry: () => pantry,
+}));
+
 vi.mock("vue", { spy: true });
 vi.mocked(vue.onUnmounted).mockImplementation(fn => fn());
 vi.mocked(vue.onMounted).mockImplementation(fn => fn());
