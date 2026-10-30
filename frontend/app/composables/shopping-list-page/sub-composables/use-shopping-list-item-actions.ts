@@ -4,7 +4,6 @@ import type { ShoppingListItemOut, ShoppingListOut } from "~/lib/api/types/house
 import type { RequestResponse } from "~/lib/api/types/non-generated";
 
 const localStorageKey = "shopping-list-queue";
-const queueTimeout = 5 * 60 * 1000; // 5 minutes
 
 type ItemQueueType = "create" | "update" | "delete";
 
@@ -12,8 +11,6 @@ export interface ShoppingListQueue {
   create: ShoppingListItemOut[];
   update: ShoppingListItemOut[];
   delete: ShoppingListItemOut[];
-
-  lastUpdate: number;
 }
 
 interface Storage {
@@ -26,9 +23,6 @@ export function useShoppingListItemActions(shoppingListId: string) {
   const storage = useLocalStorage(localStorageKey, {} as Storage, { deep: true });
   const queue = reactive(getQueue());
   const queueEmpty = computed(() => !queue.create.length && !queue.update.length && !queue.delete.length);
-  if (queueEmpty.value) {
-    queue.lastUpdate = Date.now();
-  }
 
   storage.value[shoppingListId] = { ...queue };
   watch(
@@ -47,20 +41,16 @@ export function useShoppingListItemActions(shoppingListId: string) {
       return false;
     }
 
-    const hasRequiredProps = "create" in obj && "update" in obj && "delete" in obj && "lastUpdate" in obj;
+    const hasRequiredProps = "create" in obj && "update" in obj && "delete" in obj;
     if (!hasRequiredProps) {
       return false;
     }
 
-    const arraysValid = Array.isArray(obj.create) && Array.isArray(obj.update) && Array.isArray(obj.delete);
-
-    const lastUpdateValid = typeof obj.lastUpdate === "number" && !isNaN(new Date(obj.lastUpdate).getTime());
-
-    return arraysValid && lastUpdateValid;
+    return Array.isArray(obj.create) && Array.isArray(obj.update) && Array.isArray(obj.delete);
   }
 
   function createEmptyQueue(): ShoppingListQueue {
-    const newQueue = { create: [], update: [], delete: [], lastUpdate: Date.now() };
+    const newQueue = { create: [], update: [], delete: [] };
     return newQueue;
   }
 
@@ -174,18 +164,27 @@ export function useShoppingListItemActions(shoppingListId: string) {
     if (itemQueueType === "delete" || itemQueueType === "all") {
       queue.delete = itemIds ? queue.delete.filter(item => !itemIds.includes(item.id)) : [];
     }
-    if (queueEmpty.value) {
-      queue.lastUpdate = Date.now();
-    }
   }
 
-  function checkUpdateState(list: ShoppingListOut) {
-    const cutoffDate = new Date(queue.lastUpdate + queueTimeout).toISOString();
-    if (list.updatedAt && list.updatedAt > cutoffDate) {
-      // If the queue is too far behind the shopping list to reliably do updates, we clear the queue
-      console.log("Out of sync with server; clearing queue");
-      clearQueueItems("all");
-    }
+  function isNewerThan(item: ShoppingListItemOut, other: ShoppingListItemOut): boolean {
+    const itemTime = item.updatedAt ? Date.parse(item.updatedAt) : NaN;
+    const otherTime = other.updatedAt ? Date.parse(other.updatedAt) : NaN;
+    return !isNaN(itemTime) && !isNaN(otherTime) && itemTime > otherTime;
+  }
+
+  /**
+   * Drops queued changes that the server has moved past, item by item: deletes and updates
+   * for items someone else already removed, and updates older than the server's copy.
+   * Everything else is kept, however long the queue has been waiting.
+   */
+  function reconcileQueue(list: ShoppingListOut) {
+    const serverItems = new Map((list.listItems ?? []).map(item => [item.id, item]));
+
+    queue.delete = toRaw(queue.delete).filter(item => serverItems.has(item.id));
+    queue.update = toRaw(queue.update).filter((item) => {
+      const serverItem = serverItems.get(item.id);
+      return !!serverItem && !isNewerThan(serverItem, item);
+    });
   }
 
   /**
@@ -230,28 +229,20 @@ export function useShoppingListItemActions(shoppingListId: string) {
 
   async function process() {
     if (queueEmpty.value) {
-      queue.lastUpdate = Date.now();
       return;
     }
 
-    const data = await getList();
+    // reconcile against the server's own items, not getList's copy with the queue merged in
+    const { data } = await api.shopping.lists.getOne(shoppingListId);
     if (!data) {
       return;
     }
-    checkUpdateState(data);
+    reconcileQueue(data);
 
     // We send each bulk request one at a time, since the backend may merge items
-    // "failures" here refers to an actual error, rather than failing to reach the backend
-    let failures = 0;
-    if (!(await processQueueItems(items => api.shopping.items.deleteMany(items), "delete"))) failures++;
-    if (!(await processQueueItems(items => api.shopping.items.updateMany(items), "update"))) failures++;
-    if (!(await processQueueItems(items => api.shopping.items.createMany(items), "create"))) failures++;
-
-    // If we're online, or the queue is empty, the queue is fully processed, so we're up to date
-    // Otherwise, if all three queue processes failed, we've already reset the queue, so we need to reset the date
-    if (isOnline.value || queueEmpty.value || failures === 3) {
-      queue.lastUpdate = Date.now();
-    }
+    await processQueueItems(items => api.shopping.items.deleteMany(items), "delete");
+    await processQueueItems(items => api.shopping.items.updateMany(items), "update");
+    await processQueueItems(items => api.shopping.items.createMany(items), "create");
   }
 
   return {

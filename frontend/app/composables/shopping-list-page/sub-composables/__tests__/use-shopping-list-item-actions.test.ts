@@ -1,5 +1,6 @@
 import * as vuecore from "@vueuse/core";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import type { ShoppingListItemOut } from "~/lib/api/types/household";
 import type { ShoppingListQueue } from "../use-shopping-list-item-actions";
 import { useShoppingListItemActions } from "../use-shopping-list-item-actions";
 import { MOCK_ITEM, MOCK_SHOPPING_LIST } from "./mocks";
@@ -15,6 +16,10 @@ const isOnline = ref(true);
 const storedValue = ref<{ [key: string]: ShoppingListQueue } | undefined>(undefined);
 vi.mocked(vuecore.useOnline).mockReturnValue(isOnline);
 vi.mocked(vuecore.useStorage).mockReturnValue(storedValue);
+
+function serverListWith(...items: ShoppingListItemOut[]) {
+  return { data: { ...MOCK_SHOPPING_LIST, updatedAt: new Date().toISOString(), listItems: items } };
+}
 
 vi.mock("~/composables/api", () => ({
   useUserApi: () => ({
@@ -82,11 +87,15 @@ describe("useShoppingListItemActions", () => {
       const createdItem = { ...MOCK_ITEM, id: "create" };
       const deletedItem = { ...MOCK_ITEM, id: "delete" };
 
+      getOne.mockResolvedValueOnce(serverListWith(updatedItem, deletedItem));
       updateItem(updatedItem);
       createItem(createdItem);
       deleteItem(deletedItem);
 
       await process();
+      expect(deleteMany).toHaveBeenCalledWith([deletedItem]);
+      expect(updateMany).toHaveBeenCalledWith([updatedItem]);
+      expect(createMany).toHaveBeenCalledWith([createdItem]);
       expect(queue.update).not.include(updatedItem);
       expect(queue.create).not.include(createdItem);
       expect(queue.delete).not.include(deletedItem);
@@ -100,11 +109,14 @@ describe("useShoppingListItemActions", () => {
       const createdItem = { ...MOCK_ITEM, id: "create" };
       const deletedItem = { ...MOCK_ITEM, id: "delete" };
 
+      getOne.mockResolvedValueOnce(serverListWith(updatedItem, deletedItem));
       updateItem(updatedItem);
       createItem(createdItem);
       deleteItem(deletedItem);
 
       await process();
+      expect(updateMany).toHaveBeenCalled();
+      expect(deleteMany).toHaveBeenCalled();
       expect(queue.update).not.include(updatedItem);
       expect(queue.create).not.include(createdItem);
       expect(queue.delete).not.include(deletedItem);
@@ -116,6 +128,7 @@ describe("useShoppingListItemActions", () => {
       const createdItem = { ...MOCK_ITEM, id: "create" };
       const deletedItem = { ...MOCK_ITEM, id: "delete" };
 
+      getOne.mockResolvedValueOnce(serverListWith(updatedItem, deletedItem));
       updateItem(updatedItem);
       createItem(createdItem);
       deleteItem(deletedItem);
@@ -145,6 +158,57 @@ describe("useShoppingListItemActions", () => {
       expect(updateMany).not.toHaveBeenCalled();
       expect(createMany).not.toHaveBeenCalled();
       expect(deleteMany).not.toHaveBeenCalled();
+    });
+  });
+  describe("reconciles the queue with the server", () => {
+    test("keeps offline changes when the list changed long after they were queued", async () => {
+      const updatedItem = { ...MOCK_ITEM, id: "update", checked: true, updatedAt: new Date().toISOString() };
+      const createdItem = { ...MOCK_ITEM, id: "create" };
+      const deletedItem = { ...MOCK_ITEM, id: "delete" };
+      const serverItem = { ...MOCK_ITEM, id: "update", updatedAt: "2000-01-01T00:00:00Z" };
+
+      updateItem(updatedItem);
+      createItem(createdItem);
+      deleteItem(deletedItem);
+
+      // someone else edits the list an hour later, while this device is still offline
+      const later = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+      getOne.mockResolvedValueOnce({
+        data: { ...serverListWith(serverItem, deletedItem).data, updatedAt: later },
+      });
+
+      await process();
+      expect(updateMany).toHaveBeenCalledWith([updatedItem]);
+      expect(createMany).toHaveBeenCalledWith([createdItem]);
+      expect(deleteMany).toHaveBeenCalledWith([deletedItem]);
+    });
+    test("drops changes to items someone else deleted", async () => {
+      const updatedItem = { ...MOCK_ITEM, id: "update" };
+      const deletedItem = { ...MOCK_ITEM, id: "delete" };
+      getOne.mockResolvedValueOnce(serverListWith());
+
+      updateItem(updatedItem);
+      deleteItem(deletedItem);
+
+      await process();
+      expect(updateMany).not.toHaveBeenCalled();
+      expect(deleteMany).not.toHaveBeenCalled();
+      expect(queue.update).not.include(updatedItem);
+      expect(queue.delete).not.include(deletedItem);
+    });
+    test("drops an update older than the server's copy of the item", async () => {
+      const staleItem = { ...MOCK_ITEM, id: "stale", updatedAt: "2026-01-01T10:00:00Z" };
+      const freshItem = { ...MOCK_ITEM, id: "fresh", updatedAt: "2026-01-01T12:00:00Z" };
+      getOne.mockResolvedValueOnce(serverListWith(
+        { ...staleItem, updatedAt: "2026-01-01T11:00:00Z" },
+        { ...freshItem, updatedAt: "2026-01-01T11:00:00Z" },
+      ));
+
+      updateItem(staleItem);
+      updateItem(freshItem);
+
+      await process();
+      expect(updateMany).toHaveBeenCalledWith([freshItem]);
     });
   });
   describe("getQueue", () => {
