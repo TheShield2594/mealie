@@ -553,10 +553,15 @@ Order is tokens → shared components → screens. Each line is meant to be one 
 - Recipe comments are a quiet thread (heading with a count, filled composer, hairline-separated comments, muted delete).
 - Undo for deleting a shopping-list item works with the offline queue: an unsent delete is cancelled; a sent one is re-created as a new item. Verified in the browser for both cases and after reload, with unit tests.
 
-### Still open, needs a decision
+### Second follow-up: both open decisions, done
 
-- **Item counts on the shopping-lists page.** This needs the lists summary API to return a count (a backend schema change plus `task dev:generate`), which goes beyond visual/UX work.
-- **Household settings as grouped switch lists.** This rewrites an upstream form for modest gain; it's in the shared field and type styles today.
+- **Item counts on the shopping-lists page.** This is a backend change, made at your request.
+  - `ShoppingList` gains two deferred, read-only column properties (correlated `COUNT` subqueries, so no migration).
+  - `ShoppingListSummary` exposes them as `itemCount` and `uncheckedItemCount`. Only the summary query undefers them, so other list queries are unchanged.
+  - Integration tests cover a list with items and an empty one. TS types were regenerated with the code generator, keeping only the `household.ts` change; the generator's unrelated ordering drift in `recipe.ts` and the schema `__init__` files was reverted.
+  - Each row reads "8 of 10 left", "All 10 checked off" or "Nothing on it yet".
+  - *Tested on SQLite only;* there was no Postgres in this sandbox. The SQL is standard (`IS false` on Postgres).
+- **Household settings as grouped switch lists.** `HouseholdPreferencesEditor` (shared by the household page and the admin household page) now uses a new `BaseSettingRow`: name and explanation on the left, a switch on the right, one panel per section. Saving is unchanged and verified across a reload. *Leftover:* the admin household page still wraps the editor in its own outlined card.
 
 ### What I'd do first, and why
 
@@ -616,13 +621,15 @@ Each upstream file is listed once with the phase that touched it. **New** means 
 | 3 | `CrudTable.vue` **new**, `WakelockSwitch.vue` **new**, `error.vue` **new** | Scoped style and toolbar class; small toggle; empty-state error page |
 | 3 | `composables/recipe-page/use-extract-ingredient-references.ts` **new** (and its test) | Whole-word matching (bug fix) |
 | 3 | `composables/recipes/use-recipes.ts` **new** | Keeps the query's total |
+| follow-up 2 | `mealie/db/models/household/shopping_list.py` **new**, `mealie/schema/household/group_shopping_list.py`, `tests/.../test_group_shopping_lists.py`, `frontend/app/lib/api/types/household.ts` (generated), `frontend/app/types/components.d.ts` (generated) | Item counts on the summary |
+| follow-up 2 | `HouseholdPreferencesEditor.vue` **new**, `pages/household/index.vue` **new**, `pages/shopping-lists/index.vue` | Grouped settings rows; counts in the list rows |
 | follow-up | `plugins/axios.ts` **new**, `composables/recipes/use-recipe.ts` **new** | `suppressNotFoundAlert` for the recipe fetch |
 | follow-up | `RecipePageComments.vue` **new**, `RecipeScaleEditButton.vue` **new**, `MealPlanNoteMenu.vue` **new** | Comments thread; pill as button; menu name |
 | follow-up | `WakelockSwitch.vue`, `RecipeFavoriteBadge.vue`, `AppSidebar.vue`, `AppHeader.vue`, `pages/user/profile/index.vue` | Caught refusal; no attr leak; contrast; heading levels |
 | follow-up | `shopping-list-page/sub-composables/use-shopping-list-item-actions.ts`, `use-shopping-list-crud.ts` **new** (and tests), `pages/shopping-lists/[id].vue` | Undo for deletes |
 | 3 | `RecipeIngredients.vue`, `RecipePageInstructions.vue`, `RecipeLastMade.vue`, `RecipeUnitSystemButton.vue`, `RecipePage.vue`, `RecipeCardSection.vue`, `RecipeExplorerPageSearch.vue`, `RecipeOrganizerPage.vue`, `RecipeTimelineItem.vue`, `MealPlanLayout.vue`, `ShoppingListItem.vue`, `lib/icons/icons.ts`, planner, shopping, cookbooks, users and login pages | Screen work (all already fork-modified) |
 
-Fork-only files changed in Phase 1: `design-tokens.scss`, `lib/theme/readable-on.ts` (and its test), `plugins/html-lang.client.ts` (new), `AppAuthShell.vue`, `RecipePageHero.vue`, `RecipePageCookMode.vue`, `RecipePageServingsStepper.vue`, and the `RecipeExplorerPage{Header,Recent,Tonight}.vue` parts. Fork-only files added in Phase 2: `BaseEmptyState.vue`, `BaseSkeleton.vue`, `AppTabBar.vue`, `composables/recipes/use-recipe-card-meta.ts` (and its test). Phase 3: `CookbookCover.vue`, `composables/use-planner-week-columns.ts`.
+Fork-only files changed in Phase 1: `design-tokens.scss`, `lib/theme/readable-on.ts` (and its test), `plugins/html-lang.client.ts` (new), `AppAuthShell.vue`, `RecipePageHero.vue`, `RecipePageCookMode.vue`, `RecipePageServingsStepper.vue`, and the `RecipeExplorerPage{Header,Recent,Tonight}.vue` parts. Fork-only files added in Phase 2: `BaseEmptyState.vue`, `BaseSkeleton.vue`, `AppTabBar.vue`, `composables/recipes/use-recipe-card-meta.ts` (and its test). Phase 3: `CookbookCover.vue`, `composables/use-planner-week-columns.ts`. Follow-up: `BaseSettingRow.vue`.
 
 ---
 
