@@ -1379,7 +1379,8 @@
     "details": "Details",
     "photo": "Photo",
     "organize": "Organize",
-    "more": "Notes & Nutrition"
+    "more": "Notes & Nutrition",
+    "time-text-placeholder": "Anything else, e.g. plus overnight"
   },
   "recipe-create": {
     "eyebrow": "New Recipe",

@@ -18,7 +18,9 @@
         :suffix="durationUnitLabel('hour')"
         variant="underlined"
         density="compact"
-        inset
+        control-variant="hidden"
+        placeholder="0"
+        persistent-placeholder
         class="time-input"
       />
       <v-number-input
@@ -28,7 +30,9 @@
         :suffix="durationUnitLabel('minute')"
         variant="underlined"
         density="compact"
-        inset
+        control-variant="hidden"
+        placeholder="0"
+        persistent-placeholder
         class="time-input"
       />
       <!-- Shown after the structured time, e.g. "3 hours" + "plus overnight" -->
@@ -37,6 +41,7 @@
         v-model="text"
         density="compact"
         variant="underlined"
+        :placeholder="$t('recipe-edit.time-text-placeholder')"
         class="time-text"
       />
     </div>
@@ -86,8 +91,8 @@ watch([hours, minutes], () => {
 
 <style scoped>
 .time-input {
-  flex: 1 1 9em;
-  max-width: 12em;
+  flex: 1 1 7em;
+  max-width: 9em;
 }
 .time-text {
   flex: 3 1 12em;
