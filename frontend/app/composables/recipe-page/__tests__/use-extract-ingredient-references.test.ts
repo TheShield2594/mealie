@@ -80,4 +80,24 @@ describe("test use extract ingredient references", () => {
 
     expect(result).toEqual(new Set());
   });
+
+  test.each([
+    ["Bring a large pot of water to a boil", "potatoes"],
+    ["Warm the oil", "boiled eggs"],
+    ["Add the pea shoots", "peanuts"],
+  ])("does not match part of a word: %j against %j", (text, note) => {
+    const { extractIngredientReferences } = useExtractIngredientReferences();
+    const result = extractIngredientReferences([{ note, referenceId: "123" }], [], text);
+    expect(result).toEqual(new Set());
+  });
+
+  test.each([
+    ["Add the potato", "potatoes"],
+    ["Add the tomatoes", "cherry tomato"],
+    ["Slice the garlic", "garlic, finely sliced"],
+  ])("matches whole words and plurals: %j against %j", (text, note) => {
+    const { extractIngredientReferences } = useExtractIngredientReferences();
+    const result = extractIngredientReferences([{ note, referenceId: "123" }], [], text);
+    expect(result).toEqual(new Set(["123"]));
+  });
 });
