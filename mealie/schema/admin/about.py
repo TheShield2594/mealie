@@ -31,16 +31,16 @@ class AppInfo(MealieModel):
 
 class AppTheme(MealieModel):
     light_primary: str = "#C4502A"
-    light_accent: str = "#007A99"
-    light_secondary: str = "#973542"
+    light_accent: str = "#57534D"
+    light_secondary: str = "#C4502A"
     light_success: str = "#2A7531"
     light_info: str = "#1565C0"
     light_warning: str = "#A84B0A"
     light_error: str = "#B3261E"
 
     dark_primary: str = "#E0683C"
-    dark_accent: str = "#007A99"
-    dark_secondary: str = "#E08A73"
+    dark_accent: str = "#BDB8AF"
+    dark_secondary: str = "#E0683C"
     dark_success: str = "#4CAF50"
     dark_info: str = "#5E9BD1"
     dark_warning: str = "#FF6D00"

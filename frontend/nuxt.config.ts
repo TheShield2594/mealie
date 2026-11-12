@@ -89,8 +89,8 @@ export default defineNuxtConfig({
       themes: {
         dark: {
           primary: process.env.THEME_DARK_PRIMARY || "#E0683C",
-          accent: process.env.THEME_DARK_ACCENT || "#007A99",
-          secondary: process.env.THEME_DARK_SECONDARY || "#E08A73",
+          accent: process.env.THEME_DARK_ACCENT || "#BDB8AF",
+          secondary: process.env.THEME_DARK_SECONDARY || "#E0683C",
           success: process.env.THEME_DARK_SUCCESS || "#4CAF50",
           info: process.env.THEME_DARK_INFO || "#5E9BD1",
           warning: process.env.THEME_DARK_WARNING || "#FF6D00",
@@ -99,8 +99,8 @@ export default defineNuxtConfig({
         },
         light: {
           primary: process.env.THEME_LIGHT_PRIMARY || "#C4502A",
-          accent: process.env.THEME_LIGHT_ACCENT || "#007A99",
-          secondary: process.env.THEME_LIGHT_SECONDARY || "#973542",
+          accent: process.env.THEME_LIGHT_ACCENT || "#57534D",
+          secondary: process.env.THEME_LIGHT_SECONDARY || "#C4502A",
           success: process.env.THEME_LIGHT_SUCCESS || "#2A7531",
           info: process.env.THEME_LIGHT_INFO || "#1565C0",
           warning: process.env.THEME_LIGHT_WARNING || "#A84B0A",

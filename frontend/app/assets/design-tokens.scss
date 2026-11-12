@@ -784,3 +784,44 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
   --v-border-color: var(--mealie-hairline-strong);
   --v-border-opacity: 1;
 }
+
+// Accent and secondary are no longer brand colours (DESIGN_AUDIT.md §2.1). Their defaults are now a
+// neutral ink and the primary, and the components that filled things with them become the quiet
+// neutral styles here: tags read as neutral pills, and secondary-coloured buttons and chips (the
+// planner's "Serves 4", the unit toggle) as secondary pills, so only one thing per view is orange
+.v-chip.bg-accent,
+.v-chip.text-accent {
+  background: var(--mealie-fill) !important;
+  color: var(--mealie-ink-2) !important;
+  border-radius: var(--mealie-radius-pill) !important;
+  font-weight: var(--mealie-weight-control);
+
+  > .v-chip__overlay,
+  > .v-chip__underlay {
+    display: none;
+  }
+}
+
+.v-btn.bg-secondary:not(.v-btn--icon),
+.v-btn.bg-secondary-darken-1:not(.v-btn--icon),
+.v-chip.bg-secondary-darken-1,
+.v-card.bg-secondary-darken-1 {
+  background: var(--mealie-fill) !important;
+  color: var(--mealie-ink) !important;
+  box-shadow: none !important;
+}
+
+// the scale and yield pills ("Serves 4") are cards in upstream's markup
+.v-card.bg-secondary-darken-1 {
+  border-radius: var(--mealie-radius-pill) !important;
+  font-weight: var(--mealie-weight-control);
+
+  .v-icon {
+    color: var(--mealie-ink-3);
+  }
+}
+
+// empty rating stars in the neutral rule colour; filled ones keep the secondary (now the accent)
+.v-rating .text-secondary-lighten-3 {
+  color: var(--mealie-ink-4) !important;
+}

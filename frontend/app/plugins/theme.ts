@@ -63,8 +63,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             "primary": lightPrimary,
             // the primary as small text (links, eyebrows): darkened only as far as AA needs
             "primary-ink": readableInk(lightPrimary, LIGHT_GROUNDS, false),
-            "accent": theme?.lightAccent ?? "#007A99",
-            "secondary": theme?.lightSecondary ?? "#973542",
+            "accent": theme?.lightAccent ?? "#57534D",
+            "secondary": theme?.lightSecondary ?? "#C4502A",
             "success": theme?.lightSuccess ?? "#2A7531",
             "info": theme?.lightInfo ?? "#1565C0",
             "warning": theme?.lightWarning ?? "#A84B0A",
@@ -78,8 +78,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
           colors: withReadableOn({
             "primary": darkPrimary,
             "primary-ink": readableInk(darkPrimary, DARK_GROUNDS, true),
-            "accent": theme?.darkAccent ?? "#007A99",
-            "secondary": theme?.darkSecondary ?? "#E08A73",
+            "accent": theme?.darkAccent ?? "#BDB8AF",
+            "secondary": theme?.darkSecondary ?? "#E0683C",
             "success": theme?.darkSuccess ?? "#4CAF50",
             "info": theme?.darkInfo ?? "#5E9BD1",
             "warning": theme?.darkWarning ?? "#FF6D00",
