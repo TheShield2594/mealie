@@ -217,4 +217,22 @@ const eventImageUrl = computed<string>(() => {
 .timeline-date {
   font-weight: 600;
 }
+
+/* every event card the same width on the one-sided rail, so the column reads straight */
+.timeline-card {
+  width: 100%;
+}
+
+.timeline-card :deep(.v-card-title) {
+  text-align: left;
+}
+
+/* the rail's dots: a small accent mark, not a large filled badge per event */
+:deep(.v-timeline-divider__dot) {
+  --v-timeline-dot-size: 28px;
+}
+
+:deep(.v-timeline-divider__inner-dot .v-icon) {
+  font-size: 14px;
+}
 </style>
