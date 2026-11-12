@@ -239,8 +239,9 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 
 .tonight-hero__title {
   font-size: 32px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-family: var(--mealie-font-display);
+  font-weight: 560;
+  letter-spacing: -0.01em;
   line-height: 1.1;
   color: #fff;
   text-decoration: none;

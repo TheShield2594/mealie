@@ -12,8 +12,11 @@
   --v-font-heading:
     -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mealie-font-mono: ui-monospace, "SF Mono", Menlo, monospace;
-  // titles only (page h1, recipe titles, step numbers); everything read or tapped stays sans
-  --mealie-font-display: ui-serif, Georgia, "Times New Roman", serif;
+  // titles only (page h1, recipe titles, the tonight hero, step numbers); everything read or
+  // tapped stays sans. Fraunces is bundled from npm (@fontsource-variable/fraunces, OFL-1.1) and
+  // served from Mealie's own origin: no font CDN. It covers Latin, Latin Extended and Vietnamese;
+  // other scripts fall back to the system serif
+  --mealie-font-display: "Fraunces Variable", ui-serif, Georgia, "Times New Roman", serif;
 
   // eight sizes, each with one job
   --mealie-text-caption: 12px; // eyebrows and labels: 600, +0.06em, uppercase
@@ -155,6 +158,13 @@
   }
 }
 
+// For titles outside the components that set it themselves
+.mealie-display {
+  font-family: var(--mealie-font-display);
+  font-weight: 560;
+  letter-spacing: -0.01em;
+}
+
 // Accent as text: Vuetify's text-primary (links, text buttons, icons) uses the AA-safe ink
 .text-primary {
   color: rgb(var(--v-theme-primary-ink)) !important;
@@ -208,8 +218,9 @@
 
 .mealie-page__title {
   font-size: 34px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-family: var(--mealie-font-display);
+  font-weight: 560;
+  letter-spacing: -0.01em;
   line-height: 1.1;
 }
 

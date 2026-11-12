@@ -74,7 +74,13 @@ export default defineNuxtConfig({
     viewTransition: true,
   },
 
-  css: ["~/assets/main.css", "~/assets/style-overrides.scss", "~/assets/design-tokens.scss"],
+  css: [
+    "~/assets/main.css",
+    "~/assets/style-overrides.scss",
+    // the display serif for titles, bundled and self-hosted (see --mealie-font-display)
+    "@fontsource-variable/fraunces/wght.css",
+    "~/assets/design-tokens.scss",
+  ],
 
   runtimeConfig: {
     sessionPassword: process.env.SESSION_PASSWORD || "password-with-at-least-32-characters",
@@ -239,7 +245,7 @@ export default defineNuxtConfig({
     workbox: {
       navigateFallback: "/",
       navigateFallbackAllowlist: [/^(?!\/api|\/docs)/],
-      globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
+      globPatterns: ["**/*.{js,css,html,png,svg,ico,woff2}"],
       // screenshots are only for the install prompt, which the browser fetches itself
       globIgnores: ["404.html", "200.html", "index.html", "screenshots/**"],
       cleanupOutdatedCaches: true,

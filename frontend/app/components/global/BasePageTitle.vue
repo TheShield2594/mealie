@@ -55,8 +55,9 @@ defineProps({
 .base-page-title__title {
   margin: 0;
   font-size: 34px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-family: var(--mealie-font-display);
+  font-weight: 560;
+  letter-spacing: -0.01em;
   line-height: 1.1;
 }
 

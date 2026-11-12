@@ -367,8 +367,9 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 .recipe-hero__title {
   margin-top: 8px;
   font-size: 44px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-family: var(--mealie-font-display);
+  font-weight: 560;
+  letter-spacing: -0.01em;
   line-height: 1.05;
   color: var(--mealie-ink);
   text-wrap: balance;
