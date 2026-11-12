@@ -375,21 +375,23 @@
               </v-col>
             </v-row>
           </v-container>
-          <v-container v-else class="finder-empty mealie-card">
-            <v-row>
-              <v-col
-                cols="12"
-                class="d-flex flex-column justify-center align-center ga-1"
-              >
-                <v-card-title class="ma-0 pa-0">
-                  {{ $t("recipe-finder.no-recipes-found") }}
-                </v-card-title>
-                <v-card-text class="ma-0 pa-0 text-center">
-                  {{ $t("recipe-finder.no-recipes-found-description") }}
-                </v-card-text>
-              </v-col>
-            </v-row>
-          </v-container>
+          <div v-else class="finder-empty mealie-card">
+            <!-- before anything is chosen this is an invitation, not a failed search -->
+            <BaseEmptyState
+              v-if="!selectedFoods.length && !selectedTools.length"
+              compact
+              :icon="$globals.icons.fridge"
+              :title="$t('empty-state.finder-title')"
+              :description="$t('empty-state.finder-description')"
+            />
+            <BaseEmptyState
+              v-else
+              compact
+              :icon="$globals.icons.search"
+              :title="$t('empty-state.finder-no-results-title')"
+              :description="$t('recipe-finder.no-recipes-found-description')"
+            />
+          </div>
         </v-col>
       </v-row>
     </div>
@@ -745,6 +747,6 @@ function saveQueryFilter() {
 }
 
 .finder-empty {
-  padding: 32px 16px;
+  padding: 8px 16px;
 }
 </style>

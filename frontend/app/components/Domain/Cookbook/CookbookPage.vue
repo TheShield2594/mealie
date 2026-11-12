@@ -55,7 +55,15 @@
           @replace-recipes="replaceRecipes"
           @append-recipes="appendRecipes"
           @delete="removeRecipe"
-        />
+        >
+          <template #empty>
+            <BaseEmptyState
+              :icon="$globals.icons.book"
+              :title="$t('empty-state.cookbook-title')"
+              :description="$t('empty-state.cookbook-description')"
+            />
+          </template>
+        </RecipeCardSection>
       </div>
     </div>
   </div>

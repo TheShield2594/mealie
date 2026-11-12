@@ -164,6 +164,13 @@
           </v-col>
         </v-row>
       </div>
+      <slot v-if="!loading && recipes.length === 0" name="empty">
+        <BaseEmptyState
+          :icon="$globals.icons.silverwareForkKnife"
+          :title="$t('empty-state.no-recipes-title')"
+          :description="$t('empty-state.no-recipes-description')"
+        />
+      </slot>
       <!-- keyed so each added page gets a fresh observer: one that never stops intersecting
            (a screen taller than the list) would otherwise never report again -->
       <v-card

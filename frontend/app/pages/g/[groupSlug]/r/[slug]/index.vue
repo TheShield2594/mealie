@@ -4,6 +4,22 @@
       v-if="recipe"
       v-model="recipe"
     />
+    <!-- a recipe that doesn't exist (deleted, renamed, mistyped link) gets a page of its own
+         rather than a blank screen and an error toast -->
+    <BaseEmptyState
+      v-else-if="notFound"
+      class="recipe-not-found"
+      heading-tag="h1"
+      :icon="$globals.icons.silverwareForkKnife"
+      :title="$t('empty-state.recipe-not-found-title')"
+      :description="$t('empty-state.recipe-not-found-description')"
+    >
+      <template #actions>
+        <RouterLink class="mealie-pill mealie-pill--primary" :to="`/g/${groupSlug}`">
+          {{ $t("empty-state.back-to-recipes") }}
+        </RouterLink>
+      </template>
+    </BaseEmptyState>
   </div>
 </template>
 
@@ -25,11 +41,20 @@ useSeoMeta({ title });
 const router = useRouter();
 const slug = route.params.slug as string;
 
+const groupSlug = computed(() => route.params.groupSlug as string || auth.user.value?.groupSlug || "");
+
 const recipe = ref<Recipe | null>(null);
+const notFound = ref(false);
 function loadRecipe() {
-  const { recipe: data } = useRecipe(slug);
+  const { recipe: data, loading } = useRecipe(slug);
   watch(data, (value) => {
     recipe.value = value;
+  });
+  // the fetch has finished and brought nothing back
+  watch(loading, (isLoading, wasLoading) => {
+    if (wasLoading && !isLoading && !data.value) {
+      notFound.value = true;
+    }
   });
 }
 
@@ -64,3 +89,9 @@ whenever(
   },
 );
 </script>
+
+<style scoped>
+.recipe-not-found {
+  padding-top: 18vh;
+}
+</style>

@@ -310,8 +310,16 @@
         </v-expansion-panel>
       </v-expansion-panels>
 
+      <BaseEmptyState
+        v-if="!shoppingList.listItems?.length"
+        compact
+        :icon="$globals.icons.cartCheck"
+        :title="$t('empty-state.list-title')"
+        :description="$t('empty-state.list-description')"
+      />
+
       <v-alert
-        v-if="!hasSearchResults"
+        v-else-if="!hasSearchResults"
         type="info"
         variant="tonal"
         density="compact"

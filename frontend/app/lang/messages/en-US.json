@@ -1432,5 +1432,22 @@
     "dont-restock": "Don't add them to a list",
     "pantry-updated": "Pantry updated",
     "failed-to-update-pantry": "Couldn't update the pantry"
+  },
+  "empty-state": {
+    "no-matches-title": "No recipes match",
+    "no-matches-description": "Try a different word, or clear some of the filters.",
+    "no-recipes-title": "No recipes yet",
+    "no-recipes-description": "Recipes you create or import will show up here.",
+    "cookbook-title": "This cookbook is empty",
+    "cookbook-description": "Recipes that match this cookbook's filters will show up here.",
+    "list-title": "Nothing on this list yet",
+    "list-description": "Add an item, or add a recipe's ingredients from the recipe page.",
+    "finder-title": "What's in your kitchen?",
+    "finder-description": "Choose a few ingredients you have, and the finder shows the recipes you can make with them.",
+    "finder-no-results-title": "No recipes with those ingredients",
+    "recipe-not-found-title": "This recipe isn't here",
+    "recipe-not-found-description": "It may have been deleted or renamed, or the link may be wrong.",
+    "back-to-recipes": "Back to recipes",
+    "clear-search": "Clear search and filters"
   }
 }

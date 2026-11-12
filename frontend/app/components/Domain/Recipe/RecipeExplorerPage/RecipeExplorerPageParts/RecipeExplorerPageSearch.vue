@@ -235,6 +235,7 @@ defineExpose({
   passedQueryWithSeed,
   filterItems,
   hasActiveFilters,
+  reset,
 });
 
 onMounted(async () => {

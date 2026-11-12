@@ -24,7 +24,21 @@
         @item-selected="onItemSelected"
         @replace-recipes="replaceRecipes"
         @append-recipes="appendRecipes"
-      />
+      >
+        <template v-if="!showOverview" #empty>
+          <BaseEmptyState
+            :icon="$globals.icons.search"
+            :title="$t('empty-state.no-matches-title')"
+            :description="$t('empty-state.no-matches-description')"
+          >
+            <template #actions>
+              <button type="button" class="mealie-pill" @click="searchComponent?.reset()">
+                {{ $t("empty-state.clear-search") }}
+              </button>
+            </template>
+          </BaseEmptyState>
+        </template>
+      </RecipeCardSection>
     </div>
   </div>
 </template>
