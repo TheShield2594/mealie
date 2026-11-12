@@ -391,6 +391,22 @@
     </v-lazy>
     <WakelockSwitch />
   </div>
+  <div
+    v-else
+    class="mealie-page mealie-page--narrow"
+    aria-busy="true"
+    :aria-label="$t('empty-state.loading')"
+  >
+    <!-- while the list loads: its header and a few rows, not a blank page -->
+    <BaseSkeleton :width="70" :height="12" />
+    <BaseSkeleton class="mt-3" :width="260" :height="34" />
+    <div class="shopping-list-skeleton mealie-card">
+      <div v-for="n in 7" :key="n" class="shopping-list-skeleton__row">
+        <BaseSkeleton :width="22" :height="22" radius="pill" />
+        <BaseSkeleton :width="`${70 - (n % 4) * 12}%`" :height="14" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -632,5 +648,22 @@ watch(isSearching, (searching) => {
   .shopping-list-section .v-expansion-panel__shadow {
     box-shadow: none;
   }
+}
+
+.shopping-list-skeleton {
+  margin-top: 28px;
+  padding: 8px 20px;
+}
+
+.shopping-list-skeleton__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 52px;
+  border-bottom: 1px solid var(--mealie-hairline);
+}
+
+.shopping-list-skeleton__row:last-child {
+  border-bottom: 0;
 }
 </style>

@@ -1448,6 +1448,7 @@
     "recipe-not-found-title": "This recipe isn't here",
     "recipe-not-found-description": "It may have been deleted or renamed, or the link may be wrong.",
     "back-to-recipes": "Back to recipes",
-    "clear-search": "Clear search and filters"
+    "clear-search": "Clear search and filters",
+    "loading": "Loading"
   }
 }

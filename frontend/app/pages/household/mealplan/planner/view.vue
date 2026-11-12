@@ -68,6 +68,14 @@
                 </div>
               </SpinTransition>
             </div>
+            <!-- until the week has loaded, a placeholder entry rather than "Nothing planned" -->
+            <div v-else-if="loading" class="plan-day-loading" aria-hidden="true">
+              <BaseSkeleton :width="56" :height="56" radius="sm" />
+              <div class="plan-day-loading__text">
+                <BaseSkeleton width="75%" :height="13" />
+                <BaseSkeleton class="mt-2" width="40%" :height="11" />
+              </div>
+            </div>
             <div v-else class="plan-day-empty">
               {{ $t("recipe-library.nothing-planned") }}
             </div>
@@ -87,6 +95,7 @@ import type { ReadPlanEntry } from "~/lib/api/types/meal-plan";
 
 defineProps<{
   mealplans: MealsByDate[];
+  loading?: boolean;
   actions: ReturnType<typeof useMealplans>["actions"];
 }>();
 
@@ -123,5 +132,16 @@ function editMeal(mealplan: ReadPlanEntry) {
   padding: 18px 2px 8px;
   font-size: 14px;
   color: var(--mealie-text-tertiary);
+}
+
+.plan-day-loading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px;
+}
+
+.plan-day-loading__text {
+  flex: 1;
 }
 </style>

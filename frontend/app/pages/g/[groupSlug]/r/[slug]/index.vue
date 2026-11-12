@@ -6,8 +6,43 @@
     />
     <!-- a recipe that doesn't exist (deleted, renamed, mistyped link) gets a page of its own
          rather than a blank screen and an error toast -->
+    <!-- while it loads: the page's own layout, photo and title first -->
+    <div
+      v-else-if="!notFound"
+      class="recipe-skeleton"
+      aria-busy="true"
+      :aria-label="$t('empty-state.loading')"
+    >
+      <div class="recipe-skeleton__hero">
+        <BaseSkeleton aspect-ratio="16 / 10" radius="lg" />
+        <div>
+          <BaseSkeleton width="30%" :height="12" />
+          <BaseSkeleton class="mt-4" width="85%" :height="36" />
+          <BaseSkeleton class="mt-3" width="60%" :height="36" />
+          <BaseSkeleton class="mt-6" width="90%" :height="14" />
+          <BaseSkeleton class="mt-2" width="70%" :height="14" />
+          <div class="recipe-skeleton__actions">
+            <BaseSkeleton :width="140" :height="40" radius="pill" />
+            <BaseSkeleton :width="110" :height="40" radius="pill" />
+          </div>
+        </div>
+      </div>
+      <div class="recipe-skeleton__body">
+        <div>
+          <BaseSkeleton width="45%" :height="20" />
+          <BaseSkeleton v-for="n in 6" :key="n" class="mt-5" :width="`${90 - (n % 3) * 15}%`" :height="14" />
+        </div>
+        <div>
+          <BaseSkeleton width="30%" :height="20" />
+          <template v-for="n in 3" :key="n">
+            <BaseSkeleton class="mt-6" width="95%" :height="14" />
+            <BaseSkeleton class="mt-2" width="80%" :height="14" />
+          </template>
+        </div>
+      </div>
+    </div>
     <BaseEmptyState
-      v-else-if="notFound"
+      v-else
       class="recipe-not-found"
       heading-tag="h1"
       :icon="$globals.icons.silverwareForkKnife"
@@ -93,5 +128,44 @@ whenever(
 <style scoped>
 .recipe-not-found {
   padding-top: 18vh;
+}
+
+/* mirrors RecipePageHero and RecipePage's columns, so nothing jumps when the recipe arrives */
+.recipe-skeleton {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 32px 48px 72px;
+}
+
+.recipe-skeleton__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 560px) minmax(0, 1fr);
+  gap: 44px;
+  align-items: center;
+}
+
+.recipe-skeleton__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.recipe-skeleton__body {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: 64px;
+  margin-top: 56px;
+}
+
+@media (max-width: 960px) {
+  .recipe-skeleton {
+    padding: 16px 16px 72px;
+  }
+
+  .recipe-skeleton__hero,
+  .recipe-skeleton__body {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
 }
 </style>

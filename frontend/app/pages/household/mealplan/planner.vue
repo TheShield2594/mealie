@@ -149,6 +149,7 @@
       <NuxtPage
         :mealplans="mealsByDate"
         :actions="actions"
+        :loading="!mealplans"
       />
     </div>
   </div>

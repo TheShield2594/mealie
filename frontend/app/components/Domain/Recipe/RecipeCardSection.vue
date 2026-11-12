@@ -115,7 +115,40 @@
         @toggle-dense-view="toggleMobileCards()"
       />
     </v-row>
-    <div v-if="recipes && ready">
+    <!-- first load: the shape of the grid, not a spinner (later pages still use the loader) -->
+    <div
+      v-if="!ready || (loading && recipes.length === 0)"
+      class="mt-2"
+      aria-busy="true"
+      :aria-label="$t('general.loading-recipes')"
+    >
+      <v-row v-if="!useMobileCards">
+        <v-col
+          v-for="n in 8"
+          :key="n"
+          :sm="6"
+          :md="4"
+          :lg="3"
+          :xl="3"
+        >
+          <BaseSkeleton aspect-ratio="4 / 3" radius="md" />
+          <BaseSkeleton class="mt-3" width="72%" :height="14" />
+          <BaseSkeleton class="mt-2" width="40%" :height="12" />
+        </v-col>
+      </v-row>
+      <v-row v-else density="comfortable">
+        <v-col v-for="n in 6" :key="n" cols="12" :md="singleColumn ? '12' : '6'" :lg="singleColumn ? '12' : '4'">
+          <div class="recipe-row-skeleton">
+            <BaseSkeleton :width="72" :height="72" radius="sm" />
+            <div class="recipe-row-skeleton__text">
+              <BaseSkeleton width="70%" :height="14" />
+              <BaseSkeleton class="mt-2" width="40%" :height="12" />
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+    </div>
+    <div v-else-if="recipes && ready">
       <div class="mt-2">
         <v-row v-if="!useMobileCards">
           <v-col
@@ -181,7 +214,7 @@
     </div>
     <v-fade-transition>
       <AppLoader
-        v-if="loading"
+        v-if="loading && recipes.length > 0"
         :loading="loading"
         :waiting-text="$t('general.loading-recipes')"
       />
@@ -535,5 +568,18 @@ function toggleMobileCards() {
 
 .transparent {
   opacity: 1;
+}
+
+.recipe-row-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px;
+  border-radius: var(--mealie-radius-md);
+  box-shadow: inset 0 0 0 1px var(--mealie-hairline);
+}
+
+.recipe-row-skeleton__text {
+  flex: 1;
 }
 </style>
