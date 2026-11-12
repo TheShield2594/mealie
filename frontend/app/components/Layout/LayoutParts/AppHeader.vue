@@ -188,7 +188,8 @@ async function logout() {
 .mealie-kbd {
   font-family: inherit;
   font-size: 12px;
-  color: var(--mealie-text-tertiary);
+  /* ink-2: the key sits on the search field's fill, where ink-3 dips under 4.5:1 */
+  color: var(--mealie-ink-2);
   padding: 1px 6px;
   border-radius: 5px;
   box-shadow: inset 0 0 0 1px var(--mealie-hairline-strong);

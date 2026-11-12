@@ -714,8 +714,11 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
   opacity: 1;
 }
 
-.v-field--focused .v-field-label {
-  color: var(--mealie-accent-ink);
+/* the focus ring carries the accent; the label stays neutral, since accent text on a field's
+   fill can fall under 4.5:1 (it measured 4.13 on the dark sign-in card) */
+.v-field--focused .v-field-label,
+.v-field .v-field-label.text-primary {
+  color: var(--mealie-ink-2) !important;
 }
 
 .v-input__details .v-messages {
@@ -1084,4 +1087,11 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
 .v-table a:not(.v-btn):hover {
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+// Vuetify keeps a tooltip's overlay mounted once it has been shown (or eagerly), with its text
+// hidden inside. The empty role="tooltip" element then reads as a nameless tooltip to assistive
+// tech (axe: aria-tooltip-name). An inactive tooltip is taken out of the page entirely
+.v-overlay.v-tooltip:not(.v-overlay--active) {
+  display: none;
 }

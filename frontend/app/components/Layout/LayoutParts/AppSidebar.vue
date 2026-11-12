@@ -460,10 +460,12 @@ async function logout() {
   }
 }
 
+/* the tint and the icon carry the accent; the label stays ink, since accent text on its own
+   tint falls just short of 4.5:1 */
 .mealie-sidebar__item--active,
 .mealie-sidebar__item--active:hover {
   background: var(--mealie-accent-tint);
-  color: var(--mealie-accent-ink);
+  color: var(--mealie-ink);
   font-weight: 600;
 }
 

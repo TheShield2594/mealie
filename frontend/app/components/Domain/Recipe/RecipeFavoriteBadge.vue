@@ -34,6 +34,9 @@
 import { useUserSelfRatings } from "~/composables/use-users";
 import { useUserApi } from "~/composables/api";
 
+// $attrs go to the button (bound explicitly below), not also to the tooltip around it
+defineOptions({ inheritAttrs: false });
+
 interface Props {
   recipeId?: string;
   showAlways?: boolean;

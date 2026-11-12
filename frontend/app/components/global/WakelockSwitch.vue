@@ -40,13 +40,25 @@ const wakeLock = computed({
 async function lockScreen() {
   if (wakeIsSupported) {
     console.debug("Wake Lock Requested");
-    await request("screen");
+    // the browser may refuse: always on plain HTTP, and when the page is hidden or the battery is
+    // low. That's not an error worth surfacing; the screen simply follows its normal timeout
+    try {
+      await request("screen");
+    }
+    catch (error) {
+      console.debug("Wake Lock refused", error);
+    }
   }
 }
 async function unlockScreen() {
   if (wakeIsSupported || isActive.value) {
     console.debug("Wake Lock Released");
-    await release();
+    try {
+      await release();
+    }
+    catch (error) {
+      console.debug("Wake Lock release failed", error);
+    }
   }
 }
 onMounted(() => handleLock());

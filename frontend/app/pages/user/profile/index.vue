@@ -8,9 +8,9 @@
       />
 
       <!-- the translations open with a waving-hand emoji; the redesign keeps emoji out of the UI -->
-      <h2 class="profile-greeting text-center">
+      <h1 class="profile-greeting text-center">
         {{ withoutLeadingEmoji($t('profile.welcome-user', [user.fullName])) }}
-      </h2>
+      </h1>
       <p class="subtitle-1 mb-0 text-center">
         {{ $t('profile.description') }}
       </p>
@@ -35,9 +35,9 @@
     </section>
     <section class="my-3">
       <div>
-        <h3 class="profile-section-title">
+        <h2 class="profile-section-title">
           {{ $t('profile.account-summary') }}
-        </h3>
+        </h2>
         <p>{{ $t('profile.account-summary-description') }}</p>
       </div>
       <v-row tag="section">
@@ -79,9 +79,9 @@
     <v-divider class="my-7" />
     <section>
       <div>
-        <h3 class="profile-section-title">
+        <h2 class="profile-section-title">
           {{ $t('profile.personal') }}
-        </h3>
+        </h2>
         <p>{{ $t('profile.personal-description') }}</p>
       </div>
       <v-row tag="section">
@@ -122,9 +122,9 @@
     <v-divider class="my-7" />
     <section>
       <div>
-        <h3 class="profile-section-title">
+        <h2 class="profile-section-title">
           {{ $t('household.household') }}
-        </h3>
+        </h2>
         <p>{{ $t('profile.household-description') }}</p>
       </div>
       <v-row tag="section">
@@ -215,9 +215,9 @@
     <v-divider class="my-7" />
     <section v-if="user.canManage || user.canOrganize || user.advanced">
       <div>
-        <h3 class="profile-section-title">
+        <h2 class="profile-section-title">
           {{ $t('group.group') }}
-        </h3>
+        </h2>
         <p>{{ $t('profile.group-description') }}</p>
       </div>
       <v-row tag="section">

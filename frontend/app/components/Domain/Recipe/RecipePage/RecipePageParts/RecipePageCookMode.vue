@@ -71,7 +71,8 @@
       </div>
       <div class="cook-body">
         <!-- Current step -->
-        <main ref="stage" class="cook-stage">
+        <!-- not a <main>: the page already has one, and cook mode is a dialog over it -->
+        <div ref="stage" class="cook-stage">
           <!-- on touch screens, a tap on the outer third of the step goes back or on, for a
                hand that's busy or messy; swipes still work, and taps on controls are left alone -->
           <div class="cook-stage__scroll" @click="onStageTap">
@@ -221,7 +222,7 @@
             </button>
             <span class="cook-nav__hint">{{ $t("cook-mode.keyboard-hint") }}</span>
           </nav>
-        </main>
+        </div>
 
         <!-- Side panel: every step, or the full ingredient list -->
         <aside
