@@ -479,18 +479,79 @@ Order is tokens → shared components → screens. Each line is meant to be one 
 
 ### Phase 3: Screens, in order
 
-- [ ] **3.1** Recipe page: inline organizers, Last Made, no-photo hero, 17 px lists, sticky ingredients, 36/44 px controls, serif step numbers.
-- [ ] **3.2** Home: filter row scroll, hero scrim, count, and the layout segmented control.
-- [ ] **3.3** Meal planner: compact entries and the 7-column week.
-- [ ] **3.4** Cook mode: navigation size, tap zones, wake-lock hint, larger step type, the C1 false-match fix.
-- [ ] **3.5** The 404 and error page.
-- [ ] **3.6** Shopping list and index (S1–S7).
-- [ ] **3.7** Cookbooks shelf (if approved) and the empty state.
-- [ ] **3.8** Profile, user settings and household settings (remove the emoji and illustrations, grouped lists).
-- [ ] **3.9** Recipe editor (time fields, one input style, ingredient rows).
-- [ ] **3.10** Timeline, tags/categories/tools pages, and the Finder.
-- [ ] **3.11** Admin and data tables (hide UUIDs, demote destructive actions).
-- [ ] **3.12** Auth: brand mark, the L2 layout shift, copy.
+- [x] **3.1** Recipe page:
+  - an inline "Filed under" row replaces the Categories/Tags cards (the editor keeps its cards);
+  - Last Made becomes one line, "Last made … · Log a cook";
+  - with no photo, the title takes the full width;
+  - ingredients and steps are 17px with tabular figures;
+  - step numbers are serif numerals;
+  - the ingredient header controls are all 36px tall (44px hit areas on touch);
+  - the ingredient column sticks on desktop, but only when it fits the window (verified: the 4-ingredient ragu sticks, the 32-ingredient curry scrolls).
+- [x] **3.2** Home:
+  - on phones the filters scroll sideways in one row that runs to the screen edges;
+  - the tonight hero has a deeper scrim and is taller on phones;
+  - "All Recipes" shows a count (the API's total, which `useLazyRecipes` now keeps);
+  - a visible Grid | List switch replaces the one-item menu.
+- [x] **3.3** Planner:
+  - a 7-column week at 1400px and up (seven days or fewer), with photo-on-top entries. In a column the "Serves N" pill stays, because it opens its own editor, and the −/+ steppers step aside;
+  - a Today pill appears once you've paged away;
+  - "Shop for this week" is visible on wider screens.
+
+  *Deviation from §10-H:* the date-range picker stays, because it also holds the days-shown settings; Today was added beside it.
+- [x] **3.4** Cook mode:
+  - wake-lock status in the bar ("Screen stays on" / "Screen may sleep", with the HTTPS reason). On phones only the "may sleep" case shows, under the progress bar;
+  - tap the outer thirds of the step on touch screens (§10-I);
+  - a size larger step text on phones;
+  - **C1 fixed at the source:** ingredient auto-linking now matches whole words and plurals instead of substrings. That fixes "pot" → potatoes in cook mode and in the editor's auto-link.
+
+  *Audit correction:* C3 was wrong. Next/Previous were already 56px; my 390px screenshot had them hidden behind the dev overlay.
+- [x] **3.5** The Nuxt error page (unknown routes and other errors) uses the shared empty state; the 404 redirect logic is unchanged.
+- [x] **3.6** Shopping:
+  - round check-circles;
+  - row tools in quiet ink, shown only on hover or focus with a mouse (touch keeps them, plus swipes);
+  - no "No Label" heading when a list has no labels;
+  - the checked bar stays on one line on phones;
+  - on the index page, owner and delete show on hover;
+  - "Keep Screen Awake" is a small foot-of-page toggle.
+
+  *Not built:* item counts on the index, because the lists summary API carries no item data and adding it means a backend schema change. *Deviation from §10-F:* tap-to-edit and long-press reorder weren't added, because the rows already use swipes. I quieted the controls instead of changing the gestures.
+- [x] **3.7** The cookbooks shelf (§10-E): covers made from each cookbook's recipe photos (1, 2 or 4 tiles), with name and description. Management sits behind Edit / Done; an empty shelf shows the shared empty state.
+- [x] **3.8** Profile: the illustrated link cards become settings rows; the greeting drops its emoji at render time, so translations still work, and uses the serif; section headings match. Text-style "info" buttons app-wide use the accent instead of Material blue. *Not built:* household settings as grouped switch lists (U3). That page stays a checkbox form, now in the shared field and type styles.
+- [x] **3.9** Editor time fields: hours and minutes show "0 hr / 0 min" without steppers, and the text box explains itself. Ingredient rows got only the Phase 1 field style; a deeper rework wasn't worth the upstream churn.
+- [x] **3.10** The timeline is one-sided, with equal-width cards and smaller dots. The organizer index flows letter groups into columns. The Finder was done in 2.2.
+- [x] **3.11** Admin:
+  - no UUID column in user management;
+  - row deletes in quiet ink, red on hover;
+  - data-table toolbars are neutral pills, with "Delete Unused" in red text;
+  - table links use the accent;
+  - **fixed a leak:** CrudTable's unscoped disabled-button style dimmed disabled buttons app-wide.
+
+  *Deviation:* toolbars have no accent button, because Create and Combine render identically in upstream's markup.
+- [x] **3.12** Auth: the app's own brand mark (or the custom logo) replaces the "M" square, the form waits up to 1.2s for startup info (login layout shift **0.21 → 0.000**), the button reads "Sign in", and "Invite Only" says what to do.
+
+### Final measurements (390 px, dev build, both themes)
+
+| | Audit | After phase 3 |
+|---|---|---|
+| `<html lang>` | missing everywhere | set |
+| Unnamed buttons: home / planner / recipe / login | 37 / 44 / 2 / 2 | 0 / 1 / 0 / 0 |
+| Layout shift: planner / login / home | 0.49–0.58 / 0.21 / 0.046 | 0.000 / 0.000 / 0.020 |
+| Layout shift: cook mode | 0.000 | 0.028 (the "Screen may sleep" note appearing; still well under the 0.1 "good" line) |
+| Primary-as-text contrast | 4.41:1 (fail) | computed to ≥4.6:1 for any theme primary |
+
+### Still open
+
+These are known issues I didn't fix, each small and for a later pass:
+
+- **axe `aria-tooltip-name`:** Vuetify's tooltip markup.
+- **Duplicate `<main>`:** the recipe page and cook mode nest a second `<main>`.
+- **`aria-allowed-attr`:** the planner's menu activators.
+- **No h1 on the profile page:** its greeting is an h2.
+- **The "No Entry Found" toast** still shows over the recipe not-found page.
+- **The comments block on recipes** is still stock.
+- **Undo** for deleting a shopping-list item.
+- **Shopping-list item counts** on the index (needs a backend schema change).
+- **Household settings** as grouped switches.
 
 ### What I'd do first, and why
 
@@ -544,7 +605,15 @@ Each upstream file is listed once with the phase that touched it. **New** means 
 | 2 | `pages/household/mealplan/planner.vue`, `planner/view.vue`, `pages/shopping-lists/[id].vue`, `pages/g/[groupSlug]/recipes/finder/index.vue` | Loading, empty, undo |
 | 2 | `lang/messages/en-US.json` | New `empty-state`, `toast` and `tab-bar` namespaces (fork-owned, to keep merges clean) |
 
-Fork-only files changed in Phase 1: `design-tokens.scss`, `lib/theme/readable-on.ts` (and its test), `plugins/html-lang.client.ts` (new), `AppAuthShell.vue`, `RecipePageHero.vue`, `RecipePageCookMode.vue`, `RecipePageServingsStepper.vue`, and the `RecipeExplorerPage{Header,Recent,Tonight}.vue` parts. Fork-only files added in Phase 2: `BaseEmptyState.vue`, `BaseSkeleton.vue`, `AppTabBar.vue`, `composables/recipes/use-recipe-card-meta.ts` (and its test).
+| 3 | `RecipePageOrganizers.vue` **new** | Reading-view "Filed under" row |
+| 3 | `RecipeTimeInput.vue` **new**, `RecipeTimeline.vue` **new** | Time field props and placeholder; one-sided rail |
+| 3 | `UserProfileLinkCard.vue` **new**, `pages/user/profile/index.vue` **new** | Settings rows; emoji stripped at render |
+| 3 | `CrudTable.vue` **new**, `WakelockSwitch.vue` **new**, `error.vue` **new** | Scoped style and toolbar class; small toggle; empty-state error page |
+| 3 | `composables/recipe-page/use-extract-ingredient-references.ts` **new** (and its test) | Whole-word matching (bug fix) |
+| 3 | `composables/recipes/use-recipes.ts` **new** | Keeps the query's total |
+| 3 | `RecipeIngredients.vue`, `RecipePageInstructions.vue`, `RecipeLastMade.vue`, `RecipeUnitSystemButton.vue`, `RecipePage.vue`, `RecipeCardSection.vue`, `RecipeExplorerPageSearch.vue`, `RecipeOrganizerPage.vue`, `RecipeTimelineItem.vue`, `MealPlanLayout.vue`, `ShoppingListItem.vue`, `lib/icons/icons.ts`, planner, shopping, cookbooks, users and login pages | Screen work (all already fork-modified) |
+
+Fork-only files changed in Phase 1: `design-tokens.scss`, `lib/theme/readable-on.ts` (and its test), `plugins/html-lang.client.ts` (new), `AppAuthShell.vue`, `RecipePageHero.vue`, `RecipePageCookMode.vue`, `RecipePageServingsStepper.vue`, and the `RecipeExplorerPage{Header,Recent,Tonight}.vue` parts. Fork-only files added in Phase 2: `BaseEmptyState.vue`, `BaseSkeleton.vue`, `AppTabBar.vue`, `composables/recipes/use-recipe-card-meta.ts` (and its test). Phase 3: `CookbookCover.vue`, `composables/use-planner-week-columns.ts`.
 
 ---
 
