@@ -104,7 +104,10 @@
                 {{ $globals.icons.formatListBulleted }}
               </v-icon>
             </span>
-            <span class="lists__name">{{ list.name }}</span>
+            <span class="lists__text">
+              <span class="lists__name">{{ list.name }}</span>
+              <span class="lists__count">{{ listCountText(list) }}</span>
+            </span>
           </RouterLink>
           <button
             type="button"
@@ -175,6 +178,19 @@ const isCreateNameValid = computed(() => state.createName.trim().length > 0);
 const { data: shoppingLists } = useAsyncData(useAsyncKey(), async () => {
   return await fetchShoppingLists();
 });
+
+// "8 of 10 left", "All 10 checked off" or "Nothing on it yet", from the summary's counts
+function listCountText(list: { itemCount?: number; uncheckedItemCount?: number }) {
+  const total = list.itemCount ?? 0;
+  const remaining = list.uncheckedItemCount ?? 0;
+  if (!total) {
+    return i18n.t("lists-overview.empty");
+  }
+  if (!remaining) {
+    return i18n.t("lists-overview.all-done", { total }, total);
+  }
+  return i18n.t("lists-overview.remaining", { remaining, total });
+}
 
 const shoppingListChoices = computed(() => {
   if (!shoppingLists.value) {
@@ -376,14 +392,26 @@ async function deleteOne() {
   }
 }
 
-.lists__name {
+.lists__text {
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  gap: 1px;
   min-width: 0;
+}
+
+.lists__name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 16px;
   font-weight: 600;
+}
+
+.lists__count {
+  font-size: var(--mealie-text-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--mealie-ink-3);
 }
 
 .lists__action {

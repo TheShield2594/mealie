@@ -1483,5 +1483,10 @@
   },
   "auth": {
     "invite-only-hint": "ask someone in your household for an invite link"
+  },
+  "lists-overview": {
+    "remaining": "{remaining} of {total} left",
+    "all-done": "All checked off | All {total} checked off",
+    "empty": "Nothing on it yet"
   }
 }
