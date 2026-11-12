@@ -358,8 +358,22 @@ async function deleteOne() {
   height: 32px;
   flex-shrink: 0;
   border-radius: 10px;
-  background: var(--mealie-accent-tint);
-  color: var(--mealie-accent-ink);
+  background: var(--mealie-fill-subtle);
+  color: var(--mealie-ink-3);
+}
+
+/* owner and delete: with a mouse, only on the row being pointed at or focused, so the list
+   isn't a column of bins at rest. Touch screens keep them in view */
+@media (hover: hover) {
+  .lists__row .lists__action {
+    opacity: 0;
+    transition: opacity var(--mealie-duration-hover) var(--mealie-ease);
+  }
+
+  .lists__row:hover .lists__action,
+  .lists__row:focus-within .lists__action {
+    opacity: 1;
+  }
 }
 
 .lists__name {

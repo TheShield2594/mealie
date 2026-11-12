@@ -1,12 +1,14 @@
 <template>
   <div
     v-if="wakeIsSupported"
-    class="d-print-none d-flex px-2"
-    :class="$vuetify.display.smAndDown ? 'justify-center' : 'justify-end'"
+    class="d-print-none d-flex px-2 justify-end wakelock-switch"
   >
+    <!-- a small preference at the foot of the page, not a centred control competing with it -->
     <v-switch
       v-model="wakeLock"
       color="primary"
+      density="compact"
+      hide-details
       :label="$t('recipe.screen-awake')"
     />
   </div>
@@ -50,3 +52,15 @@ async function unlockScreen() {
 onMounted(() => handleLock());
 onUnmounted(() => unlockScreen());
 </script>
+
+<style scoped>
+.wakelock-switch {
+  margin-top: var(--mealie-space-4);
+}
+
+.wakelock-switch :deep(.v-label) {
+  font-size: var(--mealie-text-meta);
+  color: var(--mealie-ink-3);
+  opacity: 1;
+}
+</style>

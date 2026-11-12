@@ -206,7 +206,9 @@
           <BaseExpansionPanels v-if="hasMatches(value)" :v-model="0" start-open>
             <v-expansion-panel class="shopping-list-section">
               <!-- the label colour fills the header bar; an uncoloured (or unlabelled) header is muted instead -->
+              <!-- a list with no labels at all needs no "No Label" heading over its only group -->
               <v-expansion-panel-title
+                v-if="!onlyUnlabelled"
                 :color="getLabelColor(key)"
                 class="body-1 section-title"
                 :class="getLabelColor(key) ? '' : 'text-medium-emphasis'"
@@ -261,7 +263,7 @@
               <div class="flex-1-0">
                 {{ $t('shopping-list.items-checked-count', visibleCheckedCount) }}
               </div>
-              <div class="justify-end">
+              <div class="justify-end shopping-checked-actions">
                 <!-- both act on every checked item, including any the search is hiding -->
                 <BaseButtonGroup
                   :buttons="[
@@ -523,6 +525,11 @@ const {
   hasSearchResults,
 } = shoppingListPage;
 
+const onlyUnlabelled = computed(() => {
+  const keys = Object.keys(itemsByLabel.value);
+  return keys.length === 1 && keys[0] === i18n.t("shopping-list.no-label");
+});
+
 // Expand the checked section while searching, so an item that has already been
 // checked off can be found and unchecked without expanding the section by hand.
 const checkedPanel = ref<number | undefined>(undefined);
@@ -665,5 +672,18 @@ watch(isSearching, (searching) => {
 
 .shopping-list-skeleton__row:last-child {
   border-bottom: 0;
+}
+
+/* the checked bar's three actions stay on one line beside the count, even on a phone */
+.shopping-checked-actions .v-item-group {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 600px) {
+  .shopping-checked-actions .v-btn {
+    width: 40px;
+    min-width: 40px;
+  }
 }
 </style>

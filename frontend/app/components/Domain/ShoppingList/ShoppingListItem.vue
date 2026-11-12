@@ -20,12 +20,15 @@
              once the row is genuinely full rather than at an arbitrary half-way point -->
         <v-col class="flex-grow-1 flex-shrink-1" style="min-width: 0;">
           <div class="d-flex align-center flex-nowrap">
+            <!-- round, like the recipe's ingredient list: the same "got it" gesture in both places -->
             <v-checkbox
               :model-value="listItem.checked"
               hide-details
               density="compact"
-              class="mt-0 flex-shrink-0"
+              class="mt-0 flex-shrink-0 shopping-list-item__check"
               color="primary"
+              :true-icon="$globals.icons.checkboxMarkedCircle"
+              :false-icon="$globals.icons.checkboxBlankCircleOutline"
               @click="toggleChecked"
             />
             <div
@@ -39,7 +42,7 @@
         </v-col>
         <v-col
           cols="auto"
-          class="text-right flex-shrink-0"
+          class="text-right flex-shrink-0 shopping-list-item__actions"
         >
           <div
             v-if="!listItem.checked"
@@ -328,6 +331,38 @@ const recipeList = computed<RecipeSummary[]>(() => {
 <style lang="css">
 .strike-through {
   text-decoration: line-through !important;
+}
+
+/* the row's edit, recipes and reorder buttons: quiet ink, and with a mouse only while the row is
+   hovered or holds focus, so a list of eight items isn't sixteen icons. Touch screens keep them
+   in view (there is no hover) and still have the swipe gestures */
+.shopping-list-item__actions .v-btn {
+  color: var(--mealie-ink-4);
+}
+
+@media (hover: hover) {
+  .shopping-list-item__actions {
+    opacity: 0;
+    transition: opacity var(--mealie-duration-hover) var(--mealie-ease);
+  }
+
+  .v-row:hover > .shopping-list-item__actions,
+  .v-row:focus-within > .shopping-list-item__actions {
+    opacity: 1;
+  }
+
+  .shopping-list-item__actions .v-btn:hover {
+    color: var(--mealie-ink-2);
+  }
+}
+
+.shopping-list-item__check .v-selection-control__input > .v-icon {
+  opacity: 1;
+}
+
+.shopping-list-item__check:not(.v-checkbox--dirty) .v-icon,
+.shopping-list-item__check .v-selection-control:not(.v-selection-control--dirty) .v-icon {
+  color: var(--mealie-checkbox-ring);
 }
 
 /* The text box must take the whole column, not shrink to its content: the "half the row" rule
