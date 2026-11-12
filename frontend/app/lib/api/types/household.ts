@@ -860,6 +860,8 @@ export interface ShoppingListSummary {
   householdId: string;
   recipeReferences: ShoppingListRecipeRefOut[];
   labelSettings: ShoppingListMultiPurposeLabelOut[];
+  itemCount?: number;
+  uncheckedItemCount?: number;
 }
 export interface ShoppingListUpdate {
   name?: string | null;

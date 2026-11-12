@@ -4,7 +4,7 @@ from datetime import datetime
 from uuid import UUID
 
 from pydantic import UUID4, ConfigDict, field_validator, model_validator
-from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm import joinedload, selectinload, undefer
 from sqlalchemy.orm.interfaces import LoaderOption
 
 from mealie.db.models.household import (
@@ -229,11 +229,17 @@ class ShoppingListSummary(ShoppingListSave):
     household_id: UUID4
     recipe_references: list[ShoppingListRecipeRefOut]
     label_settings: list[ShoppingListMultiPurposeLabelOut]
+    item_count: int = 0
+    """how many items the list holds"""
+    unchecked_item_count: int = 0
+    """how many of them are not yet checked off"""
     model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def loader_options(cls) -> list[LoaderOption]:
         return [
+            undefer(ShoppingList.item_count),
+            undefer(ShoppingList.unchecked_item_count),
             selectinload(ShoppingList.extras),
             selectinload(ShoppingList.recipe_references)
             .joinedload(ShoppingListRecipeReference.recipe)

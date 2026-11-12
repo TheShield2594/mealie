@@ -32,6 +32,38 @@ def test_shopping_lists_get_all(api_client: TestClient, unique_user: TestUser, s
         assert list_["id"] in known_ids
 
 
+def test_shopping_lists_get_all_counts_items(api_client: TestClient, unique_user: TestUser):
+    payload = {"name": random_string()}
+    response = api_client.post(api_routes.households_shopping_lists, json=payload, headers=unique_user.token)
+    list_id = response.json()["id"]
+
+    # three items, one of them checked off
+    for checked in (False, False, True):
+        item = {"shoppingListId": list_id, "note": random_string(), "checked": checked}
+        response = api_client.post(api_routes.households_shopping_items, json=item, headers=unique_user.token)
+        assert response.status_code == 201
+
+    response = api_client.get(api_routes.households_shopping_lists, headers=unique_user.token)
+    assert response.status_code == 200
+    summary = next(list_ for list_ in response.json()["items"] if list_["id"] == list_id)
+
+    assert summary["itemCount"] == 3
+    assert summary["uncheckedItemCount"] == 2
+
+
+def test_shopping_lists_get_all_counts_empty_list(api_client: TestClient, unique_user: TestUser):
+    payload = {"name": random_string()}
+    list_id = api_client.post(api_routes.households_shopping_lists, json=payload, headers=unique_user.token).json()[
+        "id"
+    ]
+
+    response = api_client.get(api_routes.households_shopping_lists, headers=unique_user.token)
+    summary = next(list_ for list_ in response.json()["items"] if list_["id"] == list_id)
+
+    assert summary["itemCount"] == 0
+    assert summary["uncheckedItemCount"] == 0
+
+
 def test_shopping_lists_create_one(api_client: TestClient, unique_user: TestUser):
     payload = {
         "name": random_string(10),

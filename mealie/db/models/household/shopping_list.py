@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from pydantic import ConfigDict
-from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, UniqueConstraint, event, orm
+from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, UniqueConstraint, event, func, orm, select
 from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import Mapped, mapped_column
@@ -173,7 +173,26 @@ class ShoppingList(SqlAlchemyBase, BaseMixins):
         collection_class=ordering_list("position"),
     )
     extras: Mapped[list[ShoppingListExtras]] = orm.relationship("ShoppingListExtras", cascade="all, delete-orphan")
-    model_config = ConfigDict(exclude={"id", "list_items"})
+
+    # How many items the list holds, and how many are still to get, for the lists overview. Counted
+    # in SQL so the overview doesn't load every item; deferred, so only queries that ask for them
+    # (ShoppingListSummary's loader options) pay for the subqueries
+    item_count: Mapped[int] = orm.column_property(
+        select(func.count(ShoppingListItem.id))
+        .where(ShoppingListItem.shopping_list_id == id)
+        .correlate_except(ShoppingListItem)
+        .scalar_subquery(),
+        deferred=True,
+    )
+    unchecked_item_count: Mapped[int] = orm.column_property(
+        select(func.count(ShoppingListItem.id))
+        .where(ShoppingListItem.shopping_list_id == id, ShoppingListItem.checked.is_(False))
+        .correlate_except(ShoppingListItem)
+        .scalar_subquery(),
+        deferred=True,
+    )
+
+    model_config = ConfigDict(exclude={"id", "list_items", "item_count", "unchecked_item_count"})
 
     @api_extras
     @auto_init()

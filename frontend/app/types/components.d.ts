@@ -14,11 +14,13 @@ import type BaseCardSectionTitle from "@/components/global/BaseCardSectionTitle.
 import type BaseDialog from "@/components/global/BaseDialog.vue";
 import type BaseDialogContent from "@/components/global/BaseDialogContent.vue";
 import type BaseDivider from "@/components/global/BaseDivider.vue";
+import type BaseEmptyState from "@/components/global/BaseEmptyState.vue";
 import type BaseExpansionPanels from "@/components/global/BaseExpansionPanels.vue";
 import type BaseKeyValueEditor from "@/components/global/BaseKeyValueEditor.vue";
 import type BaseMenu from "@/components/global/BaseMenu.vue";
 import type BaseOverflowButton from "@/components/global/BaseOverflowButton.vue";
 import type BasePageTitle from "@/components/global/BasePageTitle.vue";
+import type BaseSkeleton from "@/components/global/BaseSkeleton.vue";
 import type ButtonLink from "@/components/global/ButtonLink.vue";
 import type ContextMenu from "@/components/global/ContextMenu.vue";
 import type CrudTable from "@/components/global/CrudTable.vue";
@@ -57,11 +59,13 @@ declare module "vue" {
     BaseDialog: typeof BaseDialog;
     BaseDialogContent: typeof BaseDialogContent;
     BaseDivider: typeof BaseDivider;
+    BaseEmptyState: typeof BaseEmptyState;
     BaseExpansionPanels: typeof BaseExpansionPanels;
     BaseKeyValueEditor: typeof BaseKeyValueEditor;
     BaseMenu: typeof BaseMenu;
     BaseOverflowButton: typeof BaseOverflowButton;
     BasePageTitle: typeof BasePageTitle;
+    BaseSkeleton: typeof BaseSkeleton;
     ButtonLink: typeof ButtonLink;
     ContextMenu: typeof ContextMenu;
     CrudTable: typeof CrudTable;
