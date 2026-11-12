@@ -175,8 +175,8 @@ defineProps({
 }
 
 /* BaseButton turns tonal while disabled, which would otherwise bring back its green */
-.auth-shell .v-btn--variant-tonal.text-success,
-.auth-shell .v-btn--variant-tonal.text-primary {
+.auth-shell .v-btn--variant-tonal.text-success:not(.v-btn--disabled),
+.auth-shell .v-btn--variant-tonal.text-primary:not(.v-btn--disabled) {
   background: var(--mealie-accent-tint) !important;
   color: var(--mealie-accent-ink) !important;
 }

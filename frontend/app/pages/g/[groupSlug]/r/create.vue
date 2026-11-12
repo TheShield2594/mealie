@@ -242,8 +242,8 @@ const subpage = computed(() => route.path.split("/").pop() ?? "url");
 }
 
 /* BaseButton swaps to a tonal variant while disabled, which would bring the green back */
-.create-panel .v-btn--variant-tonal.text-success,
-.create-panel .v-btn--variant-tonal.text-primary {
+.create-panel .v-btn--variant-tonal.text-success:not(.v-btn--disabled),
+.create-panel .v-btn--variant-tonal.text-primary:not(.v-btn--disabled) {
   background: var(--mealie-accent-tint) !important;
   color: var(--mealie-accent-ink) !important;
   border-radius: 999px !important;

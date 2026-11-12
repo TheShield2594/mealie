@@ -825,3 +825,109 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
 .v-rating .text-secondary-lighten-3 {
   color: var(--mealie-ink-4) !important;
 }
+
+// ---- Interaction: focus, press, page transitions ------------------------------------------------
+
+// One focus ring everywhere a keyboard lands: 2px accent, 2px off the edge. Vuetify's own is a
+// 25%-opacity border that the audit found invisible on the header and toolbar buttons
+:focus-visible {
+  outline: 2px solid var(--mealie-accent);
+  outline-offset: 2px;
+}
+
+.v-btn:focus-visible,
+.v-chip:focus-visible,
+.v-card--link:focus-visible,
+.v-list-item:focus-visible {
+  outline: 2px solid var(--mealie-accent);
+  outline-offset: 2px;
+}
+
+// rows inside a menu or list draw the ring inside themselves, where it can't be clipped
+.v-list .v-list-item:focus-visible {
+  outline-offset: -2px;
+}
+
+// fields show focus with their own ring (see the text field block), so their inner input doesn't
+.v-field input:focus-visible,
+.v-field textarea:focus-visible,
+.v-field__input:focus-visible {
+  outline: none;
+}
+
+// checkboxes, radios and switches: Vuetify hides the native input, so ring its visual stand-in
+.v-selection-control--focus-visible .v-selection-control__input {
+  border-radius: 50%;
+  outline: 2px solid var(--mealie-accent);
+  outline-offset: -4px;
+}
+
+// Press: buttons, chips and clickable cards give a little under the finger. Material ripples are
+// off (see nuxt.config.ts), so this is the only active state
+.v-btn,
+.v-chip--link,
+.v-card--link {
+  transition-property: transform, background-color, box-shadow, opacity, color;
+  transition-duration: var(--mealie-duration-press);
+  transition-timing-function: var(--mealie-ease);
+}
+
+.v-btn:not(:disabled, .v-btn--disabled):active,
+.v-chip--link:active {
+  transform: scale(0.97);
+}
+
+.v-card--link:active {
+  transform: scale(0.99);
+}
+
+// Disabled buttons: Vuetify drops their colour and greys them to 26% of the text colour on the
+// surface, which nearly vanishes in dark mode (audit E2). A flat neutral pill with ink-4 text
+// reads clearly as "not yet" in both themes
+.v-btn--disabled.v-btn--variant-elevated,
+.v-btn--disabled.v-btn--variant-flat,
+.v-btn--disabled.v-btn--variant-tonal {
+  opacity: 1;
+  background: var(--mealie-fill-subtle) !important;
+  color: var(--mealie-ink-4) !important;
+
+  > .v-btn__overlay {
+    display: none;
+  }
+}
+
+// Route changes use the View Transitions API (experimental.viewTransition in nuxt.config.ts):
+// the old page fades out quickly and the new one fades in with a short rise
+@keyframes mealie-page-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes mealie-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+::view-transition-old(root) {
+  animation: mealie-page-out var(--mealie-duration-exit) var(--mealie-ease) both;
+}
+
+::view-transition-new(root) {
+  animation: mealie-page-in var(--mealie-duration-enter) var(--mealie-ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+
+  .v-btn:active,
+  .v-chip--link:active,
+  .v-card--link:active {
+    transform: none;
+  }
+}
