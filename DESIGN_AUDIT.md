@@ -457,13 +457,13 @@ Order is tokens → shared components → screens. Each line is meant to be one 
 
 ### Phase 1: Foundation (tokens and global rules)
 
-- [ ] **1.1** Extend `design-tokens.scss` with the type, space, radius, elevation, motion and colour roles above, keeping `--mealie-*` aliases. Add `--accent-ink` and replace the primary-as-text uses.
-- [ ] **1.2** Vuetify `defaults` in `nuxt.config.ts` for VTextField, VSelect, VAutocomplete, VCombobox, VTextarea (filled, rounded, density), VCard, VChip, VBtn, VSwitch, VCheckbox. Add one CSS block that normalises all six input variants.
-- [ ] **1.3** Retire secondary (burgundy) and accent (teal) from the redesign: ratings and favourites use accent and ink, and tags use neutral fill.
-- [ ] **1.4** Global `:focus-visible` ring, press feedback, and a page transition on `<NuxtPage>`.
-- [ ] **1.5** `<html lang>` from i18n, and `aria-label` on every icon button in the shared shell (header, sidebar).
-- [ ] **1.6** *(If approved)* the Fraunces display font through `@fontsource-variable/fraunces`, preloaded and used only by `.mealie-display`.
-- [ ] **1.7** Sync `template.env` colours with the code defaults.
+- [x] **1.1** Tokens for type, space, radius, elevation, motion and colour roles, with the old `--mealie-*` names kept as aliases. *As built:* the accent's text colour (`--v-theme-primary-ink`) is **computed at runtime** from whatever primary the theme sets, darkened only as far as AA needs, so custom themes keep their hue. The 22 improvised primary alphas became tint, wash and ring tokens, and the coloured glows were removed.
+- [x] **1.2** Vuetify defaults plus one CSS block. Filled, solo, solo-filled and underlined fields render as one sunken field. *Deviation:* outlined fields keep their notched label (moving it needs template changes) but share the radius, hairline and focus ring. Plain stays plain. Overlays sit on the raised surface. **Material ripples are off globally.**
+- [x] **1.3** *As built:* the **default** secondary is now the primary and the default accent is a neutral ink, in the backend settings, the theme schema, the frontend fallbacks and the docs. Custom `THEME_*` values still apply. Accent-coloured chips render as neutral pills, and secondary-filled buttons and the "Serves N" pill render as secondary pills.
+- [x] **1.4** Global accent `:focus-visible` ring (every Tab stop on the header, library and planner now shows one), press scale in place of the ripple, a clear disabled pill, and a page fade through the View Transitions API that Nuxt already uses. Reduced motion is respected.
+- [x] **1.5** `<html lang>` and `<html dir>` from i18n. Names added to the icon buttons in shared components: copy, context and overflow menus, button groups, logout, and the library's random and sort. *Left for 2.1:* the recipe card's own favourite and menu buttons.
+- [x] **1.6** Fraunces through `@fontsource-variable/fraunces`, same origin only (verified: the only host requested is the app's own; only the 36 KB Latin file loads). It's precached for offline use and applied to the page h1s, the library header, the tonight hero and recipe titles. *Not preloaded:* Vite hashes the file name, and `font-display: swap` covers the first visit.
+- [x] **1.7** `template.env` matches the code defaults.
 
 ### Phase 2: Shared components
 
@@ -512,9 +512,27 @@ That order gets the three mockup screens to their "after" state by the end of Ph
 - The fork already modifies **141 upstream frontend files**, deletes 5 and adds 24. The full list is in `dev/design-review/upstream-files-touched.txt`.
   - Heads-up: all 41 non-English `lang/locales/*.ts` files carry a one-line Vuetify import-path change. These aren't Crowdin-managed message files, but they will conflict whenever upstream touches them.
 
-### Upstream files touched by this audit
+### Upstream files touched by the redesign work
 
-None. This commit adds `DESIGN_AUDIT.md` and `dev/design-review/` only.
+Each upstream file is listed once with the phase that touched it. **New** means the fork hadn't modified it before. Everything else was already fork-modified.
+
+| Phase | File | Change |
+|---|---|---|
+| 1 | `frontend/nuxt.config.ts` | Vuetify defaults, the font CSS import, woff2 precache, pre-paint colour, theme defaults |
+| 1 | `frontend/package.json`, `frontend/pnpm-lock.yaml` (lock **new**) | `@fontsource-variable/fraunces` |
+| 1 | `frontend/template.env` | Theme colours |
+| 1 | `frontend/app/plugins/theme.ts` | `primary-ink`, new defaults, dark surfaces |
+| 1 | `mealie/core/settings/themes.py`, `mealie/schema/admin/about.py` | Default secondary and accent |
+| 1 | `docs/.../backend-config.md` | Theme defaults table |
+| 1 | `components/global/AppButtonCopy.vue` **new**, `BaseButtonGroup.vue` **new**, `BaseMenu.vue` **new**, `ContextMenu.vue` **new** | One `aria-label` attribute each |
+| 1 | `components/global/BasePageTitle.vue`, `StatsCards.vue` | Display font; accent tokens |
+| 1 | `components/Layout/LayoutParts/AppHeader.vue`, `AppSidebar.vue` | Logout label; accent tokens |
+| 1 | `components/Domain/Mealplan/MealPlanDayHeader.vue`, `MealPlanLayout.vue` | Accent tokens |
+| 1 | `components/Domain/Recipe/RecipeCardSection.vue`, `RecipeExplorerPageSearch.vue` | Button labels |
+| 1 | `components/Domain/Recipe/RecipeOrganizerPage.vue`, `RecipePage.vue`, `RecipePageInstructions.vue` | Accent tokens |
+| 1 | `pages/login.vue`, `forgot-password.vue`, `reset-password.vue`, `register/index.vue`, `g/[groupSlug]/r/create.vue`, `shopping-lists/index.vue`, `shopping-lists/[id].vue` | Accent tokens; disabled-button fix |
+
+Fork-only files changed in Phase 1: `design-tokens.scss`, `lib/theme/readable-on.ts` (and its test), `plugins/html-lang.client.ts` (new), `AppAuthShell.vue`, `RecipePageHero.vue`, `RecipePageCookMode.vue`, `RecipePageServingsStepper.vue`, and the `RecipeExplorerPage{Header,Recent,Tonight}.vue` parts.
 
 ---
 
