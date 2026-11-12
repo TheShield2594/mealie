@@ -1366,7 +1366,11 @@
     "timer-done": "Timer done",
     "stop-alarm": "Stop",
     "keyboard-hint": "Use ← → to move between steps",
-    "no-steps": "This recipe has no steps yet."
+    "no-steps": "This recipe has no steps yet.",
+    "screen-stays-on": "Screen stays on",
+    "screen-may-sleep": "Screen may sleep",
+    "screen-may-sleep-hint": "This browser didn't allow keeping the screen on. Turn up the auto-lock time if it dims while you cook.",
+    "screen-may-sleep-https": "Keeping the screen on needs Mealie to be served over HTTPS."
   },
   "recipe-edit": {
     "editing": "Editing",

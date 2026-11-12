@@ -31,7 +31,19 @@
         </button>
         <div class="cook-bar__title">
           <span class="cook-bar__name">{{ recipe.name }}</span>
-          <span class="cook-bar__meta">{{ barMeta }}</span>
+          <span class="cook-bar__meta">
+            {{ barMeta }}
+            <!-- whether the screen will stay on: a propped-up phone that dims mid-recipe is the
+                 commonest cook-mode complaint, and self-hosted installs on plain HTTP can't keep it on -->
+            <span
+              v-if="wakeLockState"
+              class="cook-bar__wake"
+              :class="{ 'cook-bar__wake--off': wakeLockState === 'off' }"
+              :title="wakeLockState === 'off' ? wakeLockOffReason : undefined"
+            >
+              · {{ wakeLockState === "on" ? $t("cook-mode.screen-stays-on") : $t("cook-mode.screen-may-sleep") }}
+            </span>
+          </span>
         </div>
         <button
           type="button"
@@ -53,10 +65,16 @@
         />
       </div>
 
+      <!-- phones: the bar has no room, so only the case worth knowing about shows, under the bar -->
+      <div v-if="wakeLockState === 'off'" class="cook-wake-note" :title="wakeLockOffReason">
+        {{ $t("cook-mode.screen-may-sleep") }}
+      </div>
       <div class="cook-body">
         <!-- Current step -->
         <main ref="stage" class="cook-stage">
-          <div class="cook-stage__scroll">
+          <!-- on touch screens, a tap on the outer third of the step goes back or on, for a
+               hand that's busy or messy; swipes still work, and taps on controls are left alone -->
+          <div class="cook-stage__scroll" @click="onStageTap">
             <div v-if="otherRunningTimers.length" class="cook-running">
               <button
                 v-for="timer in otherRunningTimers"
@@ -282,7 +300,7 @@
 </template>
 
 <script setup lang="ts">
-import { onKeyStroke, useIntervalFn, useSessionStorage, useSwipe, useWakeLock } from "@vueuse/core";
+import { onKeyStroke, useIntervalFn, useMediaQuery, useSessionStorage, useSwipe, useWakeLock } from "@vueuse/core";
 import RecipePageServingsStepper from "./RecipePageServingsStepper.vue";
 import RecipeIngredients from "~/components/Domain/Recipe/RecipeIngredients.vue";
 import { useIngredientTextParser } from "~/composables/recipes";
@@ -645,14 +663,56 @@ const { direction } = useSwipe(stage, {
 
 /* ---------- Page ---------- */
 // keep the screen on while cooking, and the page underneath from scrolling
-const { isSupported: wakeLockSupported, request: requestWakeLock, release: releaseWakeLock } = useWakeLock();
+const { isSupported: wakeLockSupported, isActive: wakeLockActive, request: requestWakeLock, release: releaseWakeLock } = useWakeLock();
+
+const wakeLockState = ref<"on" | "off" | null>(null);
+const wakeLockOffReason = computed(() =>
+  window.isSecureContext ? i18n.t("cook-mode.screen-may-sleep-hint") : i18n.t("cook-mode.screen-may-sleep-https"),
+);
 
 onMounted(() => {
   document.documentElement.classList.add("cook-mode-open");
   if (wakeLockSupported.value) {
-    requestWakeLock("screen").catch(() => {});
+    // the lock itself is the answer: request() can resolve without one (e.g. while hidden)
+    requestWakeLock("screen")
+      .catch(() => {})
+      .finally(() => {
+        wakeLockState.value = wakeLockActive.value ? "on" : "off";
+      });
+  }
+  else {
+    wakeLockState.value = "off";
   }
 });
+
+// the browser can drop the lock later (tab switch, low battery); keep the hint honest
+watch(wakeLockActive, (active) => {
+  if (wakeLockState.value !== null) {
+    wakeLockState.value = active ? "on" : "off";
+  }
+});
+
+/* ---------- Tap zones ---------- */
+const coarsePointer = useMediaQuery("(pointer: coarse)");
+
+function onStageTap(event: MouseEvent) {
+  if (!coarsePointer.value || !steps.value.length) {
+    return;
+  }
+  const target = event.target as HTMLElement | null;
+  // leave buttons, links and anything selected alone
+  if (target?.closest("button, a, input, [role='button']") || window.getSelection()?.toString()) {
+    return;
+  }
+  const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  const x = (event.clientX - bounds.left) / bounds.width;
+  if (x < 1 / 3) {
+    previous();
+  }
+  else if (x > 2 / 3 && !isLast.value) {
+    next();
+  }
+}
 
 onBeforeUnmount(() => {
   document.documentElement.classList.remove("cook-mode-open");
@@ -747,6 +807,14 @@ onBeforeUnmount(() => {
 .cook-bar__meta {
   font-size: 13px;
   color: var(--cook-muted);
+}
+
+.cook-bar__wake--off {
+  color: #f5b061;
+}
+
+.cook-wake-note {
+  display: none;
 }
 
 .cook-progress {
@@ -1275,16 +1343,28 @@ onBeforeUnmount(() => {
     margin: -12px 0 16px;
   }
 
+  .cook-bar__wake {
+    display: none;
+  }
+
+  .cook-wake-note {
+    display: block;
+    padding: 8px 16px 0;
+    font-size: 12px;
+    color: #f5b061;
+  }
+
+  /* a phone propped on the counter is read from arm's length: a size up on each */
   .cook-stage__text--lg {
-    font-size: 32px;
+    font-size: 36px;
   }
 
   .cook-stage__text--md {
-    font-size: 26px;
+    font-size: 29px;
   }
 
   .cook-stage__text--sm {
-    font-size: 21px;
+    font-size: 23px;
   }
 
   .cook-uses__chip {
