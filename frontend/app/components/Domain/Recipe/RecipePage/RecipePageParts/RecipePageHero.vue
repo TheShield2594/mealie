@@ -130,7 +130,7 @@
             <span class="recipe-hero__stat-label">{{ stat.label }}</span>
             <span class="recipe-hero__stat-value">{{ stat.value }}</span>
           </div>
-          <div v-if="showRating" class="recipe-hero__stat">
+          <div v-if="showRating" class="recipe-hero__stat recipe-hero__stat--rating">
             <span class="recipe-hero__stat-label">{{ $t("general.rating") }}</span>
             <RecipeRating
               :key="recipe.slug"
@@ -473,6 +473,18 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 
   .recipe-hero__stat {
     padding: 0 16px;
+  }
+}
+
+/* on phones the stars don't fit beside three stats; give them a row of their own, label beside */
+@media (max-width: 600px) {
+  .recipe-hero__stat--rating {
+    flex-basis: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding-left: 0;
+    border-left: 0;
   }
 }
 

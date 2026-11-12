@@ -942,3 +942,26 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
     transform: none;
   }
 }
+
+// Ratings: stars in the accent (secondary now defaults to it) on the neutral rule colour, 18px.
+// Stars sit edge to edge, so on touch screens each gets a tall, narrow target (28 x 44): five
+// 44px squares made the row 220px wide and pushed it onto a line of its own on phones. 28px wide
+// still clears WCAG 2.5.8's 24px minimum
+.v-rating .v-rating__item .v-btn.v-btn--icon {
+  width: 28px;
+  min-width: 0;
+  height: 28px;
+}
+
+.v-rating .v-rating__item .v-icon {
+  font-size: 18px;
+}
+
+@media (pointer: coarse) {
+  .v-rating .v-rating__item .v-btn.v-btn--icon {
+    width: 28px;
+    min-width: 0;
+    height: 44px;
+    min-height: 44px;
+  }
+}
