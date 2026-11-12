@@ -539,19 +539,24 @@ Order is tokens → shared components → screens. Each line is meant to be one 
 | Layout shift: cook mode | 0.000 | 0.028 (the "Screen may sleep" note appearing; still well under the 0.1 "good" line) |
 | Primary-as-text contrast | 4.41:1 (fail) | computed to ≥4.6:1 for any theme primary |
 
-### Still open
+### Follow-up round (after phase 3)
 
-These are known issues I didn't fix, each small and for a later pass:
+- **axe is clean** (WCAG 2 A/AA plus best practice) on home, recipe, cook mode, planner, shopping, profile and login, in both themes at 390px:
+  - Inactive Vuetify tooltips are taken out of the page; their hidden text read as nameless tooltips.
+  - Cook mode's inner `<main>` is now a plain container.
+  - The planner's "Serves N" pill is a real button that opens with Enter or Space.
+  - The note menu has a name.
+  - The profile greeting is the page's h1.
+  - Three contrast misses are fixed: the active sidebar label, the Ctrl K hint, and a focused field's label on the dark sign-in card.
+- **B-3 fixed:** `WakelockSwitch` catches the browser's refusal. On plain HTTP it was an uncaught error on every recipe page, and in dev it raised the error overlay, which was also behind the duplicate-`<main>` finding.
+- The recipe not-found page no longer has "No Entry Found" toasted over it. The new `suppressNotFoundAlert` request option skips the toast for 404s only; other errors still toast.
+- Recipe comments are a quiet thread (heading with a count, filled composer, hairline-separated comments, muted delete).
+- Undo for deleting a shopping-list item works with the offline queue: an unsent delete is cancelled; a sent one is re-created as a new item. Verified in the browser for both cases and after reload, with unit tests.
 
-- **axe `aria-tooltip-name`:** Vuetify's tooltip markup.
-- **Duplicate `<main>`:** the recipe page and cook mode nest a second `<main>`.
-- **`aria-allowed-attr`:** the planner's menu activators.
-- **No h1 on the profile page:** its greeting is an h2.
-- **The "No Entry Found" toast** still shows over the recipe not-found page.
-- **The comments block on recipes** is still stock.
-- **Undo** for deleting a shopping-list item.
-- **Shopping-list item counts** on the index (needs a backend schema change).
-- **Household settings** as grouped switches.
+### Still open, needs a decision
+
+- **Item counts on the shopping-lists page.** This needs the lists summary API to return a count (a backend schema change plus `task dev:generate`), which goes beyond visual/UX work.
+- **Household settings as grouped switch lists.** This rewrites an upstream form for modest gain; it's in the shared field and type styles today.
 
 ### What I'd do first, and why
 
@@ -611,6 +616,10 @@ Each upstream file is listed once with the phase that touched it. **New** means 
 | 3 | `CrudTable.vue` **new**, `WakelockSwitch.vue` **new**, `error.vue` **new** | Scoped style and toolbar class; small toggle; empty-state error page |
 | 3 | `composables/recipe-page/use-extract-ingredient-references.ts` **new** (and its test) | Whole-word matching (bug fix) |
 | 3 | `composables/recipes/use-recipes.ts` **new** | Keeps the query's total |
+| follow-up | `plugins/axios.ts` **new**, `composables/recipes/use-recipe.ts` **new** | `suppressNotFoundAlert` for the recipe fetch |
+| follow-up | `RecipePageComments.vue` **new**, `RecipeScaleEditButton.vue` **new**, `MealPlanNoteMenu.vue` **new** | Comments thread; pill as button; menu name |
+| follow-up | `WakelockSwitch.vue`, `RecipeFavoriteBadge.vue`, `AppSidebar.vue`, `AppHeader.vue`, `pages/user/profile/index.vue` | Caught refusal; no attr leak; contrast; heading levels |
+| follow-up | `shopping-list-page/sub-composables/use-shopping-list-item-actions.ts`, `use-shopping-list-crud.ts` **new** (and tests), `pages/shopping-lists/[id].vue` | Undo for deletes |
 | 3 | `RecipeIngredients.vue`, `RecipePageInstructions.vue`, `RecipeLastMade.vue`, `RecipeUnitSystemButton.vue`, `RecipePage.vue`, `RecipeCardSection.vue`, `RecipeExplorerPageSearch.vue`, `RecipeOrganizerPage.vue`, `RecipeTimelineItem.vue`, `MealPlanLayout.vue`, `ShoppingListItem.vue`, `lib/icons/icons.ts`, planner, shopping, cookbooks, users and login pages | Screen work (all already fork-modified) |
 
 Fork-only files changed in Phase 1: `design-tokens.scss`, `lib/theme/readable-on.ts` (and its test), `plugins/html-lang.client.ts` (new), `AppAuthShell.vue`, `RecipePageHero.vue`, `RecipePageCookMode.vue`, `RecipePageServingsStepper.vue`, and the `RecipeExplorerPage{Header,Recent,Tonight}.vue` parts. Fork-only files added in Phase 2: `BaseEmptyState.vue`, `BaseSkeleton.vue`, `AppTabBar.vue`, `composables/recipes/use-recipe-card-meta.ts` (and its test). Phase 3: `CookbookCover.vue`, `composables/use-planner-week-columns.ts`.
