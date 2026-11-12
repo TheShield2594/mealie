@@ -40,6 +40,7 @@
         v-if="loggedIn"
         :variant="smAndUp ? 'text' : undefined"
         :icon="xs"
+        :aria-label="xs ? $t('user.logout') : undefined"
         class="mr-1"
         @click="logout()"
       >

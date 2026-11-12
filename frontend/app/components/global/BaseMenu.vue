@@ -15,6 +15,7 @@
           :large="large"
           icon
           :color="activator.color"
+          :aria-label="activator.text || $t('general.menu')"
           variant="plain"
           v-bind="hoverProps"
           :loading="activator.loading || children.some(({ loading }) => loading)"

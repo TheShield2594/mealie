@@ -46,6 +46,7 @@
               variant="flat"
               rounded="pill"
               class="mealie-filter-btn"
+              :aria-label="$vuetify.display.xs ? sortText : undefined"
               v-bind="props"
             >
               <v-icon :start="!$vuetify.display.xs">

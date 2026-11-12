@@ -12,6 +12,7 @@
       <v-btn
         variant="flat"
         :icon="icon"
+        :aria-label="icon ? $t('general.copy') : undefined"
         :color="color"
         retain-focus-on-click
         :class="btnClass"
