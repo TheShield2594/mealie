@@ -122,8 +122,8 @@
             v-for="recipe in recipes"
             :key="recipe.id!"
             :sm="6"
-            :md="6"
-            :lg="4"
+            :md="4"
+            :lg="3"
             :xl="3"
           >
             <RecipeCard
@@ -134,6 +134,7 @@
               :image="recipe.image!"
               :tags="recipe.tags!"
               :recipe-id="recipe.id!"
+              :meta="recipe"
             />
           </v-col>
         </v-row>
@@ -158,6 +159,7 @@
               :image="recipe.image!"
               :tags="recipe.tags!"
               :recipe-id="recipe.id!"
+              :meta="recipe"
             />
           </v-col>
         </v-row>

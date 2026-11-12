@@ -13,6 +13,8 @@
         size="small"
         :color="buttonStyle ? 'info' : 'secondary'"
         :fab="buttonStyle"
+        :aria-label="isFavorite ? $t('recipe.remove-from-favorites') : $t('recipe.add-to-favorites')"
+        :aria-pressed="isFavorite"
         v-bind="{ ...tooltipProps, ...$attrs }"
         @click.prevent="toggleFavorite"
       >

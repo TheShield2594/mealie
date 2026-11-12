@@ -32,6 +32,8 @@
                         :name="mealplan.recipe ? mealplan.recipe.name! : mealplan.title!"
                         :image="mealplan.recipe ? mealplan.recipe.image! : undefined"
                         :tags="mealplan.recipe ? mealplan.recipe.tags! : []"
+                        :meta="mealplan.recipe"
+                        hide-favorite
                         :context-menu-leading-items="[
                           {
                             title: $t('meal-plan.remove-from-plan'),

@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { useStaticRoutes, usePublicExploreApi, useUserApi } from "~/composables/api";
-import { useRecipeTime } from "~/composables/recipes";
+import { useRecipeCardMeta } from "~/composables/recipes/use-recipe-card-meta";
 import { useLoggedInState } from "~/composables/use-logged-in-state";
 import type { RecipeSummary } from "~/lib/api/types/recipe";
 
@@ -59,7 +59,7 @@ const auth = useMealieAuth();
 const route = useRoute();
 const { isOwnGroup } = useLoggedInState();
 const { recipeSmallImage } = useStaticRoutes();
-const { recipeShortTime } = useRecipeTime();
+const { recipeCardMeta } = useRecipeCardMeta();
 
 const groupSlug = computed(() => route.params.groupSlug as string || auth.user.value?.groupSlug || "");
 
@@ -77,7 +77,7 @@ onMounted(async () => {
 });
 
 function meta(recipe: RecipeSummary) {
-  return [recipeShortTime(recipe), recipe.recipeCategory?.[0]?.name].filter(Boolean).join(" · ");
+  return recipeCardMeta(recipe);
 }
 </script>
 

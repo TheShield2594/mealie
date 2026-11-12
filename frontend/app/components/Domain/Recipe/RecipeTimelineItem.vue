@@ -60,6 +60,7 @@
               :rating="recipe.rating"
               :image="recipe.image"
               :recipe-id="recipe.id"
+              :meta="recipe"
               :is-flat="true"
             />
           </v-col>
