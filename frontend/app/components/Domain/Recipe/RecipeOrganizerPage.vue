@@ -281,7 +281,7 @@ function isTitle(str: number | string) {
 }
 
 .organizer-search:focus-within {
-  box-shadow: 0 0 0 3px rgba(var(--v-theme-primary), 0.25);
+  box-shadow: 0 0 0 3px var(--mealie-accent-ring);
 }
 
 .organizer-search__icon {
@@ -377,8 +377,8 @@ function isTitle(str: number | string) {
   height: 36px;
   flex-shrink: 0;
   border-radius: 10px;
-  background: rgba(var(--v-theme-primary), 0.1);
-  color: rgb(var(--v-theme-primary));
+  background: var(--mealie-accent-tint);
+  color: var(--mealie-accent-ink);
 }
 
 .organizer-tile__text {

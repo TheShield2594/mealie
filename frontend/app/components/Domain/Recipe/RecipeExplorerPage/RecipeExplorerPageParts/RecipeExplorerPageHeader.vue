@@ -133,7 +133,7 @@ function onEnter() {
 }
 
 .library-search:focus-within {
-  box-shadow: 0 0 0 3px rgba(var(--v-theme-primary), 0.25);
+  box-shadow: 0 0 0 3px var(--mealie-accent-ring);
 }
 
 .library-search__icon {

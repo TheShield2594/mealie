@@ -518,7 +518,7 @@ watch(isSearching, (searching) => {
   gap: 8px;
   margin-bottom: 4px;
   font-size: 14px;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   text-decoration: none;
 }
 

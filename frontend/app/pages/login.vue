@@ -375,7 +375,7 @@ function alertOnError(error: any) {
 
 .login-form__link {
   font-size: 14px;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -411,8 +411,8 @@ function alertOnError(error: any) {
 .login-first-time {
   padding: 16px 18px;
   border-radius: 18px;
-  background: rgba(var(--v-theme-primary), 0.08);
-  box-shadow: inset 0 0 0 1px rgba(var(--v-theme-primary), 0.2);
+  background: var(--mealie-accent-wash);
+  box-shadow: inset 0 0 0 1px var(--mealie-accent-tint-strong);
   font-size: 14px;
   line-height: 1.45;
   color: var(--mealie-ink);

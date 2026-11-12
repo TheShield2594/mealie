@@ -79,7 +79,7 @@ function step(direction: 1 | -1) {
   border: 0;
   border-radius: 15px;
   background: transparent;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   font: inherit;
   font-size: 18px;
   line-height: 1;

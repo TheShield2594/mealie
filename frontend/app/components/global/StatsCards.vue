@@ -67,8 +67,8 @@ const activeIcon = computed(() => {
   height: 36px;
   flex-shrink: 0;
   border-radius: 10px;
-  background: rgba(var(--v-theme-primary), 0.1);
-  color: rgb(var(--v-theme-primary));
+  background: var(--mealie-accent-tint);
+  color: var(--mealie-accent-ink);
 }
 
 .stats-tile__text {

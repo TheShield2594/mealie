@@ -1,62 +1,163 @@
-// Design tokens for the redesigned shell, recipe library, recipe page and cook mode.
-// Colors that follow the user's theme (primary, success, ...) still come from Vuetify; these
-// tokens cover the warm neutrals around them, which Vuetify's palette has no slot for.
+// Design tokens for the redesign. Colors that follow the user's theme (primary, success, ...)
+// still come from Vuetify; these tokens cover everything around them that Vuetify's palette has
+// no slot for. See DESIGN_AUDIT.md §8 for the rules behind each group.
+//
+// Naming: --mealie-<group>-<role>. Older names (--mealie-text-secondary, --mealie-fill-subtle,
+// ...) are kept as aliases further down so existing styles keep working.
 
 :root {
+  // ---- type ----------------------------------------------------------------------------
   --v-font-body:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --v-font-heading:
     -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mealie-font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  // titles only (page h1, recipe titles, step numbers); everything read or tapped stays sans
+  --mealie-font-display: ui-serif, Georgia, "Times New Roman", serif;
+
+  // eight sizes, each with one job
+  --mealie-text-caption: 12px; // eyebrows and labels: 600, +0.06em, uppercase
+  --mealie-text-meta: 13px; // secondary lines under a title
+  --mealie-text-body: 15px; // UI text
+  --mealie-text-body-lg: 17px; // ingredients, steps, descriptions: read from a distance
+  --mealie-text-h3: 20px; // section titles
+  --mealie-text-h2: 24px; // group titles
+  --mealie-text-h1: 34px; // page titles
+  --mealie-text-display: 44px; // recipe titles
+
+  // weights: 400 body, 550 controls, 600 emphasis, 650 headings
+  --mealie-weight-control: 550;
+  --mealie-weight-strong: 600;
+  --mealie-weight-heading: 650;
+
+  // ---- space (4px base) ----------------------------------------------------------------
+  --mealie-space-1: 4px;
+  --mealie-space-2: 8px;
+  --mealie-space-3: 12px;
+  --mealie-space-4: 16px;
+  --mealie-space-5: 24px;
+  --mealie-space-6: 32px;
+  --mealie-space-7: 48px;
+  --mealie-space-8: 64px;
+
+  // ---- radius: four steps and a pill. Nested corners: inner = outer - padding ---------------
+  --mealie-radius-xs: 6px; // checkboxes, kbd, tiny badges
+  --mealie-radius-sm: 10px; // inputs, thumbnails, menu items, list rows
+  --mealie-radius-md: 16px; // cards, panels, card images, dialogs
+  --mealie-radius-lg: 24px; // hero imagery, bottom sheets
+  --mealie-radius-pill: 999px; // buttons, chips, segmented controls
+
+  // ---- motion ----------------------------------------------------------------------------
+  --mealie-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --mealie-duration-press: 120ms;
+  --mealie-duration-hover: 180ms;
+  --mealie-duration-enter: 240ms;
+  --mealie-duration-exit: 160ms;
 }
 
 :root,
 .v-theme--light {
+  // surfaces, back to front
   --mealie-canvas: #faf9f7;
   --mealie-sidebar: #f3f1ed;
-  --mealie-surface: #ffffff;
+  --mealie-surface: #ffffff; // cards and panels
+  --mealie-raised: #ffffff; // menus, dialogs, sheets
+
+  // ink, strongest to faintest. ink-3 is the faintest that still meets 4.5:1 on the canvas and
+  // the sidebar; ink-4 falls below that, so it is for icons, rules and placeholders, never text
   --mealie-ink: #1c1b19;
-  --mealie-ink-secondary: #3a3835;
+  --mealie-ink-2: #57534d;
+  --mealie-ink-3: #6f6c66;
+  --mealie-ink-4: #a8a49c;
+  --mealie-ink-secondary: #3a3835; // sidebar labels: between ink and ink-2
   --mealie-icon: #4a4844;
-  --mealie-text-secondary: #5c5954;
-  // tertiary is the faintest grey that still meets 4.5:1 on the canvas and the sidebar;
-  // quaternary falls below that, so it is kept for icons, rules and inactive text
-  --mealie-text-tertiary: #6f6c66;
-  --mealie-text-quaternary: #a8a49c;
+
   --mealie-hairline: rgba(0, 0, 0, 0.06);
-  --mealie-hairline-strong: rgba(0, 0, 0, 0.08);
-  --mealie-fill: rgba(118, 118, 128, 0.12);
-  --mealie-fill-subtle: rgba(118, 118, 128, 0.1);
+  --mealie-hairline-strong: rgba(0, 0, 0, 0.1);
+  --mealie-fill: rgba(118, 112, 100, 0.12);
+  --mealie-fill-subtle: rgba(118, 112, 100, 0.08);
   --mealie-checkbox-ring: #c9c5bd;
   --mealie-avatar: #e6dfd4;
   --mealie-avatar-ink: #6b5f4f;
+  --mealie-placeholder: #ebe6dd;
   --mealie-placeholder-a: #e6e1d8;
   --mealie-placeholder-b: #ded9cf;
   --mealie-placeholder-ink: #8d877c;
-  --mealie-shadow-card: 0 1px 2px rgba(40, 30, 20, 0.04);
+
+  // elevation: hairline, card, overlay
+  --mealie-elevation-0: inset 0 0 0 1px var(--mealie-hairline);
+  --mealie-elevation-1: 0 1px 2px rgba(40, 30, 20, 0.05), inset 0 0 0 1px var(--mealie-hairline);
+  --mealie-elevation-2: 0 12px 32px -12px rgba(40, 30, 20, 0.22), 0 0 0 1px var(--mealie-hairline);
+  --mealie-accent-tint: rgba(var(--v-theme-primary), 0.1);
 }
 
+// Dark is its own palette, not the light one inverted: warm charcoal, and depth from lighter
+// surfaces rather than shadows, which disappear on a dark page
 .v-theme--dark {
-  --mealie-canvas: #161513;
-  --mealie-sidebar: #1c1b19;
-  --mealie-surface: #1f1e1c;
+  --mealie-canvas: #141311;
+  --mealie-sidebar: #191816;
+  --mealie-surface: #1d1c1a;
+  --mealie-raised: #262522;
+
   --mealie-ink: #f5f3ef;
+  --mealie-ink-2: #bdb8af;
+  --mealie-ink-3: #9a978f;
+  --mealie-ink-4: #6d6962;
   --mealie-ink-secondary: #dcd8d1;
   --mealie-icon: #c9c5bd;
-  --mealie-text-secondary: #a8a49c;
-  --mealie-text-tertiary: #9a978f;
-  --mealie-text-quaternary: #7d7a73;
-  --mealie-hairline: rgba(255, 255, 255, 0.06);
-  --mealie-hairline-strong: rgba(255, 255, 255, 0.1);
-  --mealie-fill: rgba(255, 255, 255, 0.1);
-  --mealie-fill-subtle: rgba(255, 255, 255, 0.08);
+
+  --mealie-hairline: rgba(255, 250, 240, 0.07);
+  --mealie-hairline-strong: rgba(255, 250, 240, 0.12);
+  --mealie-fill: rgba(255, 250, 240, 0.1);
+  --mealie-fill-subtle: rgba(255, 250, 240, 0.07);
   --mealie-checkbox-ring: #5a5751;
   --mealie-avatar: #3a3631;
   --mealie-avatar-ink: #d9cfc0;
+  --mealie-placeholder: #24221f;
   --mealie-placeholder-a: #2a2825;
   --mealie-placeholder-b: #25231f;
   --mealie-placeholder-ink: #7d7a73;
-  --mealie-shadow-card: none;
+
+  --mealie-elevation-0: inset 0 0 0 1px var(--mealie-hairline);
+  --mealie-elevation-1: inset 0 0 0 1px var(--mealie-hairline);
+  --mealie-elevation-2: 0 16px 40px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--mealie-hairline-strong);
+  --mealie-accent-tint: rgba(var(--v-theme-primary), 0.14);
+}
+
+// The accent in its roles. Declared on every theme scope, not just :root, because a custom
+// property's var() resolves where it is declared: a nested v-theme-provider (cook mode is
+// always dark) needs these recomputed from its own --v-theme-primary
+:root,
+.v-theme--light,
+.v-theme--dark {
+  --mealie-accent: rgb(var(--v-theme-primary)); // fills: the one primary action, today, selection
+  --mealie-accent-ink: rgb(var(--v-theme-primary-ink)); // as text or icon: links, eyebrows (AA)
+  --mealie-accent-wash: rgba(var(--v-theme-primary), 0.06); // large tinted areas, hint boxes
+  // --mealie-accent-tint (selected rows, timer chips, badges) is set per theme above
+  --mealie-accent-tint-strong: rgba(var(--v-theme-primary), 0.16); // pressed / active tint
+  --mealie-accent-ring: rgba(var(--v-theme-primary), 0.3); // focus halo around inputs
+}
+
+// Aliases for the names the first pass of the redesign used
+:root,
+.v-theme--light,
+.v-theme--dark {
+  --mealie-text-secondary: var(--mealie-ink-2);
+  --mealie-text-tertiary: var(--mealie-ink-3);
+  --mealie-text-quaternary: var(--mealie-ink-4);
+  --mealie-shadow-card: var(--mealie-elevation-1);
+}
+
+@media (max-width: 600px) {
+  :root {
+    --mealie-text-h1: 28px;
+    --mealie-text-display: 32px;
+  }
+}
+
+// Accent as text: Vuetify's text-primary (links, text buttons, icons) uses the AA-safe ink
+.text-primary {
+  color: rgb(var(--v-theme-primary-ink)) !important;
 }
 
 // The redesigned screens set their own heading sizes and spacing
@@ -307,8 +408,8 @@
   }
 
   &--tinted {
-    background: rgba(var(--v-theme-primary), 0.1);
-    color: rgb(var(--v-theme-primary));
+    background: var(--mealie-accent-tint);
+    color: var(--mealie-accent-ink);
   }
 
   &--lg {

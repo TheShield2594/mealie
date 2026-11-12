@@ -51,7 +51,7 @@ defineProps({
   padding: 64px 16px 48px;
   box-sizing: border-box;
   background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(var(--v-theme-primary), 0.08), transparent 70%), var(--mealie-canvas);
+    radial-gradient(1200px 600px at 50% -10%, var(--mealie-accent-wash), transparent 70%), var(--mealie-canvas);
   color: var(--mealie-ink);
 }
 
@@ -84,7 +84,7 @@ defineProps({
   height: 56px;
   border-radius: 16px;
   background: rgb(var(--v-theme-primary));
-  box-shadow: 0 12px 28px rgba(var(--v-theme-primary), 0.3);
+  box-shadow: none;
   color: rgb(var(--v-theme-on-primary));
   font-size: 28px;
   font-weight: 700;
@@ -157,7 +157,7 @@ defineProps({
 
 .auth-shell .v-field--variant-solo-filled.v-field--focused,
 .auth-shell .v-field--variant-filled.v-field--focused {
-  box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.45) !important;
+  box-shadow: 0 0 0 3px var(--mealie-accent-ring) !important;
 }
 
 .auth-shell .v-field__overlay {
@@ -169,7 +169,7 @@ defineProps({
   border-radius: 999px !important;
   background: rgb(var(--v-theme-primary)) !important;
   color: rgb(var(--v-theme-on-primary)) !important;
-  box-shadow: 0 8px 20px rgba(var(--v-theme-primary), 0.25) !important;
+  box-shadow: none !important;
   font-weight: 600;
   letter-spacing: 0;
 }
@@ -177,8 +177,8 @@ defineProps({
 /* BaseButton turns tonal while disabled, which would otherwise bring back its green */
 .auth-shell .v-btn--variant-tonal.text-success,
 .auth-shell .v-btn--variant-tonal.text-primary {
-  background: rgba(var(--v-theme-primary), 0.14) !important;
-  color: rgb(var(--v-theme-primary)) !important;
+  background: var(--mealie-accent-tint) !important;
+  color: var(--mealie-accent-ink) !important;
 }
 
 .auth-shell .v-btn--variant-text,

@@ -666,6 +666,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .cook-mode {
   --cook-bg: #121110;
+  --cook-surface: #1d1c1a;
   --cook-ink: #f5f3ef;
   --cook-muted: #9a978f;
   --cook-faint: #7d7a73;
@@ -906,7 +907,7 @@ onBeforeUnmount(() => {
 .cook-notes__note {
   padding: 16px 20px;
   border-radius: 18px;
-  background: #1f1e1c;
+  background: var(--cook-surface);
   box-shadow: inset 0 0 0 1px var(--cook-hairline);
   color: var(--cook-soft);
   font-size: 16px;
@@ -930,7 +931,7 @@ onBeforeUnmount(() => {
   margin-top: 36px;
   padding: 18px 18px 18px 26px;
   border-radius: 26px;
-  background: #1f1e1c;
+  background: var(--cook-surface);
   box-shadow: inset 0 0 0 1px var(--cook-hairline);
   white-space: nowrap;
 }

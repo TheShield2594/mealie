@@ -358,8 +358,8 @@ async function deleteOne() {
   height: 32px;
   flex-shrink: 0;
   border-radius: 10px;
-  background: rgba(var(--v-theme-primary), 0.12);
-  color: rgb(var(--v-theme-primary));
+  background: var(--mealie-accent-tint);
+  color: var(--mealie-accent-ink);
 }
 
 .lists__name {

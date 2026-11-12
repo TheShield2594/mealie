@@ -262,7 +262,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 }
 
 .tonight-hero__action svg {
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
 }
 
 .week {
@@ -292,7 +292,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 
 .week__link {
   font-size: 14px;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   text-decoration: none;
 }
 
@@ -325,7 +325,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 }
 
 .week__day-name--today {
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
 }
 
 .week__meal {
@@ -340,7 +340,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 }
 
 a.week__meal:hover {
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
 }
 
 .week__meal--empty {

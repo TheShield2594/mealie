@@ -39,3 +39,36 @@ export function withReadableOn<T extends Record<string, string>>(colors: T, name
   }
   return result;
 }
+
+function toHex(channels: number[]): string {
+  return `#${channels.map(c => Math.round(c).toString(16).padStart(2, "0")).join("")}`.toUpperCase();
+}
+
+function channels(hex: string): number[] {
+  const value = hex.replace("#", "");
+  const full = value.length === 3 ? value.split("").map(c => c + c).join("") : value;
+  return [0, 2, 4].map(i => Number.parseInt(full.slice(i, i + 2), 16));
+}
+
+/**
+ * The colour to use when an accent is drawn as text (links, eyebrows, "today"): the accent itself
+ * when it already reaches the target contrast on every given background, otherwise the accent
+ * mixed towards black (light themes) or white (dark themes) just far enough to get there. Keeps
+ * a custom theme's hue while making small accent text pass WCAG AA.
+ */
+export function readableInk(color: string, backgrounds: string[], dark: boolean, target = 4.6): string {
+  const valid = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
+  if (!valid.test(color) || !backgrounds.every(b => valid.test(b))) {
+    return color;
+  }
+  const base = channels(color);
+  const towards = dark ? 255 : 0;
+  for (let step = 0; step <= 20; step++) {
+    const mix = step / 20;
+    const candidate = toHex(base.map(c => c + (towards - c) * mix));
+    if (backgrounds.every(b => contrast(candidate, b) >= target)) {
+      return step === 0 ? color : candidate;
+    }
+  }
+  return dark ? "#FFFFFF" : "#000000";
+}

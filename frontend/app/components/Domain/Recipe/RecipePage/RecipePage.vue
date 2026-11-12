@@ -605,7 +605,7 @@ function chipClicked(item: RecipeTag | RecipeCategory | RecipeTool, itemType: st
 
 .recipe-edit .v-field--variant-underlined.v-field--focused,
 .recipe-edit .v-field--variant-filled.v-field--focused {
-  box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.45);
+  box-shadow: 0 0 0 3px var(--mealie-accent-ring);
 }
 
 .recipe-edit .v-field--variant-underlined .v-field__overlay,

@@ -1181,8 +1181,8 @@ function openImageUpload(index: number) {
   padding: 0;
   border: 0;
   border-radius: 14px;
-  background: rgba(var(--v-theme-primary), 0.1);
-  color: rgb(var(--v-theme-primary));
+  background: var(--mealie-accent-tint);
+  color: var(--mealie-accent-ink);
   font: inherit;
   font-size: 14px;
   font-weight: 700;

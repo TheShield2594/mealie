@@ -312,7 +312,7 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   text-decoration: none;
 }
 
@@ -361,7 +361,7 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 .recipe-hero__eyebrow {
   font-size: 13px;
   font-weight: 600;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
 }
 
 .recipe-hero__title {
@@ -432,7 +432,7 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 }
 
 .recipe-hero__cook {
-  box-shadow: 0 8px 20px rgba(var(--v-theme-primary), 0.28);
+  box-shadow: none;
 }
 
 .recipe-hero__last-made {

@@ -504,7 +504,7 @@ async function submitRegistration() {
 }
 
 .register-choice:hover {
-  background: rgba(var(--v-theme-primary), 0.06);
+  background: var(--mealie-accent-wash);
   box-shadow: inset 0 0 0 2px rgb(var(--v-theme-primary));
 }
 

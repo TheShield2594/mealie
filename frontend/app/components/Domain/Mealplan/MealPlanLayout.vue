@@ -57,7 +57,7 @@ function getDay(day: MealsByDate): Days {
 }
 
 .plan-grid__day--today {
-  box-shadow: inset 0 0 0 2px rgba(var(--v-theme-primary), 0.55);
+  box-shadow: inset 0 0 0 1.5px var(--mealie-accent);
 }
 
 @media (max-width: 600px) {

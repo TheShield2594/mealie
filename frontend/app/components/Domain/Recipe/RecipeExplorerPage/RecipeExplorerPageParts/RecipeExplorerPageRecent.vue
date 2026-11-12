@@ -102,7 +102,7 @@ function meta(recipe: RecipeSummary) {
   padding: 0;
   font: inherit;
   font-size: 15px;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   cursor: pointer;
 }
 
