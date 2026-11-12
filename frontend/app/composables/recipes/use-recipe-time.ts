@@ -21,6 +21,19 @@ export function formatDuration(seconds: number, locale: string, unitDisplay: "lo
   return new Intl.ListFormat(locale, { type: "unit", style: "narrow" }).format(parts);
 }
 
+/**
+ * Seconds in an ISO 8601 duration such as "PT1H30M" or "P1DT2H", or null for anything else.
+ * Some imports store times this way as text instead of filling in the structured seconds.
+ */
+export function parseIsoDuration(text: string | null | undefined): number | null {
+  const match = text?.trim().match(/^P(?:(\d+(?:\.\d+)?)D)?(?:T(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?)?$/i);
+  if (!match || match.slice(1).every(part => part === undefined)) {
+    return null;
+  }
+  const [days, hours, minutes, seconds] = match.slice(1).map(part => Number(part ?? 0));
+  return days! * 86400 + hours! * 3600 + minutes! * 60 + seconds!;
+}
+
 interface RecipeTimes {
   totalTimeSeconds?: number | null;
   prepTimeSeconds?: number | null;
@@ -36,6 +49,11 @@ export function recipeShortTime(recipe: RecipeTimes, locale: string): string {
   const seconds = recipe.totalTimeSeconds || ((recipe.prepTimeSeconds || 0) + (recipe.performTimeSeconds || 0));
   if (seconds) {
     return formatDuration(seconds, locale, "short");
+  }
+  // an ISO duration stored as text reads "PT1H30M" verbatim otherwise
+  const parsed = parseIsoDuration(recipe.totalTime);
+  if (parsed) {
+    return formatDuration(parsed, locale, "short");
   }
   return recipe.totalTime?.trim() || "";
 }
