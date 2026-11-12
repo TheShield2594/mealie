@@ -54,7 +54,7 @@ defineProps({
 
 .base-page-title__title {
   margin: 0;
-  font-size: 34px;
+  font-size: var(--mealie-text-h1);
   font-family: var(--mealie-font-display);
   font-weight: 560;
   letter-spacing: -0.01em;
@@ -64,9 +64,9 @@ defineProps({
 .base-page-title__subtitle {
   max-width: 680px;
   margin: 8px 0 0;
-  font-size: 15px;
+  font-size: var(--mealie-text-body);
   line-height: 1.5;
-  color: var(--mealie-text-secondary);
+  color: var(--mealie-ink-2);
 }
 
 .base-page-title__content {
@@ -74,9 +74,5 @@ defineProps({
   margin-top: 12px;
 }
 
-@media (max-width: 600px) {
-  .base-page-title__title {
-    font-size: 28px;
-  }
-}
+/* --mealie-text-h1 drops to 28px on phones by itself */
 </style>
