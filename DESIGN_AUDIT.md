@@ -467,13 +467,15 @@ Order is tokens → shared components → screens. Each line is meant to be one 
 
 ### Phase 2: Shared components
 
-- [ ] **2.1** `RecipeCard` and `RecipeCardMobile`: the restyle with one placeholder, reserved aspect ratio, image fade-in and `srcset` with `tiny-original` on phones (fixes H1–H3, H5, K2, P2/P3, favourites, timeline).
-- [ ] **2.2** `BaseEmptyState` (new), applied to search, empty cookbook, empty list, finder, and the 404 page.
-- [ ] **2.3** `RecipeChips` (neutral tags) and `RecipeRating` (accent stars, 16 px, 44 px hit area).
-- [ ] **2.4** `BasePageTitle` and `BaseCardSectionTitle` render the `.mealie-page` header, so stock pages inherit it without call-site edits.
-- [ ] **2.5** Skeletons for the grid, recipe page, planner and shopping list (new `BaseSkeleton*` files).
-- [ ] **2.6** Toast restyle (the `alert` composable's snackbar) with Undo on delete.
-- [ ] **2.7** *(If approved)* the mobile tab bar (new `AppTabBar.vue`, mounted from `DefaultLayout`).
+- [x] **2.1** Grid and row cards rebuilt to the §8.4 rules, with §10-B/C applied: no description reveal, tag chips or stars on cards; the favourite on the photo; planner rows without the favourite. Every image sits on the placeholder fill while it loads, and a missing photo shows the recipe's serif initial. Cards have a "35 min · Dinner" meta line, the grid shows 4 columns on wide screens, and the favourite and menu buttons now have names. Raw ISO durations ("PT1H30M") are now formatted (H8). *Not built:* the `srcset`, which turned out unnecessary because phones get the row card, and that already loads `tiny-original`. *Correction:* the card fix did **not** cure the planner's layout shift; that came from the planner itself and is fixed separately (planner layout shift 0.49–0.58 → **0.000**).
+- [x] **2.2** `BaseEmptyState`, applied to search with no matches (with "Clear search and filters"), the empty cookbook, the empty shopping list, the Finder before any input, and a not-found page for recipes (§10-D). *Remaining:* the "No Entry Found" toast still appears on top of the not-found page, now as a neutral pill.
+- [x] **2.3** Stars are accent on the neutral rule colour, 18px, with 28×44 touch targets (24px is the AA minimum). On phones the rating gets its own row. Tags were already neutral from 1.3.
+- [x] **2.4** Page and section titles take their sizes and colours from the tokens, and section-title icons are muted. *Scope note:* the shared header was already in place from the first pass, so this was a small step.
+- [x] **2.5** `BaseSkeleton`, used for the recipe grid and list, the recipe page, the planner (a separate placeholder week, so there's no shift) and a shopping list. Each is marked `aria-busy`.
+- [x] **2.6** Toasts are a neutral pill at the bottom, with status shown in the icon colour and a 4s default. Removing a meal from the plan offers **Undo** (verified: 10 → 9 → 10 entries). *Not built:* undo for deleting a shopping-list item, because the offline queue makes re-creating items risky. Checking items off already had undo.
+- [x] **2.7** Bottom tab bar (Recipes · Plan · Lists · More) below the desktop breakpoint for signed-in members (§10-A). More opens the drawer, which holds sign-out. It's a Vuetify layout item, so the shopping list's docked add field now sits clearly above it (fixes S4 on phones).
+
+**Measured after Phase 2** (390px, dev build): unnamed buttons on Home 37 → 0, planner 44 → 1, recipe 2 → 0, login 2 → 0. Layout shift: planner 0.49–0.58 → 0.000; login still 0.21 (L2, in 3.12).
 
 ### Phase 3: Screens, in order
 
@@ -532,7 +534,17 @@ Each upstream file is listed once with the phase that touched it. **New** means 
 | 1 | `components/Domain/Recipe/RecipeOrganizerPage.vue`, `RecipePage.vue`, `RecipePageInstructions.vue` | Accent tokens |
 | 1 | `pages/login.vue`, `forgot-password.vue`, `reset-password.vue`, `register/index.vue`, `g/[groupSlug]/r/create.vue`, `shopping-lists/index.vue`, `shopping-lists/[id].vue` | Accent tokens; disabled-button fix |
 
-Fork-only files changed in Phase 1: `design-tokens.scss`, `lib/theme/readable-on.ts` (and its test), `plugins/html-lang.client.ts` (new), `AppAuthShell.vue`, `RecipePageHero.vue`, `RecipePageCookMode.vue`, `RecipePageServingsStepper.vue`, and the `RecipeExplorerPage{Header,Recent,Tonight}.vue` parts.
+| 2 | `components/Domain/Recipe/RecipeCardImage.vue` **new**, `RecipeContextMenu/RecipeContextMenu.vue` **new**, `RecipeFavoriteBadge.vue` **new**, `RecipeDialogSearch.vue` **new** | Placeholder and initial; button names; `:meta` |
+| 2 | `components/Layout/LayoutParts/TheSnackbar.vue` **new** | Bottom placement, 4s default, `mealie-toast` class |
+| 2 | `pages/g/[groupSlug]/r/[slug]/index.vue` **new** | Not-found page and loading skeleton |
+| 2 | `RecipeCard.vue`, `RecipeCardMobile.vue`, `RecipeCardSection.vue`, `RecipeSuggestion.vue`, `RecipeTimelineItem.vue`, `RecipeExplorerPage.vue`, `RecipeExplorerPageSearch.vue`, `CookbookPage.vue` | Card rebuild; empty and skeleton states |
+| 2 | `DefaultLayout.vue`, `AppHeader.vue` | Tab bar; hide menu and logout while it shows |
+| 2 | `BasePageTitle.vue`, `BaseCardSectionTitle.vue` | Type tokens |
+| 2 | `composables/recipes/use-recipe-time.ts` (and its test) | ISO duration fallback |
+| 2 | `pages/household/mealplan/planner.vue`, `planner/view.vue`, `pages/shopping-lists/[id].vue`, `pages/g/[groupSlug]/recipes/finder/index.vue` | Loading, empty, undo |
+| 2 | `lang/messages/en-US.json` | New `empty-state`, `toast` and `tab-bar` namespaces (fork-owned, to keep merges clean) |
+
+Fork-only files changed in Phase 1: `design-tokens.scss`, `lib/theme/readable-on.ts` (and its test), `plugins/html-lang.client.ts` (new), `AppAuthShell.vue`, `RecipePageHero.vue`, `RecipePageCookMode.vue`, `RecipePageServingsStepper.vue`, and the `RecipeExplorerPage{Header,Recent,Tonight}.vue` parts. Fork-only files added in Phase 2: `BaseEmptyState.vue`, `BaseSkeleton.vue`, `AppTabBar.vue`, `composables/recipes/use-recipe-card-meta.ts` (and its test).
 
 ---
 
