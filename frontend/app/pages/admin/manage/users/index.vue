@@ -164,12 +164,8 @@ function handleRowClick(item: UserOut) {
 // ==========================================================
 // Constants / Non-reactive
 
+// the user's ID is on their own page; as the first column it was a wall of UUIDs
 const headers = [
-  {
-    title: i18n.t("user.user-id"),
-    align: "start",
-    value: "id",
-  },
   { title: i18n.t("user.username"), value: "username" },
   { title: i18n.t("user.full-name"), value: "fullName" },
   { title: i18n.t("user.email"), value: "email" },

@@ -1048,3 +1048,40 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
 .v-btn.text-info {
   color: var(--mealie-accent-ink) !important;
 }
+
+// Data and admin tables. Destructive actions don't shout at rest: a row's delete is quiet ink
+// that turns red on hover, and a destructive toolbar action is red text on a neutral pill
+.v-table .v-btn.text-error {
+  color: var(--mealie-ink-3) !important;
+}
+
+.v-table .v-btn.text-error:hover,
+.v-table .v-btn.text-error:focus-visible {
+  color: rgb(var(--v-theme-error)) !important;
+}
+
+// Toolbar buttons are all secondary pills: Create, Combine and the rest render alike in Mealie's
+// markup, and a row of equal orange pills gave none of them priority
+.crud-table__toolbar .v-btn:not(.v-btn--icon) {
+  background: var(--mealie-fill) !important;
+  color: var(--mealie-ink) !important;
+  box-shadow: none !important;
+}
+
+.crud-table__toolbar .v-btn.bg-error {
+  background: var(--mealie-fill) !important;
+  color: rgb(var(--v-theme-error)) !important;
+  box-shadow: none !important;
+}
+
+// links inside tables (recipe counts and the like) in the accent ink, not browser blue
+.v-table a:not(.v-btn) {
+  color: var(--mealie-accent-ink);
+  font-weight: var(--mealie-weight-control);
+  text-decoration: none;
+}
+
+.v-table a:not(.v-btn):hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
