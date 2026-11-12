@@ -88,8 +88,10 @@
     </div>
 
     <!-- Hero -->
-    <div class="recipe-hero">
+    <!-- without a photo the title takes the width, rather than sitting beside an empty box -->
+    <div class="recipe-hero" :class="{ 'recipe-hero--no-photo': !showImage }">
       <button
+        v-if="showImage"
         type="button"
         class="recipe-hero__photo mealie-photo-placeholder"
         :class="{ 'recipe-hero__photo--zoom': showImage }"
@@ -328,6 +330,10 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
   gap: 44px;
   align-items: center;
   padding: 32px 48px 0;
+}
+
+.recipe-hero--no-photo {
+  grid-template-columns: minmax(0, 760px);
 }
 
 .recipe-hero__photo {

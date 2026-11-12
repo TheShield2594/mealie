@@ -1344,7 +1344,11 @@
     "serves": "Serves",
     "servings-count": "{count} serving | {count} servings",
     "fewer-servings": "Fewer servings",
-    "more-servings": "More servings"
+    "more-servings": "More servings",
+    "last-made-on": "Last made {date}",
+    "not-made-yet": "Not made yet",
+    "log-a-cook": "Log a cook",
+    "filed-under": "Filed under"
   },
   "cook-mode": {
     "exit": "Exit",

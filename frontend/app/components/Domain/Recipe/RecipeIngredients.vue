@@ -146,16 +146,24 @@ function setChecked(index: number, value: boolean) {
 }
 
 .ingredients-header__title {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: var(--mealie-text-h3);
+  font-weight: var(--mealie-weight-heading);
+  letter-spacing: -0.01em;
   color: var(--mealie-ink);
 }
 
 .ingredients-header__actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+}
+
+/* the header's controls share one 36px height (44px hit areas on touch screens) */
+.ingredients-header__actions > .v-btn,
+.ingredients-header__actions .v-btn--icon {
+  width: 36px !important;
+  height: 36px !important;
+  color: var(--mealie-ink-3);
 }
 
 .ingredients-list {
@@ -163,11 +171,11 @@ function setChecked(index: number, value: boolean) {
 }
 
 .ingredients-list__section {
-  margin-top: 18px;
+  margin-top: 22px;
   padding-bottom: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-size: var(--mealie-text-caption);
+  font-weight: 650;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--mealie-text-tertiary);
   border-bottom: 1px solid var(--mealie-hairline);
@@ -176,9 +184,9 @@ function setChecked(index: number, value: boolean) {
 .ingredient-row {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  min-height: 40px;
-  padding: 8px 0;
+  gap: 14px;
+  min-height: 48px;
+  padding: 11px 0;
   border-bottom: 1px solid var(--mealie-hairline);
   box-sizing: border-box;
   cursor: pointer;
@@ -188,13 +196,13 @@ function setChecked(index: number, value: boolean) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
   margin-top: 2px;
   padding: 0;
   border: 0;
-  border-radius: 10px;
+  border-radius: 11px;
   background: transparent;
   box-shadow: inset 0 0 0 1.6px var(--mealie-checkbox-ring);
   color: rgb(var(--v-theme-on-primary));
@@ -217,14 +225,18 @@ function setChecked(index: number, value: boolean) {
 .ingredient-row__text {
   flex: 1;
   min-width: 0;
-  font-size: 15px !important;
+  /* read from across the counter: the body-lg size, figures that line up */
+  font-size: var(--mealie-text-body-lg) !important;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
   color: var(--mealie-ink);
-  transition: color 0.15s ease;
+  transition: color var(--mealie-duration-hover) var(--mealie-ease);
 }
 
 .ingredient-row--checked .ingredient-row__text {
-  color: var(--mealie-text-quaternary);
+  color: var(--mealie-ink-4);
   text-decoration: line-through;
+  text-decoration-color: var(--mealie-ink-4);
 }
 
 .dense-markdown p {
