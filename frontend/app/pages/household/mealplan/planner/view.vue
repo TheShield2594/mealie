@@ -7,7 +7,28 @@
       @create="actions.createOne($event)"
       @update="actions.updateOne($event)"
     />
-    <MealPlanLayout :mealplans="mealplans">
+    <!-- Until the week has loaded: a placeholder week of its own. It is swapped for the real days
+         rather than growing into them, so nothing on screen shifts when the meals arrive -->
+    <div
+      v-if="loading"
+      class="plan-skeleton"
+      aria-busy="true"
+      :aria-label="$t('empty-state.loading')"
+    >
+      <div v-for="n in 4" :key="n" class="plan-skeleton__day mealie-card">
+        <BaseSkeleton :width="70" :height="11" />
+        <BaseSkeleton class="mt-2" :width="130" :height="17" />
+        <BaseSkeleton class="mt-6" :width="64" :height="10" />
+        <div class="plan-skeleton__entry">
+          <BaseSkeleton :width="72" :height="72" radius="sm" />
+          <div class="plan-skeleton__text">
+            <BaseSkeleton width="75%" :height="14" />
+            <BaseSkeleton class="mt-2" width="40%" :height="12" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <MealPlanLayout v-else :mealplans="mealplans">
       <template #default="{ day }">
         <MealPlanDay :day="day.date" :actions="actions" :recipes="day.recipes">
           <SpinTransition>
@@ -67,14 +88,6 @@
                   </SpinTransition>
                 </div>
               </SpinTransition>
-            </div>
-            <!-- until the week has loaded, a placeholder entry rather than "Nothing planned" -->
-            <div v-else-if="loading" class="plan-day-loading" aria-hidden="true">
-              <BaseSkeleton :width="56" :height="56" radius="sm" />
-              <div class="plan-day-loading__text">
-                <BaseSkeleton width="75%" :height="13" />
-                <BaseSkeleton class="mt-2" width="40%" :height="11" />
-              </div>
             </div>
             <div v-else class="plan-day-empty">
               {{ $t("recipe-library.nothing-planned") }}
@@ -159,14 +172,39 @@ function editMeal(mealplan: ReadPlanEntry) {
   color: var(--mealie-text-tertiary);
 }
 
-.plan-day-loading {
+/* mirrors MealPlanLayout's grid and day cards */
+.plan-skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(356px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.plan-skeleton__day {
+  padding: 18px;
+}
+
+.plan-skeleton__entry {
   display: flex;
   align-items: center;
   gap: 14px;
+  margin-top: 10px;
   padding: 8px;
+  border-radius: var(--mealie-radius-md);
+  box-shadow: inset 0 0 0 1px var(--mealie-hairline);
 }
 
-.plan-day-loading__text {
+.plan-skeleton__text {
   flex: 1;
+}
+
+@media (max-width: 600px) {
+  .plan-skeleton {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plan-skeleton__day {
+    padding: 16px 12px 12px;
+  }
 }
 </style>
