@@ -1335,7 +1335,9 @@
     "see-all": "See All",
     "all-recipes": "All Recipes",
     "start-cooking": "Start Cooking",
-    "recipes-count": "No recipes | One recipe | {count} recipes"
+    "recipes-count": "No recipes | One recipe | {count} recipes",
+    "view-grid": "Grid",
+    "view-list": "List"
   },
   "recipe-page": {
     "prep": "Prep",

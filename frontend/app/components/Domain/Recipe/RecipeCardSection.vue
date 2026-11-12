@@ -12,6 +12,10 @@
         {{ displayTitleIcon }}
       </v-icon>
       <span class="recipe-card-section__title">{{ title }}</span>
+      <span
+        v-if="title && total !== null && ready"
+        class="recipe-card-section__count"
+      >{{ $t("recipe-library.recipes-count", total) }}</span>
       <v-spacer />
       <v-btn
         :icon="$vuetify.display.xs"
@@ -103,17 +107,32 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <ContextMenu
+      <!-- grid or list: the same preference the old menu toggled, now in plain sight -->
+      <div
         v-if="!$vuetify.display.smAndDown"
-        :items="[
-          {
-            title: $t('general.toggle-view'),
-            icon: $globals.icons.eye,
-            event: 'toggle-dense-view',
-          },
-        ]"
-        @toggle-dense-view="toggleMobileCards()"
-      />
+        class="mealie-segmented ml-2"
+        role="group"
+        :aria-label="$t('general.toggle-view')"
+      >
+        <button
+          type="button"
+          class="mealie-segmented__item"
+          :class="{ 'mealie-segmented__item--active': !useMobileCards }"
+          :aria-pressed="!useMobileCards"
+          @click="useMobileCards && toggleMobileCards()"
+        >
+          {{ $t("recipe-library.view-grid") }}
+        </button>
+        <button
+          type="button"
+          class="mealie-segmented__item"
+          :class="{ 'mealie-segmented__item--active': useMobileCards }"
+          :aria-pressed="useMobileCards"
+          @click="!useMobileCards && toggleMobileCards()"
+        >
+          {{ $t("recipe-library.view-list") }}
+        </button>
+      </div>
     </v-row>
     <!-- first load: the shape of the grid, not a spinner (later pages still use the loader) -->
     <div
@@ -316,7 +335,7 @@ const hasMore = ref(true);
 const ready = ref(false);
 const loading = ref(false);
 
-const { fetchMore, getRandom } = useLazyRecipes(isOwnGroup.value ? null : groupSlug.value);
+const { fetchMore, getRandom, total } = useLazyRecipes(isOwnGroup.value ? null : groupSlug.value);
 const { savePosition, getSavedPage, restorePosition } = useScrollPosition();
 const router = useRouter();
 
@@ -561,9 +580,17 @@ function toggleMobileCards() {
 
 <style>
 .recipe-card-section__title {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: var(--mealie-text-h2);
+  font-weight: var(--mealie-weight-heading);
+  letter-spacing: -0.01em;
+}
+
+.recipe-card-section__count {
+  margin-left: 10px;
+  font-size: var(--mealie-text-body);
+  font-weight: 500;
+  color: var(--mealie-ink-3);
+  font-variant-numeric: tabular-nums;
 }
 
 .transparent {
