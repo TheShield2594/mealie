@@ -1463,7 +1463,8 @@
     "page-not-found-title": "This page isn't here",
     "page-not-found-description": "The link may be out of date, or the address mistyped.",
     "error-title": "Something went wrong",
-    "error-description": "Try again in a moment. If it keeps happening, the server log will say why."
+    "error-description": "Try again in a moment. If it keeps happening, the server log will say why.",
+    "no-cookbooks-title": "No cookbooks yet"
   },
   "toast": {
     "removed-from-plan": "Removed {name} from the plan"

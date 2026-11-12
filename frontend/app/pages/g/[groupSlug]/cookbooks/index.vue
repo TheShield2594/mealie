@@ -38,7 +38,7 @@
       </v-card-text>
     </BaseDialog>
 
-    <div class="mealie-page mealie-page--narrow">
+    <div class="mealie-page" :class="{ 'mealie-page--narrow': editing }">
       <header class="mealie-page__header">
         <div class="mealie-page__titles">
           <div class="mealie-eyebrow">
@@ -49,6 +49,16 @@
           </h1>
         </div>
         <div class="mealie-page__actions">
+          <!-- the shelf is for reading; reordering, editing and deleting live behind Edit -->
+          <button
+            v-if="myCookbooks.length"
+            type="button"
+            class="mealie-pill"
+            :aria-pressed="editing"
+            @click="editing = !editing"
+          >
+            {{ editing ? $t("general.done") : $t("general.edit") }}
+          </button>
           <button type="button" class="mealie-pill mealie-pill--primary" @click="createCookbook">
             <v-icon size="16">
               {{ $globals.icons.createAlt }}
@@ -57,85 +67,104 @@
           </button>
         </div>
       </header>
-      <p class="cookbooks-intro">
-        {{ $t("cookbook.description") }}
-      </p>
-
-      <div class="cookbooks-preference mealie-card">
-        <v-checkbox
-          v-model="cookbookPreferences.hideOtherHouseholds"
-          :label="$t('cookbook.hide-cookbooks-from-other-households')"
-          hide-details
-          density="compact"
-          color="primary"
+      <!-- The shelf: every cookbook as a cover -->
+      <div v-if="!editing" class="cookbook-shelf">
+        <CookbookCover
+          v-for="(cookbook, index) in myCookbooks"
+          :key="cookbook.id"
+          :cookbook="cookbook"
+          :color="cookbookColor(index)"
+          :to="`/g/${groupSlug}/cookbooks/${cookbook.slug}`"
         />
-        <p class="cookbooks-preference__hint">
-          {{ $t("cookbook.hide-cookbooks-from-other-households-description") }}
-        </p>
       </div>
+      <BaseEmptyState
+        v-if="!editing && !myCookbooks.length"
+        :icon="$globals.icons.book"
+        :title="$t('empty-state.no-cookbooks-title')"
+        :description="$t('cookbook.description')"
+      />
 
-      <!-- Cookbook List -->
-      <v-expansion-panels class="cookbooks-list">
-        <VueDraggable
-          v-model="myCookbooks"
-          handle=".handle"
-          :delay="250"
-          :delay-on-touch-only="true"
-          style="width: 100%"
-          @end="updateAll(myCookbooks)"
-        >
-          <v-expansion-panel
-            v-for="(cookbook, index) in myCookbooks"
-            :key="cookbook.id"
-            class="cookbooks-list__item"
+      <template v-if="editing">
+        <p class="cookbooks-intro">
+          {{ $t("cookbook.description") }}
+        </p>
+
+        <div class="cookbooks-preference mealie-card">
+          <v-checkbox
+            v-model="cookbookPreferences.hideOtherHouseholds"
+            :label="$t('cookbook.hide-cookbooks-from-other-households')"
+            hide-details
+            density="compact"
+            color="primary"
+          />
+          <p class="cookbooks-preference__hint">
+            {{ $t("cookbook.hide-cookbooks-from-other-households-description") }}
+          </p>
+        </div>
+
+        <!-- Cookbook List -->
+        <v-expansion-panels class="cookbooks-list">
+          <VueDraggable
+            v-model="myCookbooks"
+            handle=".handle"
+            :delay="250"
+            :delay-on-touch-only="true"
+            style="width: 100%"
+            @end="updateAll(myCookbooks)"
           >
-            <v-expansion-panel-title disable-icon-rotate class="cookbooks-list__title">
-              <div class="d-flex align-center ga-3">
-                <span class="cookbooks-list__swatch" :style="{ background: cookbookColor(index) }" />
-                {{ cookbook.name }}
-              </div>
-              <template #actions>
-                <div class="d-flex align-center">
-                  <v-btn icon variant="text" class="ml-2">
-                    <v-icon>
-                      {{ $globals.icons.edit }}
-                    </v-icon>
-                  </v-btn>
-                  <v-icon class="handle" :size="24">
-                    {{ $globals.icons.arrowUpDown }}
-                  </v-icon>
+            <v-expansion-panel
+              v-for="(cookbook, index) in myCookbooks"
+              :key="cookbook.id"
+              class="cookbooks-list__item"
+            >
+              <v-expansion-panel-title disable-icon-rotate class="cookbooks-list__title">
+                <div class="d-flex align-center ga-3">
+                  <span class="cookbooks-list__swatch" :style="{ background: cookbookColor(index) }" />
+                  {{ cookbook.name }}
                 </div>
-              </template>
-            </v-expansion-panel-title>
-            <v-expansion-panel-text>
-              <CookbookEditor
-                v-model="myCookbooks[index]"
-                :collapsable="false"
-              />
-              <v-card-actions>
-                <v-spacer />
-                <BaseButtonGroup
-                  :buttons="[
-                    {
-                      icon: $globals.icons.delete,
-                      text: $t('general.delete'),
-                      event: 'delete',
-                    },
-                    {
-                      icon: $globals.icons.save,
-                      text: $t('general.save'),
-                      event: 'save',
-                      disabled: !cookbook.queryFilterString,
-                    },
-                  ]"
-                  @delete="deleteEventHandler(myCookbooks[index])"
-                  @save="actions.updateOne(myCookbooks[index])"
+                <template #actions>
+                  <div class="d-flex align-center">
+                    <v-btn icon variant="text" class="ml-2">
+                      <v-icon>
+                        {{ $globals.icons.edit }}
+                      </v-icon>
+                    </v-btn>
+                    <v-icon class="handle" :size="24">
+                      {{ $globals.icons.arrowUpDown }}
+                    </v-icon>
+                  </div>
+                </template>
+              </v-expansion-panel-title>
+              <v-expansion-panel-text>
+                <CookbookEditor
+                  v-model="myCookbooks[index]"
+                  :collapsable="false"
                 />
-              </v-card-actions>
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </VueDraggable>
-      </v-expansion-panels>
+                <v-card-actions>
+                  <v-spacer />
+                  <BaseButtonGroup
+                    :buttons="[
+                      {
+                        icon: $globals.icons.delete,
+                        text: $t('general.delete'),
+                        event: 'delete',
+                      },
+                      {
+                        icon: $globals.icons.save,
+                        text: $t('general.save'),
+                        event: 'save',
+                        disabled: !cookbook.queryFilterString,
+                      },
+                    ]"
+                    @delete="deleteEventHandler(myCookbooks[index])"
+                    @save="actions.updateOne(myCookbooks[index])"
+                  />
+                </v-card-actions>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </VueDraggable>
+        </v-expansion-panels>
+      </template>
     </div>
   </div>
 </template>
@@ -146,6 +175,7 @@ import { cookbookColor } from "~/lib/cookbooks/colors";
 import { useCookbookStore } from "~/composables/store/use-cookbook-store";
 import { useHouseholdSelf } from "@/composables/use-households";
 import CookbookEditor from "~/components/Domain/Cookbook/CookbookEditor.vue";
+import CookbookCover from "~/components/Domain/Cookbook/CookbookCover.vue";
 import type { CreateCookBook, ReadCookBook } from "~/lib/api/types/cookbook";
 import { useCookbookPreferences } from "~/composables/use-users/preferences";
 
@@ -185,6 +215,10 @@ const { household } = useHouseholdSelf();
 const cookbookPreferences = useCookbookPreferences();
 
 // create
+const editing = ref(false);
+const route = useRoute();
+const groupSlug = computed(() => (route.params.groupSlug as string) || auth.user.value?.groupSlug || "");
+
 const createTargetKey = ref(0);
 const createTarget = ref<ReadCookBook | null>(null);
 async function createCookbook() {
@@ -301,5 +335,19 @@ onBeforeUnmount(() => {
   height: 12px;
   flex-shrink: 0;
   border-radius: 4px;
+}
+
+.cookbook-shelf {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 32px 24px;
+}
+
+@media (max-width: 600px) {
+  .cookbook-shelf {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 14px;
+  }
 }
 </style>
