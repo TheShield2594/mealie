@@ -1,5 +1,9 @@
 <template>
-  <div class="plan-grid">
+  <div
+    class="plan-grid"
+    :class="{ 'plan-grid--week': weekColumns }"
+    :style="weekColumns ? { '--plan-days': mealplans.length } : undefined"
+  >
     <section
       v-for="(plan, index) in mealplans"
       :key="index"
@@ -14,10 +18,12 @@
 <script setup lang="ts">
 import { isSameDay } from "date-fns";
 import type { PlanEntryType } from "~/lib/api/types/meal-plan";
+import { usePlannerWeekColumns } from "~/composables/use-planner-week-columns";
 
-defineProps<{
+const props = defineProps<{
   mealplans: MealsByDate[];
 }>();
+const weekColumns = usePlannerWeekColumns(() => props.mealplans.length);
 const planTypeOptions = usePlanTypeOptions();
 
 function isToday(date: Date) {
@@ -54,6 +60,27 @@ function getDay(day: MealsByDate): Days {
   flex-direction: column;
   min-width: 0;
   padding: 18px 18px 14px;
+}
+
+/* a week at a glance: one column per day, all the same height so the row reads as a calendar */
+.plan-grid--week {
+  grid-template-columns: repeat(var(--plan-days), minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+.plan-grid--week .plan-grid__day {
+  padding: 14px 10px 10px;
+}
+
+/* a narrow column: the date steps down a size so it fits beside the day's menu */
+.plan-grid--week :deep(.plan-day-header__date) {
+  font-size: var(--mealie-text-body);
+  line-height: 1.3;
+}
+
+.plan-grid--week :deep(.v-card.bg-secondary-darken-1) {
+  font-size: var(--mealie-text-meta);
 }
 
 .plan-grid__day--today {

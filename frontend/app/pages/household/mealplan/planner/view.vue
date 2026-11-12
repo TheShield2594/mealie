@@ -32,7 +32,7 @@
       <template #default="{ day }">
         <MealPlanDay :day="day.date" :actions="actions" :recipes="day.recipes">
           <SpinTransition>
-            <div v-if="day.sections.length" class="plan-day-meals">
+            <div v-if="day.sections.length" class="plan-day-meals" :class="{ 'plan-day-meals--week': weekColumns }">
               <SpinTransition>
                 <div v-for="section in day.sections" :key="section.title">
                   <div class="plan-section">
@@ -54,6 +54,7 @@
                         :image="mealplan.recipe ? mealplan.recipe.image! : undefined"
                         :tags="mealplan.recipe ? mealplan.recipe.tags! : []"
                         :meta="mealplan.recipe"
+                        :vertical="weekColumns"
                         hide-favorite
                         :context-menu-leading-items="[
                           {
@@ -105,6 +106,7 @@ import MealPlanScaleControl from "~/components/Domain/Mealplan/MealPlanScaleCont
 import RecipeCardMobile from "~/components/Domain/Recipe/RecipeCardMobile.vue";
 import type { MealsByDate } from "~/composables/use-group-mealplan";
 import { alert } from "~/composables/use-toast";
+import { usePlannerWeekColumns } from "~/composables/use-planner-week-columns";
 import type { ReadPlanEntry } from "~/lib/api/types/meal-plan";
 
 const props = defineProps<{
@@ -114,6 +116,7 @@ const props = defineProps<{
 }>();
 
 const i18n = useI18n();
+const weekColumns = usePlannerWeekColumns(() => props.mealplans.length);
 
 const dialog = reactive({
   open: false,
@@ -155,6 +158,25 @@ function editMeal(mealplan: ReadPlanEntry) {
 <style scoped>
 .plan-day-meals {
   margin-top: 4px;
+}
+
+/* In a week column the servings pill stays (it opens its own editor) and the -/+ steppers
+   beside it step aside: there isn't room for both in a ~130px column */
+.plan-day-meals--week :deep(.v-item-group) {
+  display: none;
+}
+
+.plan-day-meals--week :deep(.mealie-row-card--vertical) {
+  padding: 6px;
+  gap: 8px;
+}
+
+.plan-day-meals--week :deep(.mealie-row-card__title) {
+  font-size: var(--mealie-text-meta);
+}
+
+.plan-day-meals--week :deep(.mealie-row-card__meta) {
+  font-size: 12px;
 }
 
 .plan-section {

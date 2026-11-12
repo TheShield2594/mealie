@@ -1465,5 +1465,9 @@
     "plan": "Plan",
     "lists": "Lists",
     "more": "More"
+  },
+  "planner": {
+    "today": "Today",
+    "shop-this-week": "Shop for this week"
   }
 }

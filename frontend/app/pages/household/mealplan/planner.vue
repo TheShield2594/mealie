@@ -92,6 +92,15 @@
               {{ $globals.icons.chevronRight }}
             </v-icon>
           </button>
+          <!-- back to the current week, once you've paged away from it -->
+          <button
+            v-if="!showsToday"
+            type="button"
+            class="mealie-pill planner-range__today"
+            @click="goToToday"
+          >
+            {{ $t("planner.today") }}
+          </button>
         </div>
 
         <div class="mealie-segmented" role="group">
@@ -110,6 +119,20 @@
             {{ $t("general.edit") }}
           </RouterLink>
         </div>
+
+        <!-- the week's shopping, one click away on wide screens (also in the menu) -->
+        <button
+          v-if="$vuetify.display.mdAndUp"
+          type="button"
+          class="mealie-pill"
+          :disabled="!hasRecipes"
+          @click="addAllToList"
+        >
+          <v-icon size="16">
+            {{ $globals.icons.cartCheck }}
+          </v-icon>
+          {{ $t("planner.shop-this-week") }}
+        </button>
 
         <v-menu location="bottom end" :offset="6">
           <template #activator="{ props }">
@@ -156,7 +179,7 @@
 </template>
 
 <script setup lang="ts">
-import { addDays, differenceInCalendarDays, format, isSameDay, isValid, parseISO } from "date-fns";
+import { addDays, differenceInCalendarDays, endOfDay, format, isSameDay, isValid, isWithinInterval, parseISO, startOfDay } from "date-fns";
 import GroupMealPlanCalendarDialog from "~/components/Domain/Household/GroupMealPlanCalendarDialog.vue";
 import RecipeDialogAddToShoppingList from "~/components/Domain/Recipe/RecipeDialogAddToShoppingList.vue";
 import { useAddToShoppingListDialog } from "~/composables/shopping-list-page/use-add-to-shopping-list-dialog";
@@ -248,6 +271,13 @@ function changeWeek(step: number) {
   ];
 }
 
+function goToToday() {
+  state.value.range = [
+    addDays(new Date(), adjustForToday(-numberOfDaysPast.value)),
+    addDays(new Date(), adjustForToday(numberOfDays.value)),
+  ];
+}
+
 const weekRange = computed(() => {
   const sorted = [...state.value.range].sort((a, b) => a.getTime() - b.getTime());
 
@@ -320,6 +350,11 @@ const mealsByDate = computed(() => {
   });
 });
 
+const showsToday = computed(() => {
+  const { start, end } = weekRange.value;
+  return isWithinInterval(new Date(), { start: startOfDay(start), end: endOfDay(end) });
+});
+
 const hasRecipes = computed(() => {
   return mealsByDate.value.some(day => day.meals.some(meal => meal.recipe));
 });
@@ -330,6 +365,10 @@ const weekRecipesWithScales = computed(() => {
 </script>
 
 <style scoped>
+.planner-range__today {
+  margin-left: 4px;
+}
+
 .planner-range {
   display: flex;
   align-items: center;
