@@ -2,8 +2,9 @@
   <v-app dark>
     <TheSnackbar />
 
-    <AppHeader hide-on-desktop>
+    <AppHeader hide-on-desktop :hide-logout="showTabBar">
       <v-btn
+        v-if="!showTabBar"
         icon
         :aria-label="$t('general.menu')"
         @click.stop="sidebar = !sidebar"
@@ -17,6 +18,12 @@
       :top-link="topLinks"
       :secondary-links="cookbookLinks || []"
       :secondary-header="$t('cookbook.cookbooks')"
+    />
+    <AppTabBar
+      v-if="showTabBar"
+      :group-slug="groupSlug"
+      :drawer-open="sidebar"
+      @more="sidebar = true"
     />
     <v-main :class="{ 'pt-12': !display.lgAndUp.value }">
       <v-scroll-x-transition>
@@ -66,6 +73,10 @@ const cookbooks = computed(() => {
   }
   return [];
 });
+
+// below the desktop breakpoint, members get a tab bar for the main destinations (DESIGN_AUDIT.md
+// §10-A); visitors to a public group keep the drawer alone, since planning and lists need an account
+const showTabBar = computed(() => !display.lgAndUp.value && isOwnGroup.value && !!groupSlug.value);
 
 const sidebar = ref<boolean>(false);
 onMounted(() => {

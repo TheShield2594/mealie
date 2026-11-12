@@ -37,7 +37,7 @@
         <v-icon> {{ $globals.icons.search }}</v-icon>
       </v-btn>
       <v-btn
-        v-if="loggedIn"
+        v-if="loggedIn && !hideLogout"
         :variant="smAndUp ? 'text' : undefined"
         :icon="xs"
         :aria-label="xs ? $t('user.logout') : undefined"
@@ -50,7 +50,7 @@
         {{ smAndUp ? $t("user.logout") : "" }}
       </v-btn>
       <v-btn
-        v-else
+        v-else-if="!loggedIn"
         variant="text"
         nuxt
         to="/login"
@@ -78,6 +78,12 @@ const props = defineProps({
     default: true,
   },
   /** Hide the bar on large screens, where the permanent sidebar carries the brand and navigation */
+  // sign out lives in the drawer's account menu; the header doesn't repeat it when the tab bar
+  // (which opens that drawer) is on screen
+  hideLogout: {
+    type: Boolean,
+    default: false,
+  },
   hideOnDesktop: {
     type: Boolean,
     default: false,

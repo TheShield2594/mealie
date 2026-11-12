@@ -1035,3 +1035,8 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
 .mealie-toast .v-progress-linear {
   color: var(--mealie-toast-action) !important;
 }
+
+// With the tab bar on screen, the scroll-to-top button sits above it rather than on it
+.v-application:has(.mealie-tabbar) .scroll-to-top {
+  margin-bottom: calc(72px + env(safe-area-inset-bottom)) !important;
+}

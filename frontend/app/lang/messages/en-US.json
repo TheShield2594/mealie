@@ -1453,5 +1453,11 @@
   },
   "toast": {
     "removed-from-plan": "Removed {name} from the plan"
+  },
+  "tab-bar": {
+    "navigation": "Main",
+    "plan": "Plan",
+    "lists": "Lists",
+    "more": "More"
   }
 }
