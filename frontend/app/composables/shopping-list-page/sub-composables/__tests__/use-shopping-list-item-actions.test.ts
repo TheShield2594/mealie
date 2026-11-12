@@ -36,6 +36,7 @@ describe("useShoppingListItemActions", () => {
     createItem,
     deleteItem,
     updateItem,
+    restoreItem,
     process,
     __testing__: { queue, clearQueueItems },
   } = useShoppingListItemActions("list_id");
@@ -215,6 +216,34 @@ describe("useShoppingListItemActions", () => {
     test("fetches from local storage if available", () => {
       const { queue, createEmptyQueue } = useShoppingListItemActions("list_id").__testing__;
       expect(queue).not.toEqual(createEmptyQueue);
+    });
+  });
+
+  describe("restoreItem (undo a delete)", () => {
+    test("cancels a deletion that hasn't been sent, returning the same item", () => {
+      deleteItem(MOCK_ITEM);
+      expect(queue.delete).toContainEqual(MOCK_ITEM);
+
+      const restored = restoreItem(MOCK_ITEM);
+
+      expect(restored).toBe(MOCK_ITEM);
+      expect(queue.delete).toHaveLength(0);
+      expect(queue.create).toHaveLength(0);
+    });
+
+    test("re-creates an item whose deletion was already sent, under a new id", () => {
+      const item = {
+        ...MOCK_ITEM,
+        recipeReferences: [{ id: "ref-1", shoppingListItemId: MOCK_ITEM.id, recipeId: "recipe-1", recipeQuantity: 2, recipeScale: 1 }],
+      } as ShoppingListItemOut;
+
+      const restored = restoreItem(item);
+
+      expect(restored.id).not.toBe(item.id);
+      expect(restored.note).toBe(item.note);
+      expect(queue.create).toContainEqual(restored);
+      // fresh recipe links, not the old row's
+      expect(restored.recipeReferences).toEqual([{ recipeId: "recipe-1", recipeQuantity: 2, recipeScale: 1, recipeNote: undefined }]);
     });
   });
 });

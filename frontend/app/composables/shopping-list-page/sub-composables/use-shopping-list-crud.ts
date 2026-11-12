@@ -115,6 +115,20 @@ export function useShoppingListCrud(
     refresh();
   }
 
+  /** Undo for deleteListItem: puts the item back in the list (see restoreItem for the queue side) */
+  function restoreListItem(item: ShoppingListItemOut) {
+    if (!shoppingList.value) {
+      return;
+    }
+
+    const restored = shoppingListItemActions.restoreItem(item);
+    if (shoppingList.value.listItems && !shoppingList.value.listItems.some(itm => itm.id === restored.id)) {
+      shoppingList.value.listItems.push(restored);
+    }
+    updateListItemOrder();
+    refresh();
+  }
+
   function deleteListItems(items: ShoppingListItemOut[]) {
     if (!shoppingList.value) {
       return;
@@ -240,6 +254,7 @@ export function useShoppingListCrud(
     deleteCheckedItems,
     saveListItem,
     deleteListItem,
+    restoreListItem,
     deleteListItems,
     createListItem,
     updateUncheckedListItems,

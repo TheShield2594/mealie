@@ -243,7 +243,7 @@
                         :recipes="recipeMap"
                         @checked="onItemChecked"
                         @save="onItemSaved"
-                        @delete="deleteListItem"
+                        @delete="deleteWithUndo"
                         @view="onItemView"
                         @edit="onItemEdit"
                       />
@@ -304,7 +304,7 @@
                   :foods="allFoods || []"
                   @checked="saveListItem"
                   @save="saveListItem"
-                  @delete="deleteListItem"
+                  @delete="deleteWithUndo"
                 />
               </div>
             </TransitionGroup>
@@ -460,6 +460,22 @@ function onItemView() {
   editingItem.value = undefined;
 }
 
+// Deleting an item is one tap in its row, so the toast offers it back
+function deleteWithUndo(item: ShoppingListItemOut) {
+  deleteListItem(item);
+  alert.info(
+    i18n.t("toast.removed-from-list", { item: item.food?.name || item.note || i18n.t("recipe.ingredient") }),
+    undefined,
+    {
+      timeout: 6000,
+      action: {
+        message: i18n.t("general.undo"),
+        onClick: () => restoreListItem(item),
+      },
+    },
+  );
+}
+
 function itemCheckedToast(item: ShoppingListItemOut) {
   setTimeout(() => {
     alert.info(
@@ -505,6 +521,7 @@ const {
   recipeMap,
   saveListItem,
   deleteListItem,
+  restoreListItem,
   listItems,
   openUncheckAll,
   openDeleteChecked,

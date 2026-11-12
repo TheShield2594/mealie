@@ -1468,7 +1468,8 @@
     "no-cookbooks-title": "No cookbooks yet"
   },
   "toast": {
-    "removed-from-plan": "Removed {name} from the plan"
+    "removed-from-plan": "Removed {name} from the plan",
+    "removed-from-list": "Removed {item}"
   },
   "tab-bar": {
     "navigation": "Main",
