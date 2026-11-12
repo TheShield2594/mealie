@@ -271,19 +271,27 @@ export default defineNuxtConfig({
         fallback: "en-US",
       },
       defaults: {
+        // the redesign's look for Vuetify components; see assets/design-tokens.scss for the CSS half
+        // and DESIGN_AUDIT.md §8.4 for the rules. Material ripples read as stock Vuetify, so they
+        // are off; buttons and cards get a press scale from design-tokens.scss instead
+        global: {
+          ripple: false,
+        },
+        VTextField: { variant: "filled", color: "primary" },
+        VTextarea: { variant: "filled", color: "primary" },
+        VSelect: { variant: "filled", color: "primary", scrollStrategy: "close" },
+        VAutocomplete: { variant: "filled", color: "primary", scrollStrategy: "close" },
+        VCombobox: { variant: "filled", color: "primary", scrollStrategy: "close" },
+        VFileInput: { variant: "filled", color: "primary" },
+        VNumberInput: { variant: "filled", color: "primary" },
+        VCheckbox: { color: "primary" },
+        VCheckboxBtn: { color: "primary" },
+        VRadioGroup: { color: "primary" },
+        VSwitch: { color: "primary", inset: true },
         VOverlay: {
           scrollStrategy: "close",
         },
         VMenu: {
-          scrollStrategy: "close",
-        },
-        VAutocomplete: {
-          scrollStrategy: "close",
-        },
-        VCombobox: {
-          scrollStrategy: "close",
-        },
-        VSelect: {
           scrollStrategy: "close",
         },
       },

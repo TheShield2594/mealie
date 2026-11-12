@@ -575,3 +575,212 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
     scroll-behavior: auto !important;
   }
 }
+
+// ---- Vuetify components, brought onto the tokens ----------------------------------------------
+// Vuetify 4 ships its styles in cascade layers, so these unlayered rules win without !important.
+// They restyle components wherever they render (pages, dialogs, menus) without touching templates.
+
+// Text fields: one look, the sunken filled field. Upstream asks for six variants across ~150
+// call sites; filled, solo, solo-filled and underlined all become the same field here. Outlined
+// keeps its notched label (moving it would need template changes) but takes the same radius,
+// hairline and focus treatment, so the two read as one family. Plain stays plain: it is used
+// where a field sits inside something else, like a table cell.
+.v-field--variant-filled,
+.v-field--variant-solo,
+.v-field--variant-solo-filled,
+.v-field--variant-underlined {
+  --v-field-padding-start: 14px;
+  --v-field-padding-end: 14px;
+  border-radius: var(--mealie-radius-sm);
+  background: var(--mealie-fill-subtle);
+  box-shadow: none;
+  transition:
+    background-color var(--mealie-duration-hover) var(--mealie-ease),
+    box-shadow var(--mealie-duration-hover) var(--mealie-ease);
+
+  // Vuetify's own hover/focus overlay and underline give way to the background and ring below.
+  // The outline element stays: underlined fields render their floating label inside it
+  > .v-field__overlay {
+    display: none;
+  }
+
+  > .v-field__outline::before,
+  > .v-field__outline::after {
+    display: none;
+  }
+
+  &:hover {
+    background: var(--mealie-fill);
+  }
+
+  &.v-field--focused {
+    background: var(--mealie-surface);
+    box-shadow:
+      inset 0 0 0 1.5px var(--mealie-accent),
+      0 0 0 3px var(--mealie-accent-ring);
+  }
+
+  &.v-field--error:not(.v-field--disabled) {
+    box-shadow: inset 0 0 0 1.5px rgb(var(--v-theme-error));
+  }
+}
+
+// Underlined fields get the filled field's height and label position, so the two match
+.v-input--density-default .v-field--variant-underlined {
+  --v-input-control-height: 56px;
+  --v-field-padding-top: 8px;
+  --v-field-padding-bottom: 4px;
+}
+
+.v-input--density-comfortable .v-field--variant-underlined {
+  --v-input-control-height: 48px;
+  --v-field-padding-top: 8px;
+  --v-field-padding-bottom: 0px;
+}
+
+.v-input--density-compact .v-field--variant-underlined {
+  --v-input-control-height: 40px;
+  --v-field-padding-top: 8px;
+  --v-field-padding-bottom: 0px;
+}
+
+.v-field--variant-underlined .v-label.v-field-label {
+  top: var(--v-input-padding-top);
+}
+
+.v-field--variant-underlined .v-label.v-field-label--floating {
+  top: 7px;
+  margin-inline-start: var(--v-field-padding-start);
+  transform: none;
+}
+
+.v-input--density-comfortable .v-field--variant-underlined .v-label.v-field-label--floating {
+  top: 5px;
+}
+
+.v-input--density-compact .v-field--variant-underlined .v-label.v-field-label--floating {
+  top: 3px;
+}
+
+.v-field--variant-outlined {
+  border-radius: var(--mealie-radius-sm);
+
+  > .v-field__outline {
+    --v-field-border-opacity: 1;
+    color: var(--mealie-hairline-strong);
+  }
+
+  // the notched outline draws its corners in three parts
+  > .v-field__outline .v-field__outline__start {
+    border-radius: var(--mealie-radius-sm) 0 0 var(--mealie-radius-sm);
+  }
+
+  > .v-field__outline .v-field__outline__end {
+    border-radius: 0 var(--mealie-radius-sm) var(--mealie-radius-sm) 0;
+  }
+
+  &:hover > .v-field__outline {
+    color: var(--mealie-ink-4);
+  }
+
+  &.v-field--focused {
+    box-shadow: 0 0 0 3px var(--mealie-accent-ring);
+
+    > .v-field__outline {
+      --v-field-border-width: 1.5px;
+      color: rgb(var(--v-theme-primary));
+    }
+  }
+
+  &.v-field--error:not(.v-field--disabled) > .v-field__outline {
+    color: rgb(var(--v-theme-error));
+  }
+}
+
+// labels and hints on the ink scale rather than Vuetify's opacity, which can fall below AA
+.v-field .v-field-label {
+  color: var(--mealie-ink-3);
+  opacity: 1;
+}
+
+.v-field--focused .v-field-label {
+  color: var(--mealie-accent-ink);
+}
+
+.v-input__details .v-messages {
+  color: var(--mealie-ink-3);
+  opacity: 1;
+}
+
+// Overlays (menus, dialogs, sheets) sit on the raised surface. In dark mode depth comes from the
+// lighter surface and a stronger hairline rather than a shadow, which a dark page would swallow
+.v-overlay__content > .v-card,
+.v-overlay__content > .v-sheet,
+.v-menu > .v-overlay__content > .v-list,
+.v-menu > .v-overlay__content > .v-card {
+  background: var(--mealie-raised);
+  box-shadow: var(--mealie-elevation-2);
+}
+
+.v-menu > .v-overlay__content > :is(.v-list, .v-card, .v-sheet) {
+  border-radius: var(--mealie-radius-md);
+  overflow: hidden;
+}
+
+// select and autocomplete menus wrap their list in a sheet; the list then carries the inset
+.v-menu > .v-overlay__content > .v-list,
+.v-menu > .v-overlay__content > .v-sheet > .v-list {
+  padding: 6px;
+  background: transparent;
+}
+
+.v-menu .v-list-item {
+  border-radius: var(--mealie-radius-sm);
+  min-height: 40px;
+}
+
+// the chosen option: a quiet tint rather than Vuetify's 12% wash of the accent
+.v-menu .v-list-item--active > .v-list-item__overlay {
+  opacity: 0.08;
+}
+
+.v-dialog > .v-overlay__content > .v-card,
+.v-dialog > .v-overlay__content > .v-sheet {
+  border-radius: var(--mealie-radius-md);
+}
+
+.v-bottom-sheet > .v-overlay__content > .v-card,
+.v-bottom-sheet > .v-overlay__content > .v-sheet {
+  border-radius: var(--mealie-radius-lg) var(--mealie-radius-lg) 0 0;
+}
+
+// Dark scrims are warm, not blue-black
+.v-overlay__scrim {
+  background: #0b0a09;
+}
+
+// Tooltips: small dark pills in both themes
+.v-tooltip > .v-overlay__content {
+  border-radius: var(--mealie-radius-xs);
+  background: #2a2826;
+  color: #f5f3ef;
+  font-size: var(--mealie-text-caption);
+  font-weight: 500;
+  padding: 5px 9px;
+}
+
+// Switches: the accent only when on, a neutral track when off
+.v-switch .v-switch__track {
+  background: var(--mealie-fill);
+  opacity: 1;
+}
+
+.v-switch .v-selection-control--dirty .v-switch__track {
+  background: rgb(var(--v-theme-primary));
+}
+
+// Tables and data rows: hairline separators on the ink scale
+.v-table {
+  --v-border-color: var(--mealie-hairline-strong);
+  --v-border-opacity: 1;
+}
