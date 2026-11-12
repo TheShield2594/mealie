@@ -9,7 +9,8 @@ export const useRecipe = function (slug: string, eager = true) {
 
   async function fetchRecipe() {
     loading.value = true;
-    const { data } = await api.recipes.getOne(slug);
+    // a missing recipe gets the page's own not-found state, not an error toast on top of it
+    const { data } = await api.recipes.getOne(slug, { suppressNotFoundAlert: true });
     loading.value = false;
     if (data) {
       recipe.value = data;
