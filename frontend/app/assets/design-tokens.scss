@@ -793,6 +793,13 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
   background: rgb(var(--v-theme-primary));
 }
 
+// the thumb: white with a soft shadow in both themes, instead of Material's tinted thumb
+.v-switch .v-switch__thumb {
+  background: #fff !important;
+  color: #fff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
 // Tables and data rows: hairline separators on the ink scale
 .v-table {
   --v-border-color: var(--mealie-hairline-strong);
@@ -1094,4 +1101,29 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
 // tech (axe: aria-tooltip-name). An inactive tooltip is taken out of the page entirely
 .v-overlay.v-tooltip:not(.v-overlay--active) {
   display: none;
+}
+
+// A grouped list of settings (BaseSettingRow): one panel per group, rows divided by hairlines
+.base-setting-group {
+  border-radius: var(--mealie-radius-md);
+  background: var(--mealie-surface);
+  box-shadow: var(--mealie-elevation-1);
+  overflow: hidden;
+}
+
+.base-setting-group__title {
+  margin: var(--mealie-space-6) 0 var(--mealie-space-2);
+  font-size: var(--mealie-text-h3);
+  font-weight: var(--mealie-weight-heading);
+  letter-spacing: -0.01em;
+}
+
+.base-setting-group__title:first-child {
+  margin-top: 0;
+}
+
+.base-setting-group__intro {
+  margin: 0 0 var(--mealie-space-3);
+  font-size: var(--mealie-text-meta);
+  color: var(--mealie-ink-3);
 }

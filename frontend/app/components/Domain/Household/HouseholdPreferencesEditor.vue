@@ -1,66 +1,63 @@
 <template>
+  <!-- Grouped settings: each preference is a row with its explanation and a switch -->
   <div v-if="preferences">
-    <BaseCardSectionTitle :title="$t('household.household-preferences')" />
-    <div class="mb-6">
-      <v-checkbox v-model="local.privateHousehold" hide-details density="compact" :label="$t('household.private-household')" color="primary" />
-      <div class="ml-8">
-        <p class="text-subtitle-2 my-0 py-0">
+    <h2 class="base-setting-group__title">
+      {{ $t("household.household-preferences") }}
+    </h2>
+    <div class="base-setting-group">
+      <BaseSettingRow
+        v-model="local.privateHousehold"
+        :title="$t('household.private-household')"
+      >
+        <template #description>
           {{ $t("household.private-household-description") }}
-        </p>
-        <DocLink class="mt-2" link="/documentation/getting-started/faq/#how-do-private-groups-and-recipes-work" />
-      </div>
-    </div>
-    <div class="mb-6">
-      <v-checkbox v-model="local.lockRecipeEditsFromOtherHouseholds" hide-details density="compact" :label="$t('household.lock-recipe-edits-from-other-households')" color="primary" />
-      <div class="ml-8">
-        <p class="text-subtitle-2 my-0 py-0 d-flex align-center">
+          <DocLink class="mt-2" link="/documentation/getting-started/faq/#how-do-private-groups-and-recipes-work" />
+        </template>
+      </BaseSettingRow>
+      <BaseSettingRow
+        v-model="local.lockRecipeEditsFromOtherHouseholds"
+        :title="$t('household.lock-recipe-edits-from-other-households')"
+      >
+        <template #description>
           {{ $t("household.lock-recipe-edits-from-other-households-description") }}
-          <v-tooltip location="bottom">
-            <template #activator="{ props: tooltipProps }">
-              <v-icon v-bind="tooltipProps" size="small" class="ms-2">
-                {{ $globals.icons.informationOutline }}
-              </v-icon>
-            </template>
-            <span>{{ $t("household.lock-recipe-edits-from-other-households-admin-note") }}</span>
-          </v-tooltip>
-        </p>
-      </div>
-    </div>
-    <div class="mb-6">
-      <v-checkbox
+          <span class="d-block mt-1">{{ $t("household.lock-recipe-edits-from-other-households-admin-note") }}</span>
+        </template>
+      </BaseSettingRow>
+      <BaseSettingRow
         v-model="local.showAnnouncements"
-        hide-details
-        density="compact"
-        color="primary"
-        :label="$t('announcements.show-announcements-from-mealie')"
+        :title="$t('announcements.show-announcements-from-mealie')"
+        :description="$t('announcements.show-announcements-setting-description')"
       />
-      <div class="ml-8">
-        <p class="text-subtitle-2 my-0 py-0">
-          {{ $t("announcements.show-announcements-setting-description") }}
-        </p>
-      </div>
+      <BaseSettingRow :title="$t('settings.first-day-of-week')">
+        <template #control>
+          <v-select
+            v-model="local.firstDayOfWeek"
+            :items="allDays"
+            item-title="name"
+            item-value="value"
+            :aria-label="$t('settings.first-day-of-week')"
+            density="compact"
+            hide-details
+            class="household-preferences__day"
+          />
+        </template>
+      </BaseSettingRow>
     </div>
-    <v-select
-      v-model="local.firstDayOfWeek"
-      :prepend-icon="$globals.icons.calendarWeekBegin"
-      :items="allDays"
-      item-title="name"
-      item-value="value"
-      :label="$t('settings.first-day-of-week')"
-      variant="underlined"
-      flat
-    />
 
-    <BaseCardSectionTitle class="mt-5" :title="$t('household.household-recipe-preferences')">
+    <h2 class="base-setting-group__title">
+      {{ $t("household.household-recipe-preferences") }}
+    </h2>
+    <p class="base-setting-group__intro">
       {{ $t("household.default-recipe-preferences-description") }}
-    </BaseCardSectionTitle>
-    <div class="preference-container">
-      <div v-for="p in recipePreferences" :key="p.key">
-        <v-checkbox v-model="local[p.key]" hide-details density="compact" :label="p.label" color="primary" />
-        <p class="ml-8 text-subtitle-2 my-0 py-0">
-          {{ p.description }}
-        </p>
-      </div>
+    </p>
+    <div class="base-setting-group">
+      <BaseSettingRow
+        v-for="p in recipePreferences"
+        :key="p.key"
+        v-model="local[p.key]"
+        :title="p.label"
+        :description="p.description"
+      />
     </div>
   </div>
 </template>
@@ -75,8 +72,13 @@ watch(preferences, (newVal) => { if (newVal) Object.assign(local, newVal); });
 
 const i18n = useI18n();
 
+// only the on/off preferences, so each can bind straight to a switch
+type BooleanPreferenceKey = {
+  [K in keyof ReadHouseholdPreferences]-?: ReadHouseholdPreferences[K] extends boolean | undefined ? K : never
+}[keyof ReadHouseholdPreferences];
+
 type Preference = {
-  key: keyof ReadHouseholdPreferences;
+  key: BooleanPreferenceKey;
   label: string;
   description: string;
 };
@@ -142,10 +144,15 @@ const allDays = [
 </script>
 
 <style lang="css">
+/* kept for the page that used it alongside this editor */
 .preference-container {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   max-width: 600px;
+}
+
+.household-preferences__day {
+  width: 170px;
 }
 </style>
