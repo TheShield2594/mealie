@@ -1,10 +1,12 @@
 <template>
   <div class="text-center">
+    <!-- bottom centre, long enough to read and to reach an Undo; styled in design-tokens.scss -->
     <v-snackbar
       v-model="toastAlert.open"
-      location="top"
+      location="bottom"
+      class="mealie-toast"
       :color="toastAlert.color"
-      :timeout="toastAlert.timeout ?? 2000"
+      :timeout="toastAlert.timeout ?? 4000"
     >
       <v-icon
         v-if="icon"
@@ -30,6 +32,7 @@
     </v-snackbar>
     <v-snackbar
       v-model="toastLoading.open"
+      class="mealie-toast"
       content-class="py-2"
       density="compact"
       location="bottom"

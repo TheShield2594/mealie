@@ -1450,5 +1450,8 @@
     "back-to-recipes": "Back to recipes",
     "clear-search": "Clear search and filters",
     "loading": "Loading"
+  },
+  "toast": {
+    "removed-from-plan": "Removed {name} from the plan"
   }
 }

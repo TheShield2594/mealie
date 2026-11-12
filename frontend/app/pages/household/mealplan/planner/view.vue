@@ -50,12 +50,12 @@
                             isPublic: false,
                           },
                         ]"
-                        @mealplan-remove="actions.deleteOne(mealplan.id)"
+                        @mealplan-remove="removeMeal(mealplan)"
                         @mealplan-edit="editMeal(mealplan)"
                       >
                         <template v-if="!mealplan.recipe" #context-menu>
                           <MealPlanNoteMenu
-                            @mealplan-remove="actions.deleteOne(mealplan.id)"
+                            @mealplan-remove="removeMeal(mealplan)"
                             @mealplan-edit="editMeal(mealplan)"
                           />
                         </template>
@@ -91,19 +91,44 @@ import MealPlanNoteMenu from "~/components/Domain/Mealplan/MealPlanNoteMenu.vue"
 import MealPlanScaleControl from "~/components/Domain/Mealplan/MealPlanScaleControl.vue";
 import RecipeCardMobile from "~/components/Domain/Recipe/RecipeCardMobile.vue";
 import type { MealsByDate } from "~/composables/use-group-mealplan";
+import { alert } from "~/composables/use-toast";
 import type { ReadPlanEntry } from "~/lib/api/types/meal-plan";
 
-defineProps<{
+const props = defineProps<{
   mealplans: MealsByDate[];
   loading?: boolean;
   actions: ReturnType<typeof useMealplans>["actions"];
 }>();
+
+const i18n = useI18n();
 
 const dialog = reactive({
   open: false,
   entry: null as ReadPlanEntry | null,
   date: null as Date | null,
 });
+
+// Removing an entry is one tap from its menu, so it can be taken back: the toast's Undo puts the
+// same meal back on the same day (as a new entry)
+async function removeMeal(mealplan: ReadPlanEntry) {
+  await props.actions.deleteOne(mealplan.id);
+  alert.info(i18n.t("toast.removed-from-plan", { name: mealplan.recipe?.name || mealplan.title }), null, {
+    timeout: 6000,
+    action: {
+      message: i18n.t("general.undo"),
+      onClick: () => {
+        props.actions.createOne({
+          date: mealplan.date,
+          entryType: mealplan.entryType,
+          title: mealplan.title,
+          text: mealplan.text,
+          recipeId: mealplan.recipeId,
+          recipeScale: mealplan.recipeScale,
+        });
+      },
+    },
+  });
+}
 
 function editMeal(mealplan: ReadPlanEntry) {
   if (!mealplan.entryType) return;

@@ -965,3 +965,73 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
     min-height: 44px;
   }
 }
+
+// Toasts: a neutral pill at the bottom, dark on the light theme and raised on the dark one. The
+// status (success, error, ...) shows in the icon's colour, not as a full-width coloured bar, so a
+// routine "Saved" never shouts and an error reads as information. The action (Undo, View) is the
+// accent; dismissing is the quiet Close beside it
+.mealie-toast {
+  --mealie-toast-bg: #23211f;
+  --mealie-toast-ink: #f5f3ef;
+  --mealie-toast-muted: #bdb8af;
+  --mealie-toast-action: #f0a07c;
+}
+
+.v-theme--dark .mealie-toast,
+.v-theme--dark.mealie-toast {
+  --mealie-toast-bg: #2e2c29;
+}
+
+.mealie-toast .v-snackbar__wrapper {
+  min-width: min(360px, calc(100vw - 32px));
+  max-width: min(560px, calc(100vw - 32px));
+  border-radius: var(--mealie-radius-md);
+  background: var(--mealie-toast-bg) !important;
+  color: var(--mealie-toast-ink) !important;
+  box-shadow:
+    0 16px 40px -12px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 250, 240, 0.06) !important;
+}
+
+.mealie-toast .v-snackbar__content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 8px 12px 16px;
+  font-size: var(--mealie-text-body);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.mealie-toast .v-snackbar__content > .v-icon {
+  margin: 0 !important;
+  font-size: 20px;
+}
+
+.mealie-toast .v-snackbar__wrapper.bg-success .v-snackbar__content > .v-icon {
+  color: #7fcf86;
+}
+
+.mealie-toast .v-snackbar__wrapper.bg-error .v-snackbar__content > .v-icon {
+  color: #f2857f;
+}
+
+.mealie-toast .v-snackbar__wrapper.bg-warning .v-snackbar__content > .v-icon {
+  color: #f5b061;
+}
+
+.mealie-toast .v-snackbar__wrapper.bg-info .v-snackbar__content > .v-icon {
+  color: var(--mealie-toast-muted);
+}
+
+.mealie-toast .v-snackbar__actions .v-btn {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--mealie-radius-pill);
+  color: var(--mealie-toast-action) !important;
+  font-weight: 600;
+}
+
+.mealie-toast .v-progress-linear {
+  color: var(--mealie-toast-action) !important;
+}
