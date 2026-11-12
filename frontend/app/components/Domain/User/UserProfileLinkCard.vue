@@ -1,55 +1,24 @@
 <template>
-  <v-card
-    variant="outlined"
-    style="border-color: lightgrey;"
+  <!-- A settings row: the whole card is the link, with its title, a line of description and a
+       chevron. The stock illustrations and the separate blue "Manage ..." button are gone; the
+       button's text names the link for assistive tech. `image` is still accepted, unused -->
+  <RouterLink
     :to="link.to"
-    height="100%"
-    class="d-flex flex-column mt-4 pa-2"
+    class="profile-link mealie-card"
+    :aria-label="link.text"
   >
-    <div
-      v-if="$vuetify.display.smAndDown"
-      class="pa-2 mx-auto"
-    >
-      <v-img
-        width="150px"
-        height="125"
-        :src="image"
-      />
-    </div>
-    <div class="d-flex justify-space-between">
-      <div>
-        <v-card-title class="text-subtitle-1 pb-0">
-          <slot name="title" />
-        </v-card-title>
-        <div class="d-flex justify-center align-center">
-          <v-card-text class="d-flex flex-row mb-auto">
-            <slot name="default" />
-          </v-card-text>
-        </div>
-      </div>
-      <div
-        v-if="$vuetify.display.mdAndUp"
-        class="py-2 px-10 my-auto"
-      >
-        <v-img
-          width="150px"
-          height="125"
-          :src="image"
-        />
-      </div>
-    </div>
-    <v-spacer />
-    <v-divider />
-    <v-card-actions>
-      <v-btn
-        variant="text"
-        color="info"
-        :to="link.to"
-      >
-        {{ link.text }}
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+    <span class="profile-link__text">
+      <span class="profile-link__title">
+        <slot name="title" />
+      </span>
+      <span class="profile-link__description">
+        <slot name="default" />
+      </span>
+    </span>
+    <v-icon size="18" class="profile-link__chevron">
+      {{ $globals.icons.chevronRight }}
+    </v-icon>
+  </RouterLink>
 </template>
 
 <script setup lang="ts">
@@ -71,3 +40,55 @@ defineProps({
   },
 });
 </script>
+
+<style scoped>
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+  min-height: 76px;
+  margin-top: 4px;
+  padding: 16px 16px 16px 20px;
+  border-radius: var(--mealie-radius-md);
+  color: var(--mealie-ink);
+  text-decoration: none;
+  transition:
+    box-shadow var(--mealie-duration-hover) var(--mealie-ease),
+    transform var(--mealie-duration-press) var(--mealie-ease);
+}
+
+@media (hover: hover) {
+  .profile-link:hover {
+    box-shadow: inset 0 0 0 1px var(--mealie-hairline-strong);
+  }
+}
+
+.profile-link:active {
+  transform: scale(0.99);
+}
+
+.profile-link__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.profile-link__title {
+  font-size: var(--mealie-text-body);
+  font-weight: var(--mealie-weight-strong);
+}
+
+.profile-link__description {
+  font-size: var(--mealie-text-meta);
+  line-height: 1.45;
+  color: var(--mealie-ink-3);
+}
+
+.profile-link__chevron {
+  flex-shrink: 0;
+  color: var(--mealie-ink-4);
+}
+</style>

@@ -1040,3 +1040,11 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
 .v-application:has(.mealie-tabbar) .scroll-to-top {
   margin-bottom: calc(72px + env(safe-area-inset-bottom)) !important;
 }
+
+// Text, outlined and plain buttons coloured "info" read as stock Material blue links among the
+// warm palette ("Upload", "Manage ...", dialog actions). As text they take the accent ink;
+// filled info buttons are already the neutral secondary pill (see the .v-main block above).
+// Info alerts and chips keep their colour: there it carries meaning
+.v-btn.text-info {
+  color: var(--mealie-accent-ink) !important;
+}
