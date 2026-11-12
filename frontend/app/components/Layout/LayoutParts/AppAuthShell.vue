@@ -2,7 +2,10 @@
   <div class="auth-shell">
     <div class="auth-shell__column" :class="{ 'auth-shell__column--wide': wide }">
       <div class="auth-shell__brand">
-        <span class="auth-shell__mark">M</span>
+        <!-- the same mark as inside the app (or the custom logo, when one is set) -->
+        <span class="auth-shell__mark">
+          <AppBrandLogo :size="34" />
+        </span>
         <span class="auth-shell__name">{{ $appInfo.brandingName }}</span>
       </div>
 
@@ -80,19 +83,17 @@ defineProps({
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  background: rgb(var(--v-theme-primary));
-  box-shadow: none;
-  color: rgb(var(--v-theme-on-primary));
-  font-size: 28px;
-  font-weight: 700;
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: var(--mealie-surface);
+  box-shadow: var(--mealie-elevation-1);
 }
 
 .auth-shell__name {
-  font-size: 22px;
-  font-weight: 700;
+  font-family: var(--mealie-font-display);
+  font-size: 24px;
+  font-weight: 560;
   letter-spacing: -0.02em;
 }
 

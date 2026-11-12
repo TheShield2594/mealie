@@ -6,7 +6,7 @@
       size="64"
     />
   </div>
-  <AppAuthShell v-else :title="$t('user.sign-in')">
+  <AppAuthShell v-else-if="startupInfoReady" :title="$t('user.sign-in')">
     <template #above>
       <div v-if="isFirstLogin" class="login-first-time">
         <p>
@@ -81,7 +81,7 @@
           size="large"
           block
         >
-          {{ $t("user.login") }}
+          {{ $t("user.sign-in") }}
         </v-btn>
       </template>
 
@@ -111,7 +111,7 @@
       >
         {{ $t("user.register") }}
       </RouterLink>
-      <span v-else>{{ $t("user.invite-only") }}</span>
+      <span v-else :title="$t('auth.invite-only-hint')">{{ $t("user.invite-only") }} · {{ $t("auth.invite-only-hint") }}</span>
     </div>
 
     <template #footer>
@@ -193,8 +193,18 @@ const form = reactive({
   remember: true,
 });
 
+// The form shows once startup info has answered, so the first-time-login hint above it doesn't
+// arrive late and push everything down (that was a 0.21 layout shift). It never waits long:
+const startupInfoReady = ref(false);
+// never hold the form back for long: a slow or failed request just means no first-time hint
+setTimeout(() => {
+  startupInfoReady.value = true;
+}, 1200);
+
 useAsyncData(useAsyncKey(), async () => {
-  const data = await $axios.get<AppStartupInfo>("/api/app/about/startup-info");
+  const data = await $axios.get<AppStartupInfo>("/api/app/about/startup-info").finally(() => {
+    startupInfoReady.value = true;
+  });
   isDemo.value = data.data.isDemo;
   isFirstLogin.value = data.data.isFirstLogin;
 

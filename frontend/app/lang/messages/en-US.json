@@ -1479,5 +1479,8 @@
   "planner": {
     "today": "Today",
     "shop-this-week": "Shop for this week"
+  },
+  "auth": {
+    "invite-only-hint": "ask someone in your household for an invite link"
   }
 }
