@@ -22,8 +22,8 @@ from mealie.schema.household.pantry import (
     PantryUseIn,
     PantryUseOut,
 )
-from mealie.schema.recipe.recipe import Recipe
-from mealie.schema.recipe.recipe_ingredient import IngredientUnit
+from mealie.schema.recipe.recipe import RecipeOut
+from mealie.schema.recipe.recipe_ingredient import IngredientUnitOut
 from mealie.schema.response.pagination import PaginationQuery
 from mealie.services._base_service import BaseService
 from mealie.services.household_services.shopping_lists import ShoppingListService
@@ -33,7 +33,9 @@ from mealie.services.parser_services.parser_utils import UnitConverter
 EPSILON = 1e-6
 
 
-def convert_quantity(quantity: float, from_unit: IngredientUnit | None, to_unit: IngredientUnit | None) -> float | None:
+def convert_quantity(
+    quantity: float, from_unit: IngredientUnitOut | None, to_unit: IngredientUnitOut | None
+) -> float | None:
     """
     Convert a quantity between two units, using their standardized unit data.
     Returns None when the units can't be converted, e.g. grams into cups.
@@ -258,7 +260,7 @@ class PantryService(BaseService):
     # ==================================================================================================================
     # Cooking
 
-    def get_usage(self, recipe: Recipe, scale: float = 1) -> PantryUsageOut:
+    def get_usage(self, recipe: RecipeOut, scale: float = 1) -> PantryUsageOut:
         """
         Works out what cooking a recipe takes from the pantry, without changing anything.
         Each ingredient draws on the food's pantry items in use order, so it can span several of them.
@@ -276,10 +278,11 @@ class PantryService(BaseService):
         usage: list[PantryUsageItemOut] = []
         for ingredient in recipe.recipe_ingredient:
             food = ingredient.food
-            if ingredient.referenced_recipe or not food or not getattr(food, "id", None):
+            food_id = getattr(food, "id", None)
+            if ingredient.referenced_recipe or not food or not food_id:
                 continue
 
-            unit = ingredient.unit if isinstance(ingredient.unit, IngredientUnit) else None
+            unit = ingredient.unit if isinstance(ingredient.unit, IngredientUnitOut) else None
             required = ingredient.quantity * scale if ingredient.quantity else None
             base = {
                 "ingredient_reference_id": ingredient.reference_id,
@@ -288,7 +291,7 @@ class PantryService(BaseService):
                 "required_unit": unit,
             }
 
-            pantry_items = pantry_by_food.get(food.id, [])
+            pantry_items = pantry_by_food.get(food_id, [])
             if not pantry_items:
                 usage.append(PantryUsageItemOut(**base, status=PantryUsageStatus.missing))
                 continue

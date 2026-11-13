@@ -109,10 +109,8 @@
 
               <div v-if="uses.length" class="cook-uses">
                 <div v-for="(use, index) in uses" :key="index" class="cook-uses__chip">
-                  <!-- eslint-disable-next-line vue/no-v-html -- sanitized by the ingredient parser -->
-                  <span v-if="use.amount" class="cook-uses__amount" v-html="use.amount" />
-                  <!-- eslint-disable-next-line vue/no-v-html -- sanitized by the ingredient parser -->
-                  <span class="cook-uses__name" v-html="use.name" />
+                  <SafeInlineHtml v-if="use.amount" class="cook-uses__amount" :html="use.amount" />
+                  <SafeInlineHtml class="cook-uses__name" :html="use.name" />
                 </div>
               </div>
 
@@ -308,11 +306,10 @@ import { useIngredientTextParser } from "~/composables/recipes";
 import { useExtractIngredientReferences } from "~/composables/recipe-page/use-extract-ingredient-references";
 import { highlightTerms, ingredientHighlightTerms } from "~/composables/recipe-page/use-cook-mode-highlights";
 import { formatTimer, parseStepTimers } from "~/composables/recipe-page/use-step-timers";
-import type { NoUndefinedField } from "~/lib/api/types/non-generated";
-import type { Recipe, RecipeIngredient, RecipeNote } from "~/lib/api/types/recipe";
+import type { RecipeOut, RecipeIngredient, RecipeNote } from "~/lib/api/types/recipe";
 
 interface Props {
-  recipe: NoUndefinedField<Recipe>;
+  recipe: RecipeOut;
   ingredientStorageKey?: string;
 }
 const props = withDefaults(defineProps<Props>(), {

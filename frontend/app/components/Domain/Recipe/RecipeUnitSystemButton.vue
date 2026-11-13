@@ -58,11 +58,10 @@
 <script setup lang="ts">
 import { canConvertIngredient, useUnitSystem } from "~/composables/recipes";
 import type { UnitSystem } from "~/composables/recipes/unit-systems";
-import type { NoUndefinedField } from "~/lib/api/types/non-generated";
-import type { Recipe } from "~/lib/api/types/recipe";
+import type { RecipeOut } from "~/lib/api/types/recipe";
 
 const props = defineProps<{
-  recipe: NoUndefinedField<Recipe>;
+  recipe: RecipeOut;
   /** a small icon pill that fits beside the servings stepper, with the active system in its tooltip */
   compact?: boolean;
 }>();

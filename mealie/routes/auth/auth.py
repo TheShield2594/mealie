@@ -1,4 +1,5 @@
 import hmac
+import ssl
 from datetime import timedelta
 from typing import Annotated, Any
 
@@ -9,7 +10,7 @@ from fastapi.responses import RedirectResponse
 from jwt.exceptions import PyJWTError
 from pydantic import BaseModel
 from sqlalchemy.orm.session import Session
-from starlette.datastructures import URLPath
+from starlette.datastructures import URL, URLPath
 
 from mealie.core import root_logger, security
 from mealie.core.config import get_app_settings
@@ -64,6 +65,25 @@ def _register_native_oidc_client(oauth_registry, client_args: dict[str, Any]) ->
     )
 
 
+def _create_oidc_ssl_context(cafile: str | None = None, verify_strict: bool = True) -> ssl.SSLContext | None:
+    """Build an SSLContext for OIDC requests, supporting custom CA files and relaxed strict verification."""
+    if not cafile and verify_strict:
+        return None
+
+    # 1. Create a secure default client context (loads default system CAs)
+    ssl_context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH)
+
+    # 2. Relax strict X509 verification flags to pre-Python 3.13 behavior
+    if not verify_strict and hasattr(ssl, "VERIFY_X509_STRICT"):
+        ssl_context.verify_flags &= ~ssl.VERIFY_X509_STRICT
+
+    # 3. Load custom CA certificate/bundle if provided
+    if cafile:
+        ssl_context.load_verify_locations(cafile=cafile)
+
+    return ssl_context
+
+
 oauth = None
 if settings.OIDC_READY:
     from authlib.integrations.starlette_client import OAuth
@@ -78,8 +98,8 @@ if settings.OIDC_READY:
     client_args: dict[str, Any] = {"scope": scope.rstrip()}
     if settings.OIDC_CLIENT_TIMEOUT != "default":
         client_args["timeout"] = settings.OIDC_CLIENT_TIMEOUT if settings.OIDC_CLIENT_TIMEOUT != "None" else None
-    if settings.OIDC_TLS_CACERTFILE:
-        client_args["verify"] = settings.OIDC_TLS_CACERTFILE
+    if ssl_context := _create_oidc_ssl_context(settings.OIDC_TLS_CACERTFILE, settings.OIDC_VERIFY_X509_STRICT):
+        client_args["verify"] = ssl_context
 
     oauth.register(
         "oidc",
@@ -200,6 +220,21 @@ def get_token(
     return MealieAuthToken.respond(access_token, duration)
 
 
+def oidc_login_redirect_url(request: Request) -> str:
+    if not settings.PRODUCTION:
+        # in development, we want to redirect to the frontend
+        return "http://localhost:3000/login"
+
+    # Prioritize User Configuration over Request Headers.
+    base: str | URL = request.base_url
+    if not settings.is_default_base_url and settings.BASE_URL:
+        base = settings.BASE_URL
+        if "://" not in base:
+            # Without a scheme the IdP gets a relative redirect URI and rejects it (#6417).
+            base = f"{request.url.scheme}://{base}"
+    return str(URLPath("/login").make_absolute_url(base))
+
+
 @public_router.get("/oauth")
 async def oauth_login(request: Request):
     if not oauth:
@@ -208,19 +243,7 @@ async def oauth_login(request: Request):
             detail="Could not initialize OAuth client",
         )
     client = oauth.create_client("oidc")
-    redirect_url = None
-    if not settings.PRODUCTION:
-        # in development, we want to redirect to the frontend
-        redirect_url = "http://localhost:3000/login"
-    else:
-        # Prioritize User Configuration over Request Headers.
-        if not settings.is_default_base_url:
-            base = settings.BASE_URL or request.base_url
-        else:
-            base = request.base_url
-        redirect_url = URLPath("/login").make_absolute_url(base)
-
-    response: RedirectResponse = await client.authorize_redirect(request, redirect_url)
+    response: RedirectResponse = await client.authorize_redirect(request, oidc_login_redirect_url(request))
     return response
 
 

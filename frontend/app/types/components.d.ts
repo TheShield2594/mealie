@@ -20,6 +20,7 @@ import type BaseKeyValueEditor from "@/components/global/BaseKeyValueEditor.vue"
 import type BaseMenu from "@/components/global/BaseMenu.vue";
 import type BaseOverflowButton from "@/components/global/BaseOverflowButton.vue";
 import type BasePageTitle from "@/components/global/BasePageTitle.vue";
+import type BaseSettingRow from "@/components/global/BaseSettingRow.vue";
 import type BaseSkeleton from "@/components/global/BaseSkeleton.vue";
 import type ButtonLink from "@/components/global/ButtonLink.vue";
 import type ContextMenu from "@/components/global/ContextMenu.vue";
@@ -35,6 +36,7 @@ import type LanguageDialog from "@/components/global/LanguageDialog.vue";
 import type MarkdownEditor from "@/components/global/MarkdownEditor.vue";
 import type RecipeJsonEditor from "@/components/global/RecipeJsonEditor.vue";
 import type ReportTable from "@/components/global/ReportTable.vue";
+import type SafeInlineHtml from "@/components/global/SafeInlineHtml.vue";
 import type SafeMarkdown from "@/components/global/SafeMarkdown.vue";
 import type StatsCards from "@/components/global/StatsCards.vue";
 import type ToggleState from "@/components/global/ToggleState.vue";
@@ -65,6 +67,7 @@ declare module "vue" {
     BaseMenu: typeof BaseMenu;
     BaseOverflowButton: typeof BaseOverflowButton;
     BasePageTitle: typeof BasePageTitle;
+    BaseSettingRow: typeof BaseSettingRow;
     BaseSkeleton: typeof BaseSkeleton;
     ButtonLink: typeof ButtonLink;
     ContextMenu: typeof ContextMenu;
@@ -80,6 +83,7 @@ declare module "vue" {
     MarkdownEditor: typeof MarkdownEditor;
     RecipeJsonEditor: typeof RecipeJsonEditor;
     ReportTable: typeof ReportTable;
+    SafeInlineHtml: typeof SafeInlineHtml;
     SafeMarkdown: typeof SafeMarkdown;
     StatsCards: typeof StatsCards;
     ToggleState: typeof ToggleState;

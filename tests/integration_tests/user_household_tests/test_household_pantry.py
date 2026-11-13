@@ -5,13 +5,13 @@ import pytest
 from fastapi.testclient import TestClient
 
 from mealie.schema.household.group_shopping_list import ShoppingListItemCreate, ShoppingListOut
-from mealie.schema.recipe.recipe import Recipe
+from mealie.schema.recipe.recipe import RecipeDraft, RecipeOut
 from mealie.schema.recipe.recipe_ingredient import (
-    IngredientFood,
-    IngredientUnit,
+    IngredientFoodOut,
+    IngredientFoodSave,
+    IngredientUnitOut,
+    IngredientUnitSave,
     RecipeIngredient,
-    SaveIngredientFood,
-    SaveIngredientUnit,
 )
 from tests import utils
 from tests.utils import api_routes
@@ -19,13 +19,13 @@ from tests.utils.factories import random_string
 from tests.utils.fixture_schemas import TestUser
 
 
-def make_food(user: TestUser) -> IngredientFood:
-    return user.repos.ingredient_foods.create(SaveIngredientFood(name=random_string(), group_id=user.group_id))
+def make_food(user: TestUser) -> IngredientFoodOut:
+    return user.repos.ingredient_foods.create(IngredientFoodSave(name=random_string(), group_id=user.group_id))
 
 
 def make_unit(user: TestUser, standard_quantity: float | None = None, standard_unit: str | None = None):
     return user.repos.ingredient_units.create(
-        SaveIngredientUnit(
+        IngredientUnitSave(
             name=random_string(),
             group_id=user.group_id,
             standard_quantity=standard_quantity,
@@ -34,9 +34,9 @@ def make_unit(user: TestUser, standard_quantity: float | None = None, standard_u
     )
 
 
-def add_pantry_item(api_client: TestClient, user: TestUser, food: IngredientFood, **kwargs) -> dict:
+def add_pantry_item(api_client: TestClient, user: TestUser, food: IngredientFoodOut, **kwargs) -> dict:
     data = {"foodId": str(food.id), **kwargs}
-    if isinstance(unit := data.pop("unit", None), IngredientUnit):
+    if isinstance(unit := data.pop("unit", None), IngredientUnitOut):
         data["unitId"] = str(unit.id)
     for key, value in list(data.items()):
         if isinstance(value, date):
@@ -46,7 +46,7 @@ def add_pantry_item(api_client: TestClient, user: TestUser, food: IngredientFood
     return utils.assert_deserialize(response, 201)
 
 
-def is_on_hand(user: TestUser, food: IngredientFood) -> bool:
+def is_on_hand(user: TestUser, food: IngredientFoodOut) -> bool:
     user.repos.session.expire_all()
     household = user.repos.households.get_one(user.household_id)
     refreshed = user.repos.ingredient_foods.get_one(food.id)
@@ -54,7 +54,7 @@ def is_on_hand(user: TestUser, food: IngredientFood) -> bool:
     return household.slug in refreshed.households_with_ingredient_food
 
 
-def get_pantry(api_client: TestClient, user: TestUser, *foods: IngredientFood) -> list[dict]:
+def get_pantry(api_client: TestClient, user: TestUser, *foods: IngredientFoodOut) -> list[dict]:
     """The household's pantry items, limited to the given foods, since other tests share the household"""
     response = api_client.get(api_routes.households_pantry, params={"perPage": -1}, headers=user.token)
     items = utils.assert_deserialize(response, 200)["items"]
@@ -62,7 +62,7 @@ def get_pantry(api_client: TestClient, user: TestUser, *foods: IngredientFood) -
     return [item for item in items if item["foodId"] in food_ids]
 
 
-def get_list_items(api_client: TestClient, user: TestUser, shopping_list: ShoppingListOut, *foods: IngredientFood):
+def get_list_items(api_client: TestClient, user: TestUser, shopping_list: ShoppingListOut, *foods: IngredientFoodOut):
     response = api_client.get(api_routes.households_shopping_lists_item_id(shopping_list.id), headers=user.token)
     items = utils.assert_deserialize(response, 200)["listItems"]
     food_ids = {str(food.id) for food in foods}
@@ -70,12 +70,12 @@ def get_list_items(api_client: TestClient, user: TestUser, shopping_list: Shoppi
 
 
 @pytest.fixture
-def cup(unique_user: TestUser) -> IngredientUnit:
+def cup(unique_user: TestUser) -> IngredientUnitOut:
     return make_unit(unique_user, 1, "cup")
 
 
 @pytest.fixture
-def pint(unique_user: TestUser) -> IngredientUnit:
+def pint(unique_user: TestUser) -> IngredientUnitOut:
     # two cups, so conversions are easy to check
     return make_unit(unique_user, 2, "cup")
 
@@ -84,7 +84,7 @@ def pint(unique_user: TestUser) -> IngredientUnit:
 # CRUD
 
 
-def test_pantry_crud_keeps_on_hand_in_sync(api_client: TestClient, unique_user: TestUser, cup: IngredientUnit):
+def test_pantry_crud_keeps_on_hand_in_sync(api_client: TestClient, unique_user: TestUser, cup: IngredientUnitOut):
     food = make_food(unique_user)
     assert not is_on_hand(unique_user, food)
 
@@ -211,8 +211,8 @@ def test_add_checked_items_from_shopping_list(
     api_client: TestClient,
     unique_user: TestUser,
     shopping_list: ShoppingListOut,
-    cup: IngredientUnit,
-    pint: IngredientUnit,
+    cup: IngredientUnitOut,
+    pint: IngredientUnitOut,
 ):
     milk = make_food(unique_user)
     eggs = make_food(unique_user)
@@ -311,9 +311,9 @@ def test_refill_low_items(api_client: TestClient, unique_user: TestUser, shoppin
 
 @pytest.fixture
 def make_recipe(unique_user: TestUser):
-    def _make(ingredients: list[RecipeIngredient]) -> Recipe:
+    def _make(ingredients: list[RecipeIngredient]) -> RecipeOut:
         return unique_user.repos.recipes.create(
-            Recipe(
+            RecipeDraft(
                 user_id=unique_user.user_id,
                 group_id=unique_user.group_id,
                 name=random_string(),
@@ -324,7 +324,7 @@ def make_recipe(unique_user: TestUser):
     return _make
 
 
-def get_usage(api_client: TestClient, user: TestUser, recipe: Recipe, scale: float = 1) -> list[dict]:
+def get_usage(api_client: TestClient, user: TestUser, recipe: RecipeOut, scale: float = 1) -> list[dict]:
     response = api_client.get(
         api_routes.households_pantry_usage_recipe_slug(recipe.slug), params={"scale": scale}, headers=user.token
     )
@@ -332,7 +332,7 @@ def get_usage(api_client: TestClient, user: TestUser, recipe: Recipe, scale: flo
 
 
 def test_usage_draws_on_what_expires_first(
-    api_client: TestClient, unique_user: TestUser, make_recipe, cup: IngredientUnit, pint: IngredientUnit
+    api_client: TestClient, unique_user: TestUser, make_recipe, cup: IngredientUnitOut, pint: IngredientUnitOut
 ):
     flour = make_food(unique_user)
     later = add_pantry_item(
@@ -351,7 +351,7 @@ def test_usage_draws_on_what_expires_first(
     assert usage[0]["requiredQuantity"] == pytest.approx(3)
 
 
-def test_usage_statuses(api_client: TestClient, unique_user: TestUser, make_recipe, cup: IngredientUnit):
+def test_usage_statuses(api_client: TestClient, unique_user: TestUser, make_recipe, cup: IngredientUnitOut):
     grams = make_unit(unique_user, 1, "gram")
     sugar = make_food(unique_user)
     salt = make_food(unique_user)
@@ -381,7 +381,7 @@ def test_usage_statuses(api_client: TestClient, unique_user: TestUser, make_reci
 
 
 def test_usage_shares_an_item_between_ingredients(
-    api_client: TestClient, unique_user: TestUser, make_recipe, cup: IngredientUnit
+    api_client: TestClient, unique_user: TestUser, make_recipe, cup: IngredientUnitOut
 ):
     milk = make_food(unique_user)
     add_pantry_item(api_client, unique_user, milk, quantity=3, unit=cup)

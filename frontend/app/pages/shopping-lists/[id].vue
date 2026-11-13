@@ -364,7 +364,7 @@
                 flat
                 class="bg-transparent"
                 :disabled="isOffline"
-                @click.prevent="removeRecipeReferenceToList(recipe.id!)"
+                @click.prevent="removeRecipeReferenceToList(recipe.id)"
               >
                 <v-icon color="grey-lighten-1">
                   {{ $globals.icons.minus }}
@@ -380,7 +380,7 @@
                 :disabled="isOffline"
                 flat
                 class="bg-transparent"
-                @click.prevent="addRecipeReferenceToList(recipe.id!)"
+                @click.prevent="addRecipeReferenceToList(recipe.id)"
               >
                 <v-icon color="grey-lighten-1">
                   {{ $globals.icons.createAlt }}
@@ -547,6 +547,13 @@ const onlyUnlabelled = computed(() => {
   return keys.length === 1 && keys[0] === i18n.t("shopping-list.no-label");
 });
 
+// Once per streak of failures: the items stay queued and look saved, so this is the only sign they aren't
+watch(shoppingListPage.hasFailedWrites, (failed) => {
+  if (failed) {
+    alert.error(i18n.t("shopping-list.changes-not-saved"));
+  }
+});
+
 // Expand the checked section while searching, so an item that has already been
 // checked off can be found and unchecked without expanding the section by hand.
 const checkedPanel = ref<number | undefined>(undefined);
@@ -644,7 +651,7 @@ watch(isSearching, (searching) => {
     }
   }
 
-  .shopping-list-item-row .v-btn--size-small {
+  .shopping-list-item-row .v-btn--icon.v-btn--size-small {
     width: 32px;
     height: 32px;
     margin-left: 0 !important;

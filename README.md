@@ -103,7 +103,7 @@ cd mealie
 docker build -f docker/Dockerfile -t mealie-redesign .
 ```
 
-To run it for development, see the [Contributors Guide](https://nightly.mealie.io/contributors/developers-guide/code-contributions/). In short: `task setup`, then `task py` for the backend and `task ui` for the frontend.
+To run it for development, see the [Contributors Guide](https://nightly.mealie.io/contributors/developers-guide/code-contributions/). In short: `mise run setup`, then `mise run py` for the backend and `mise run ui` for the frontend.
 
 ## Versioning and Releases
 
@@ -113,7 +113,7 @@ The About page under Admin Settings checks this fork's releases, not upstream's,
 
 To cut a release:
 
-1. Bump the version in a pull request, where `N` is one more than the latest release on the same upstream version, or 1 for the first release on a new one: `task fork:version -- 3.29.0+redesign.N`
+1. Bump the version in a pull request, where `N` is one more than the latest release on the same upstream version, or 1 for the first release on a new one: `mise run fork:version 3.31.0+redesign.N`
 2. Once it is merged, create the tag on `mealie-next` in either of two ways:
    - On GitHub, open **Releases → Draft a new release**, type the new tag (`v3.29.0-redesign.N`), pick `mealie-next` as the target, generate the release notes and publish.
    - From a clone:

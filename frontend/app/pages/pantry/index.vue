@@ -235,7 +235,7 @@ import {
   usePantryRestockList,
 } from "~/composables/pantry/use-pantry";
 import type { PantryItemOut, ShoppingListSummary } from "~/lib/api/types/household";
-import type { IngredientFood, IngredientUnit } from "~/lib/api/types/recipe";
+import type { IngredientFoodOut, IngredientUnitOut } from "~/lib/api/types/recipe";
 
 definePageMeta({
   middleware: ["auth"],
@@ -291,9 +291,9 @@ const locationChoices = computed(() => {
 interface EditTarget {
   id?: string;
   foodId: string;
-  food?: IngredientFood;
+  food?: IngredientFoodOut;
   unitId?: string | null;
-  unit?: IngredientUnit | null;
+  unit?: IngredientUnitOut | null;
   quantity: number | null;
   minimumQuantity: number | null;
   location: string | { title: string; value: string } | null;

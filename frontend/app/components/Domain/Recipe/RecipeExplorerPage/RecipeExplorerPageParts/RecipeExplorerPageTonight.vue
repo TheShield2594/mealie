@@ -81,7 +81,7 @@
 import { addDays, format, isSameDay } from "date-fns";
 import { useStaticRoutes, useUserApi } from "~/composables/api";
 import { useRecipeTime } from "~/composables/recipes";
-import type { PlanEntryType, ReadPlanEntry } from "~/lib/api/types/meal-plan";
+import type { PlanEntryType, PlanEntryOut } from "~/lib/api/types/meal-plan";
 
 const DAYS_SHOWN = 5;
 // the order meals are picked in when a day has several, dinner first since that's "tonight"
@@ -98,7 +98,7 @@ const groupSlug = computed(() => route.params.groupSlug as string || auth.user.v
 const plannerLink = "/household/mealplan/planner/view";
 
 const loading = ref(true);
-const entries = ref<ReadPlanEntry[]>([]);
+const entries = ref<PlanEntryOut[]>([]);
 const start = new Date();
 
 onMounted(async () => {
@@ -110,24 +110,24 @@ onMounted(async () => {
   loading.value = false;
 });
 
-function byPriority(a: ReadPlanEntry, b: ReadPlanEntry) {
-  const rank = (entry: ReadPlanEntry) => {
+function byPriority(a: PlanEntryOut, b: PlanEntryOut) {
+  const rank = (entry: PlanEntryOut) => {
     const index = ENTRY_PRIORITY.indexOf(entry.entryType ?? "dinner");
     return index === -1 ? ENTRY_PRIORITY.length : index;
   };
   return rank(a) - rank(b);
 }
 
-function entryTitle(entry: ReadPlanEntry) {
+function entryTitle(entry: PlanEntryOut) {
   return entry.recipe?.name || entry.title || "";
 }
 
-function entryLink(entry: ReadPlanEntry) {
+function entryLink(entry: PlanEntryOut) {
   return entry.recipe?.slug ? `/g/${groupSlug.value}/r/${entry.recipe.slug}` : "";
 }
 
 /** plan entries are dated without a time, so parse them as local days rather than UTC midnight */
-function entryDate(entry: ReadPlanEntry) {
+function entryDate(entry: PlanEntryOut) {
   const [year, month, day] = entry.date.split("-").map(Number);
   return new Date(year!, month! - 1, day!);
 }

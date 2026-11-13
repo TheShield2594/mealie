@@ -87,15 +87,16 @@ import { useGroupRecipeActions } from "~/composables/use-group-recipe-actions";
 import { useGroupSelf } from "~/composables/use-groups";
 import { useHouseholdSelf } from "~/composables/use-households";
 import { useLoggedInState } from "~/composables/use-logged-in-state";
-import { alert } from "~/composables/use-toast";
+import { alert, loader } from "~/composables/use-toast";
 import type { GroupRecipeActionOut, HouseholdSummary } from "~/lib/api/types/household";
-import type { Recipe } from "~/lib/api/types/recipe";
+import type { RecipeOut } from "~/lib/api/types/recipe";
 import { isRecipeFullyPublic } from "~/lib/recipe/recipe-visibility";
 
 export interface ContextMenuIncludes {
   delete: boolean;
   edit: boolean;
   download: boolean;
+  downloadPdf: boolean;
   duplicate: boolean;
   mealplanner: boolean;
   shoppingList: boolean;
@@ -123,7 +124,7 @@ interface Props {
   slug: string;
   menuIcon?: string | null;
   name: string;
-  recipe?: Recipe;
+  recipe?: RecipeOut;
   recipeId: string;
   recipeScale?: number;
   /** render only the dialogs, for callers that trigger actions from their own buttons via `runAction` */
@@ -134,6 +135,7 @@ const props = withDefaults(defineProps<Props>(), {
     delete: true,
     edit: true,
     download: true,
+    downloadPdf: true,
     duplicate: false,
     mealplanner: true,
     shoppingList: true,
@@ -233,6 +235,13 @@ const defaultItems: { [key: string]: ContextMenuItem } = {
     event: "download",
     isPublic: false,
   },
+  downloadPdf: {
+    title: i18n.t("recipe.download-pdf"),
+    icon: $globals.icons.filePDF,
+    color: undefined,
+    event: "downloadPdf",
+    isPublic: false,
+  },
   duplicate: {
     title: i18n.t("general.duplicate"),
     icon: $globals.icons.duplicate,
@@ -283,7 +292,7 @@ menuItems.value = [...menuItems.value, ...props.leadingItems, ...props.appendIte
 // ===========================================================================
 // Context Menu Event Handler
 
-const recipeRef = ref<Recipe | undefined>(props.recipe);
+const recipeRef = ref<RecipeOut | undefined>(props.recipe);
 const recipeRefWithScale = computed(() =>
   recipeRef.value ? { scale: props.recipeScale, ...recipeRef.value } : undefined,
 );
@@ -383,6 +392,17 @@ async function handleDownloadEvent() {
   download(api.recipes.share.getZipRedirectUrl(shareToken.id), `${props.slug}.zip`);
 }
 
+async function handleDownloadPdfEvent() {
+  // The menu closes on click, so a toast is the only place left to show that a PDF is coming.
+  loader.info(i18n.t("recipe.preparing-pdf"));
+  try {
+    await download(api.recipes.getPdfUrl(props.slug), `${props.slug}.pdf`);
+  }
+  finally {
+    loader.close();
+  }
+}
+
 async function duplicateRecipe() {
   const { data } = await api.recipes.duplicateOne(props.slug, recipeName.value);
   if (data && data.slug) {
@@ -398,6 +418,7 @@ const eventHandlers: { [key: string]: () => void | Promise<any> } = {
   },
   edit: () => router.push(`/g/${groupSlug.value}/r/${props.slug}` + "?edit=true"),
   download: handleDownloadEvent,
+  downloadPdf: handleDownloadPdfEvent,
   duplicate: () => {
     recipeDuplicateDialog.value = true;
   },

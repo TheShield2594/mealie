@@ -160,7 +160,7 @@ import RecipeExplorerPageSearchFilters from "./RecipeExplorerPageSearchFilters.v
 import { useRecipeExplorerSearch, clearRecipeExplorerSearchState } from "~/composables/use-recipe-explorer-search";
 import { useLoggedInState } from "~/composables/use-logged-in-state";
 import { useCategoryStore, useHouseholdStore, usePublicCategoryStore, usePublicHouseholdStore } from "~/composables/store";
-import type { RecipeCategory } from "~/lib/api/types/recipe";
+import type { CategoryOut } from "~/lib/api/types/recipe";
 
 const emit = defineEmits<{
   ready: [];
@@ -223,7 +223,7 @@ function isOnlyCategory(id?: string | null) {
   return selectedCategories.value.length === 1 && selectedCategories.value[0]!.id === id;
 }
 
-function toggleCategory(category: RecipeCategory) {
+function toggleCategory(category: CategoryOut) {
   if (isOnlyCategory(category.id)) {
     selectedCategories.value = [];
     return;

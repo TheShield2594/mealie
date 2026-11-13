@@ -2,13 +2,17 @@
   <div
     class="plan-grid"
     :class="{ 'plan-grid--week': weekColumns }"
-    :style="weekColumns ? { '--plan-days': mealplans.length } : undefined"
+    :style="weekColumns ? { '--plan-days': dayCount } : undefined"
   >
+    <!-- a week spans the full row, so its days start on a new row below it -->
     <section
       v-for="(plan, index) in mealplans"
       :key="index"
       class="plan-grid__day mealie-card"
-      :class="{ 'plan-grid__day--today': isToday(plan.date) }"
+      :class="{
+        'plan-grid__day--today': isCurrent(plan),
+        'plan-grid__week': plan.endDate,
+      }"
     >
       <slot v-bind="{ plan, index, day: getDay(plan) }" />
     </section>
@@ -16,24 +20,30 @@
 </template>
 
 <script setup lang="ts">
-import { isSameDay } from "date-fns";
+import { endOfDay, isSameDay, isWithinInterval, startOfDay } from "date-fns";
 import type { PlanEntryType } from "~/lib/api/types/meal-plan";
 import { usePlannerWeekColumns } from "~/composables/use-planner-week-columns";
 
 const props = defineProps<{
   mealplans: MealsByDate[];
 }>();
-const weekColumns = usePlannerWeekColumns(() => props.mealplans.length);
+// weeks take a full row of their own, so only days count toward the columns
+const dayCount = computed(() => props.mealplans.filter(plan => !plan.endDate).length);
+const weekColumns = usePlannerWeekColumns(() => dayCount.value);
 const planTypeOptions = usePlanTypeOptions();
 
-function isToday(date: Date) {
-  return isSameDay(date, new Date());
+function isCurrent(plan: MealsByDate) {
+  const today = new Date();
+  return plan.endDate
+    ? isWithinInterval(today, { start: startOfDay(plan.date), end: endOfDay(plan.endDate) })
+    : isSameDay(plan.date, today);
 }
 
 function getDay(day: MealsByDate): Days {
   const forSection = (key: PlanEntryType) => day.meals.filter(({ entryType }) => entryType === key);
   return {
     date: day.date,
+    endDate: day.endDate,
     sections: planTypeOptions
       .map(({ text, value }) => ({ title: text, meals: forSection(value) }))
       .filter(({ meals }) => meals.length > 0),
@@ -96,5 +106,18 @@ function getDay(day: MealsByDate): Days {
   .plan-grid__day {
     padding: 16px 12px 12px;
   }
+}
+
+/* a week spans the full row, with a tint of the accent so it reads as one block apart from the days */
+.plan-grid__week {
+  grid-column: 1 / -1;
+  background: var(--mealie-accent-wash);
+}
+
+/* its meals are laid out side by side instead of in one long column */
+.plan-grid__week :deep(.week-meals) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  column-gap: 12px;
 }
 </style>

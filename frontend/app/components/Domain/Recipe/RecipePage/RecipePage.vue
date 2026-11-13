@@ -67,13 +67,16 @@
           </section>
 
           <section class="recipe-edit__card mealie-card">
-            <RecipePageInstructions
-              v-model="recipe.recipeInstructions"
-              v-model:assets="recipe.assets"
-              :recipe="displayedRecipe"
-              :scale="scale"
-              :ingredient-storage-key="ingredientStorageKey"
-            />
+            <!-- a form, so each step's duration field is checked before saving -->
+            <v-form ref="instructionForm" @submit.prevent>
+              <RecipePageInstructions
+                v-model="recipe.recipeInstructions"
+                v-model:assets="recipe.assets"
+                :recipe="displayedRecipe"
+                :scale="scale"
+                :ingredient-storage-key="ingredientStorageKey"
+              />
+            </v-form>
             <div class="d-flex justify-end ga-2 mt-2">
               <RecipeDialogBulkAdd @bulk-data="addStep" />
               <BaseButton @click="addStep()">
@@ -178,6 +181,7 @@
 import type { ComponentPublicInstance } from "vue";
 import { invoke, until, useElementSize, useWindowSize } from "@vueuse/core";
 import type { RouteLocationNormalized } from "vue-router";
+import type { VForm } from "~/types/auto-forms";
 import RecipePageFooter from "./RecipePageParts/RecipePageFooter.vue";
 import RecipePageIngredientToolsView from "./RecipePageParts/RecipePageIngredientToolsView.vue";
 import RecipePageInstructions from "./RecipePageParts/RecipePageInstructions.vue";
@@ -194,7 +198,7 @@ import {
 } from "~/composables/recipe-page/shared-state";
 import { useCookModeQuery, type BooleanString } from "~/composables/recipe-page/use-cook-mode-query";
 import type { NoUndefinedField } from "~/lib/api/types/non-generated";
-import type { Recipe, RecipeCategory, RecipeIngredient, RecipeTag, RecipeTool } from "~/lib/api/types/recipe";
+import type { RecipeOut, CategoryOut, RecipeIngredient, RecipeStep, TagOut, ToolOut } from "~/lib/api/types/recipe";
 import { useRouteQuery } from "~/composables/use-router";
 import { useStaticRoutes, useUserApi } from "~/composables/api";
 import { uuid4, deepCopy } from "~/composables/use-utils";
@@ -214,7 +218,7 @@ const RecipePageCookMode = defineAsyncComponent(() => import("./RecipePageParts/
 const RecipePageEditBar = defineAsyncComponent(() => import("./RecipePageParts/RecipePageEditBar.vue"));
 const RecipeDialogBulkAdd = defineAsyncComponent(() => import("~/components/Domain/Recipe/RecipeDialogBulkAdd.vue"));
 
-const recipe = defineModel<NoUndefinedField<Recipe>>({ required: true });
+const recipe = defineModel<RecipeOut>({ required: true });
 
 const auth = useMealieAuth();
 const route = useRoute();
@@ -233,7 +237,7 @@ const ingredientStorageKey = computed(() => `recipe-ingredients:${recipe.value.i
 
 const router = useRouter();
 const api = useUserApi();
-const { pageMode, setMode, isEditJSON, isCookMode, isEditMode, isParsing, toggleIsParsing, imageKey }
+const { pageMode, setMode, isEditForm, isEditJSON, isCookMode, isEditMode, isParsing, toggleIsParsing, imageKey }
   = usePageState(recipe.value.slug);
 const parseDialogUsed = ref(false);
 watch(isParsing, (parsing) => {
@@ -261,7 +265,7 @@ const { convertIngredient } = useUnitConversion();
  * mutate in place, so handing them a derived copy would silently drop edits. Conversion is
  * display-only and never reaches anything that saves.
  */
-const displayedRecipe = computed<NoUndefinedField<Recipe>>(() => {
+const displayedRecipe = computed<RecipeOut>(() => {
   if (isEditMode.value || !unitSystem.value) {
     return recipe.value;
   }
@@ -302,7 +306,7 @@ onUnmounted(() => toolbarObserver?.disconnect());
  * this is used to determine if the recipe has been changed since the last save
  * and prompts the user to save if they have unsaved changes.
  */
-const originalRecipe = ref<Recipe | null>(null);
+const originalRecipe = ref<RecipeOut | null>(null);
 const discardDialog = ref(false);
 const pendingRoute = ref<RouteLocationNormalized | null>(null);
 
@@ -320,7 +324,7 @@ function hasUnsavedChanges(): boolean {
 
 function restoreOriginalRecipe() {
   if (originalRecipe.value) {
-    recipe.value = deepCopy(originalRecipe.value) as NoUndefinedField<Recipe>;
+    recipe.value = deepCopy(originalRecipe.value);
   }
 }
 
@@ -363,7 +367,7 @@ onBeforeRouteLeave((to) => {
 
 onUnmounted(() => {
   deactivateNavigationWarning();
-  clearPageState(recipe.value.slug || "");
+  clearPageState(recipe.value.slug);
 });
 /** =============================================================
  * Set State onMounted
@@ -413,7 +417,7 @@ watch(isEditMode, (newVal) => {
 });
 
 watch(isParsing, () => {
-  if (!isParsing.value) {
+  if (!isParsing.value && paramsParse.value) {
     paramsParse.value = undefined;
   }
 });
@@ -422,7 +426,13 @@ watch(isParsing, () => {
  * Recipe Save Delete
  */
 
+const instructionForm = ref<VForm | null>(null);
+
 async function saveRecipe() {
+  if (isEditForm.value) {
+    const { valid } = (await instructionForm.value?.validate()) ?? { valid: false };
+    if (!valid) return;
+  }
   const { data, error } = await api.recipes.updateOne(route.params.slug as string, recipe.value);
   if (!error) {
     if (data?.slug && data.slug !== route.params.slug) {
@@ -430,8 +440,8 @@ async function saveRecipe() {
     }
     setMode(PageMode.VIEW);
   }
-  if (data?.slug) {
-    recipe.value = data as NoUndefinedField<Recipe>;
+  if (data) {
+    recipe.value = data;
     originalRecipe.value = deepCopy(recipe.value);
     if (data.slug !== route.params.slug) {
       router.replace(`/g/${groupSlug.value}/r/` + data.slug);
@@ -466,21 +476,25 @@ function addStep(steps: Array<string> | null = null) {
     return;
   }
 
+  // New steps use the API's nullable fields, not the populated-view helper type.
+  const instructions: RecipeStep[] = recipe.value.recipeInstructions;
+
   if (steps) {
     const cleanedSteps = steps.map((step) => {
-      return { id: uuid4(), text: step, title: "", summary: "", ingredientReferences: [], noteReferences: [] };
+      return { id: uuid4(), text: step, title: "", summary: "", ingredientReferences: [], noteReferences: [], durationSeconds: null };
     });
 
-    recipe.value.recipeInstructions.push(...cleanedSteps);
+    instructions.push(...cleanedSteps);
   }
   else {
-    recipe.value.recipeInstructions.push({
+    instructions.push({
       id: uuid4(),
       text: "",
       title: "",
       summary: "",
       ingredientReferences: [],
       noteReferences: [],
+      durationSeconds: null,
     });
   }
 }
@@ -489,7 +503,7 @@ function addStep(steps: Array<string> | null = null) {
  * RecipeChip Clicked
  */
 
-function chipClicked(item: RecipeTag | RecipeCategory | RecipeTool, itemType: string) {
+function chipClicked(item: TagOut | CategoryOut | ToolOut, itemType: string) {
   if (!item.id) {
     return;
   }

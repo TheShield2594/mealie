@@ -5,7 +5,7 @@ name: Fork Release
 # workflow is used instead.
 #
 # To cut a release:
-#   1. Bump the version in a PR: `task fork:version -- 3.28.0+redesign.2`
+#   1. Bump the version in a PR: `mise run fork:version 3.28.0+redesign.2`
 #   2. Once that is merged, either push a tag on the merge commit:
 #        git tag v3.28.0-redesign.2 && git push origin v3.28.0-redesign.2
 #      or publish a release from the GitHub UI with a new tag of that name,

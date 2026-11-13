@@ -6,6 +6,7 @@ import { isSafeRedirectTarget } from "~/lib/validators/redirect";
 
 declare module "axios" {
   interface AxiosRequestConfig {
+    /** Skips the toasts the interceptor raises on its own: the response message and the generic failure notice. */
     suppressAlert?: boolean;
     /** Skip the error toast for a 404 only, when the caller shows its own not-found state */
     suppressNotFoundAlert?: boolean;
@@ -15,7 +16,29 @@ declare module "axios" {
 /** Requests that must never trigger a refresh, or a failed login would retry itself forever. */
 const NO_REFRESH_PATHS = ["/api/auth/token", "/api/auth/refresh", "/api/auth/logout"];
 
+/** A failed read shows up as missing content, and some are expected to fail, so only writes get the generic notice. */
+const READ_METHODS = ["get", "head", "options"];
+
 type RetriableConfig = InternalAxiosRequestConfig & { _retriedAfterRefresh?: boolean };
+
+/**
+ * Whether a failed request needs the generic notice because nothing else reports it.
+ *
+ * Mealie's own errors carry a message the interceptor shows. A write rejected before it reaches Mealie
+ * (by a reverse proxy, a dropped connection, a redirect the browser cannot follow) carries none, and the
+ * user would otherwise see nothing happen. A 401 is left to the session handling.
+ */
+function isUnreportedWriteFailure(error: any, config: RetriableConfig | undefined): boolean {
+  if (!config || config.suppressAlert || axios.isCancel(error)) {
+    return false;
+  }
+
+  if (READ_METHODS.includes(config.method?.toLowerCase() ?? "get")) {
+    return false;
+  }
+
+  return error?.response?.status !== 401;
+}
 
 function getErrorDetailMessage(detail: unknown): string | null {
   if (detail && typeof detail === "object" && "message" in detail && typeof detail.message === "string") {
@@ -130,6 +153,11 @@ export default defineNuxtPlugin((nuxtApp) => {
       const notFoundHandledByCaller = error?.response?.status === 404 && config?.suppressNotFoundAlert;
       if (errorMessage && !notFoundHandledByCaller) {
         alert.error(errorMessage);
+      }
+      else if (isUnreportedWriteFailure(error, config)) {
+        alert.error(error?.response
+          ? nuxtApp.$i18n.t("general.request-failed-with-status", { status: error.response.status })
+          : nuxtApp.$i18n.t("general.request-failed-no-response"));
       }
 
       // A 401 from the logout call itself only means the token was already dead — expired, or

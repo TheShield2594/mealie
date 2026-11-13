@@ -1,7 +1,7 @@
 <template>
   <div class="plan-day-header">
     <div class="plan-day-header__text">
-      <span class="plan-day-header__weekday" :class="{ 'plan-day-header__weekday--today': today }">
+      <span class="plan-day-header__weekday" :class="{ 'plan-day-header__weekday--today': isCurrent }">
         {{ weekday }}
       </span>
       <span class="plan-day-header__date">{{ date }}</span>
@@ -11,20 +11,31 @@
 </template>
 
 <script setup lang="ts">
-import { isSameDay } from "date-fns";
+import { endOfDay, isSameDay, isWithinInterval, startOfDay } from "date-fns";
 
 interface Props {
   day: Date;
+  /** Set for a week, whose meals aren't planned for a specific day */
+  endDate?: Date | null;
 };
 const props = defineProps<Props>();
 
 const i18n = useI18n();
-const today = computed(() => isSameDay(props.day, new Date()));
+const isCurrent = computed(() => {
+  const today = new Date();
+  return props.endDate
+    ? isWithinInterval(today, { start: startOfDay(props.day), end: endOfDay(props.endDate) })
+    : isSameDay(props.day, today);
+});
+const dateFormat = computed(() => new Intl.DateTimeFormat(i18n.locale.value, { month: "long", day: "numeric" }));
+// a week shows its first and last day, e.g. "March 3 – 9"
 const date = computed(() =>
-  new Intl.DateTimeFormat(i18n.locale.value, { month: "long", day: "numeric" }).format(props.day),
+  props.endDate ? dateFormat.value.formatRange(props.day, props.endDate) : dateFormat.value.format(props.day),
 );
 const weekday = computed(() =>
-  new Intl.DateTimeFormat(i18n.locale.value, { weekday: "long" }).format(props.day),
+  props.endDate
+    ? i18n.t("meal-plan.whole-week")
+    : new Intl.DateTimeFormat(i18n.locale.value, { weekday: "long" }).format(props.day),
 );
 </script>
 

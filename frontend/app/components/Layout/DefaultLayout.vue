@@ -40,7 +40,7 @@ import { useLoggedInState } from "~/composables/use-logged-in-state";
 import type { SideBarLink } from "~/types/application-types";
 import { useCookbookPreferences } from "~/composables/use-users/preferences";
 import { useCookbookStore, usePublicCookbookStore } from "~/composables/store/use-cookbook-store";
-import type { ReadCookBook } from "~/lib/api/types/cookbook";
+import type { CookBookOut } from "~/lib/api/types/cookbook";
 import { cookbookColor } from "~/lib/cookbooks/colors";
 
 const i18n = useI18n();
@@ -87,7 +87,7 @@ watch(display.lgAndUp, (lgAndUp) => {
   sidebar.value = lgAndUp;
 });
 
-function cookbookAsLink(cookbook: ReadCookBook, index: number): SideBarLink {
+function cookbookAsLink(cookbook: CookBookOut, index: number): SideBarLink {
   return {
     key: cookbook.slug || "",
     icon: $globals.icons.pages,
@@ -112,7 +112,7 @@ const cookbookLinks = computed<SideBarLink[]>(() => {
     const householdName = cookbook.household?.name || "";
     (acc[householdName] ||= []).push(cookbook);
     return acc;
-  }, {} as Record<string, ReadCookBook[]>);
+  }, {} as Record<string, CookBookOut[]>);
 
   Object.entries(cookbooksByHousehold).forEach(([householdName, cookbooks]) => {
     if (!cookbooks.length) {
