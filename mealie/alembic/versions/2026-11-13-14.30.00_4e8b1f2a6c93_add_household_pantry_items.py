@@ -1,8 +1,8 @@
 """add household pantry items
 
-Revision ID: f7677d17b953
-Revises: a91720b8a7e7
-Create Date: 2026-10-30 17:05:37.394314
+Revision ID: 4e8b1f2a6c93
+Revises: f3a1ae61d772
+Create Date: 2026-11-13 14:30:00.000000
 
 """
 
@@ -13,8 +13,8 @@ import mealie.db.migration_types
 from mealie.db.models._model_utils.guid import GUID
 
 # revision identifiers, used by Alembic.
-revision = "f7677d17b953"
-down_revision: str | None = "a91720b8a7e7"
+revision = "4e8b1f2a6c93"
+down_revision: str | None = "f3a1ae61d772"
 branch_labels: str | tuple[str, ...] | None = None
 depends_on: str | tuple[str, ...] | None = None
 
