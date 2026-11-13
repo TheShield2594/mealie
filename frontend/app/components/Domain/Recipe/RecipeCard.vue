@@ -51,6 +51,7 @@
                   delete: false,
                   edit: false,
                   download: true,
+                  downloadPdf: true,
                   mealplanner: true,
                   shoppingList: true,
                   print: false,

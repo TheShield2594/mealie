@@ -172,20 +172,20 @@
         <v-row v-if="!useMobileCards">
           <v-col
             v-for="recipe in recipes"
-            :key="recipe.id!"
+            :key="recipe.id"
             :sm="6"
             :md="4"
             :lg="3"
             :xl="3"
           >
             <RecipeCard
-              :name="recipe.name!"
+              :name="recipe.name"
               :description="recipe.description!"
-              :slug="recipe.slug!"
+              :slug="recipe.slug"
               :rating="recipe.rating!"
               :image="recipe.image!"
-              :tags="recipe.tags!"
-              :recipe-id="recipe.id!"
+              :tags="recipe.tags"
+              :recipe-id="recipe.id"
               :meta="recipe"
             />
           </v-col>
@@ -196,7 +196,7 @@
         >
           <v-col
             v-for="recipe in recipes"
-            :key="recipe.id!"
+            :key="recipe.id"
             cols="12"
             :sm="singleColumn ? '12' : '12'"
             :md="singleColumn ? '12' : '6'"
@@ -204,13 +204,13 @@
             :xl="singleColumn ? '12' : '3'"
           >
             <RecipeCardMobile
-              :name="recipe.name!"
+              :name="recipe.name"
               :description="recipe.description!"
-              :slug="recipe.slug!"
+              :slug="recipe.slug"
               :rating="recipe.rating!"
               :image="recipe.image!"
-              :tags="recipe.tags!"
-              :recipe-id="recipe.id!"
+              :tags="recipe.tags"
+              :recipe-id="recipe.id"
               :meta="recipe"
             />
           </v-col>
@@ -248,7 +248,7 @@ import RecipeCard from "./RecipeCard.vue";
 import RecipeCardMobile from "./RecipeCardMobile.vue";
 import { useLoggedInState } from "~/composables/use-logged-in-state";
 import { useLazyRecipes } from "~/composables/recipes";
-import type { Recipe } from "~/lib/api/types/recipe";
+import type { RecipeSummary } from "~/lib/api/types/recipe";
 import { useUserSortPreferences } from "~/composables/use-users/preferences";
 import type { RecipeSearchQuery } from "~/lib/api/user/recipes/recipe";
 
@@ -262,7 +262,7 @@ interface Props {
   hideIcon?: boolean;
   title?: string | null;
   singleColumn?: boolean;
-  recipes?: Recipe[];
+  recipes?: RecipeSummary[];
   query?: RecipeSearchQuery | null;
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -277,8 +277,8 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  replaceRecipes: [recipes: Recipe[]];
-  appendRecipes: [recipes: Recipe[]];
+  replaceRecipes: [recipes: RecipeSummary[]];
+  appendRecipes: [recipes: RecipeSummary[]];
 }>();
 
 const display = useDisplay();

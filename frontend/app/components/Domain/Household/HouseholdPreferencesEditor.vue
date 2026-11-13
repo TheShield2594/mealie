@@ -11,7 +11,7 @@
       >
         <template #description>
           {{ $t("household.private-household-description") }}
-          <DocLink class="mt-2" link="/documentation/getting-started/faq/#how-do-private-groups-and-recipes-work" />
+          <DocLink class="mt-2" link="/documentation/getting-started/faq/#how-do-private-groups-households-and-recipes-work" />
         </template>
       </BaseSettingRow>
       <BaseSettingRow
@@ -63,9 +63,9 @@
 </template>
 
 <script setup lang="ts">
-import type { ReadHouseholdPreferences } from "~/lib/api/types/household";
+import type { HouseholdPreferencesOut } from "~/lib/api/types/household";
 
-const preferences = defineModel<ReadHouseholdPreferences>({ required: true });
+const preferences = defineModel<HouseholdPreferencesOut>({ required: true });
 const local = reactive({ ...preferences.value });
 watch(local, (newVal) => { preferences.value = { ...newVal }; });
 watch(preferences, (newVal) => { if (newVal) Object.assign(local, newVal); });
@@ -74,8 +74,8 @@ const i18n = useI18n();
 
 // only the on/off preferences, so each can bind straight to a switch
 type BooleanPreferenceKey = {
-  [K in keyof ReadHouseholdPreferences]-?: ReadHouseholdPreferences[K] extends boolean | undefined ? K : never
-}[keyof ReadHouseholdPreferences];
+  [K in keyof HouseholdPreferencesOut]-?: HouseholdPreferencesOut[K] extends boolean | undefined ? K : never
+}[keyof HouseholdPreferencesOut];
 
 type Preference = {
   key: BooleanPreferenceKey;

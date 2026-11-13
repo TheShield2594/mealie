@@ -1,7 +1,7 @@
 import { useLocalStorage } from "@vueuse/core";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 import type { PantryItemOut, PantryUsageItemOut, PantryUsageStatus } from "~/lib/api/types/household";
-import type { IngredientUnit } from "~/lib/api/types/recipe";
+import type { IngredientUnitOut } from "~/lib/api/types/recipe";
 
 /** Items expiring within this many days are flagged as soon */
 export const EXPIRES_SOON_DAYS = 3;
@@ -16,7 +16,7 @@ export function formatPantryQuantity(quantity: number): string {
 }
 
 /** The unit's name to show next to a quantity, singular or plural to match it */
-export function pantryUnitName(quantity: number, unit?: IngredientUnit | null): string {
+export function pantryUnitName(quantity: number, unit?: IngredientUnitOut | null): string {
   if (!unit) {
     return "";
   }
@@ -32,7 +32,7 @@ export function pantryUnitName(quantity: number, unit?: IngredientUnit | null): 
 }
 
 /** "2 cups", "1 kg", or an empty string when the amount isn't tracked */
-export function formatPantryAmount(quantity: number | null | undefined, unit?: IngredientUnit | null): string {
+export function formatPantryAmount(quantity: number | null | undefined, unit?: IngredientUnitOut | null): string {
   if (quantity === null || quantity === undefined) {
     return "";
   }

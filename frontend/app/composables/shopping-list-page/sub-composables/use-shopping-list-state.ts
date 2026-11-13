@@ -50,7 +50,7 @@ export function useShoppingListState() {
   const recipeMap = computed<Map<string, RecipeSummary>>((previous) => {
     const next = new Map(
       (shoppingList.value?.recipeReferences?.map(ref => ref.recipe) ?? [])
-        .map(recipe => [recipe.id || "", recipe]),
+        .map(recipe => [recipe.id, recipe]),
     );
     if (previous && JSON.stringify([...previous]) === JSON.stringify([...next])) {
       return previous;

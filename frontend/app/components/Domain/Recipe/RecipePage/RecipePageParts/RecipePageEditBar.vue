@@ -64,10 +64,9 @@
 
 <script setup lang="ts">
 import { usePageState } from "~/composables/recipe-page/shared-state";
-import type { NoUndefinedField } from "~/lib/api/types/non-generated";
-import type { Recipe } from "~/lib/api/types/recipe";
+import type { RecipeOut } from "~/lib/api/types/recipe";
 
-const props = defineProps<{ recipe: NoUndefinedField<Recipe> }>();
+const props = defineProps<{ recipe: RecipeOut }>();
 
 defineEmits<{
   save: [];

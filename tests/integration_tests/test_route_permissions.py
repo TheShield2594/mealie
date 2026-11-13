@@ -7,6 +7,7 @@ from fastapi.routing import APIRoute, iter_route_contexts
 from fastapi.testclient import TestClient
 
 from mealie.app import app
+from mealie.lang.providers import get_locale_provider
 from mealie.routes._base.permissions import Perm, RequirePermission
 from mealie.schema.user.user import PrivateUser
 from tests.utils.fixture_schemas import TestUser
@@ -66,9 +67,22 @@ EXPECTED_ROUTE_PERMISSIONS: dict[Perm, set[str]] = {
         "POST    /api/households/invitations/email",
     },
     Perm.HOUSEHOLD_MANAGE: {
+        "GET     /api/households/events/notifications",
+        "POST    /api/households/events/notifications",
+        "GET     /api/households/events/notifications/{item_id}",
+        "PUT     /api/households/events/notifications/{item_id}",
+        "DELETE  /api/households/events/notifications/{item_id}",
+        "POST    /api/households/events/notifications/{item_id}/test",
         "POST    /api/households/mealplans/ical",
         "DELETE  /api/households/mealplans/ical",
         "PUT     /api/households/preferences",
+        "GET     /api/households/webhooks",
+        "POST    /api/households/webhooks",
+        "POST    /api/households/webhooks/rerun",
+        "GET     /api/households/webhooks/{item_id}",
+        "PUT     /api/households/webhooks/{item_id}",
+        "DELETE  /api/households/webhooks/{item_id}",
+        "POST    /api/households/webhooks/{item_id}/test",
     },
 }
 
@@ -105,7 +119,10 @@ def call_route(api_client: TestClient, route: str, user: TestUser):
 
 @pytest.mark.parametrize("route", EXPECTED_ROUTES)
 def test_route_rejects_user_without_permission(api_client: TestClient, unprivileged_user: TestUser, route: str):
-    assert call_route(api_client, route, unprivileged_user).status_code == 403
+    response = call_route(api_client, route, unprivileged_user)
+    assert response.status_code == 403
+    # the frontend only shows an error toast when the response carries a message
+    assert response.json()["detail"]["message"] == get_locale_provider().t("exceptions.permission-denied")
 
 
 @pytest.mark.parametrize("route", EXPECTED_ROUTES)
@@ -124,13 +141,14 @@ def test_route_allows_user_with_permission(api_client: TestClient, unique_user: 
 )
 def test_require_permission_checks_user_flag(perm: Perm, flag: str):
     check = RequirePermission(perm)
+    translator = get_locale_provider()
 
-    check(PrivateUser.model_construct(**{flag: True}))
+    check(PrivateUser.model_construct(**{flag: True}), translator)
 
     with pytest.raises(HTTPException) as exc_info:
-        check(PrivateUser.model_construct(**{flag: False}))
+        check(PrivateUser.model_construct(**{flag: False}), translator)
     assert exc_info.value.status_code == 403
 
 
 def test_require_any_valid_user_allows_any_user():
-    RequirePermission(Perm.ANY_VALID_USER)(PrivateUser.model_construct())
+    RequirePermission(Perm.ANY_VALID_USER)(PrivateUser.model_construct(), get_locale_provider())

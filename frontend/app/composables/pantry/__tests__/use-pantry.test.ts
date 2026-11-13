@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import type { PantryItemOut, PantryUsageItemOut } from "~/lib/api/types/household";
-import type { IngredientUnit } from "~/lib/api/types/recipe";
+import type { IngredientUnitOut } from "~/lib/api/types/recipe";
 import { buildPantryUsageRows, expiryState, formatPantryAmount, groupPantryItems, isLow, matchesPantrySearch } from "../use-pantry";
 
 function item(overrides: Partial<PantryItemOut> & { name?: string } = {}): PantryItemOut {
@@ -15,7 +15,7 @@ function item(overrides: Partial<PantryItemOut> & { name?: string } = {}): Pantr
   };
 }
 
-const cup: IngredientUnit = { id: "cup", name: "cup", pluralName: "cups", abbreviation: "c" };
+const cup: IngredientUnitOut = { id: "cup", name: "cup", pluralName: "cups", abbreviation: "c" };
 
 describe("formatPantryAmount", () => {
   test("leaves untracked amounts empty", () => {

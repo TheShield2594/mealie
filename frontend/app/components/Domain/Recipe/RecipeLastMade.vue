@@ -138,11 +138,11 @@ import { formatISO } from "date-fns";
 import { useUserApi } from "~/composables/api";
 import { alert } from "~/composables/use-toast";
 import { useHouseholdSelf } from "~/composables/use-households";
-import type { Recipe, RecipeTimelineEventIn, RecipeTimelineEventOut } from "~/lib/api/types/recipe";
+import type { RecipeOut, RecipeTimelineEventIn, RecipeTimelineEventOut } from "~/lib/api/types/recipe";
 import type { VForm } from "~/types/auto-forms";
 import RecipePantryUsage from "~/components/Domain/Recipe/RecipePantryUsage.vue";
 
-const props = withDefaults(defineProps<{ recipe: Recipe; scale?: number }>(), { scale: 1 });
+const props = withDefaults(defineProps<{ recipe: RecipeOut; scale?: number }>(), { scale: 1 });
 const emit = defineEmits<{
   eventCreated: [event: RecipeTimelineEventOut];
 }>();
@@ -159,7 +159,7 @@ const newTimelineEvent = ref<RecipeTimelineEventIn>({
   eventType: "comment",
   eventMessage: "",
   timestamp: undefined,
-  recipeId: props.recipe?.id || "",
+  recipeId: props.recipe.id,
 });
 const newTimelineEventImage = ref<Blob | File>();
 const newTimelineEventImageName = ref<string>("");
@@ -173,7 +173,7 @@ const lastMade = ref<string>();
 const lastMadeReady = ref(false);
 onMounted(async () => {
   if (auth.user?.value?.householdSlug) {
-    const { data } = await userApi.households.getCurrentUserHouseholdRecipe(props.recipe.slug || "");
+    const { data } = await userApi.households.getCurrentUserHouseholdRecipe(props.recipe.slug);
     lastMade.value = data?.lastMade;
   }
 
@@ -238,7 +238,7 @@ function resetMadeThisForm() {
 }
 
 async function createTimelineEvent() {
-  if (!(newTimelineEventTimestampString.value && props.recipe?.id && props.recipe?.slug)) {
+  if (!newTimelineEventTimestampString.value) {
     return;
   }
 

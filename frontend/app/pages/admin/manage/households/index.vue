@@ -123,7 +123,7 @@ import { fieldTypes } from "~/composables/forms";
 import { useGroups } from "~/composables/use-groups";
 import { useAdminHouseholds } from "~/composables/use-households";
 import { validators } from "~/composables/use-validators";
-import type { HouseholdInDB } from "~/lib/api/types/household";
+import type { HouseholdOut } from "~/lib/api/types/household";
 import type { VForm } from "~/types/auto-forms";
 
 definePageMeta({
@@ -184,7 +184,7 @@ function openDialog() {
 
 const router = useRouter();
 
-function handleRowClick(item: HouseholdInDB) {
+function handleRowClick(item: HouseholdOut) {
   router.push(`/admin/manage/households/${item.id}`);
 }
 

@@ -72,6 +72,7 @@
             :use-items="{
               edit: false,
               download: isOwnGroup,
+              downloadPdf: isOwnGroup,
               duplicate: isOwnGroup,
               mealplanner: isOwnGroup,
               shoppingList: isOwnGroup,
@@ -97,7 +98,7 @@
         :class="{ 'recipe-hero__photo--zoom': showImage }"
         :disabled="!showImage"
         :aria-label="recipe.name || ''"
-        @click="lightboxOpen = true"
+        @click="openLightbox"
       >
         <img
           v-if="showImage"
@@ -110,8 +111,8 @@
       <RecipeImageLightbox
         v-if="lightboxOpen"
         v-model="lightboxOpen"
-        :image-url="recipeFullImageUrl"
-        :image-alt="recipe.name || ''"
+        v-model:index="lightboxIndex"
+        :items="lightboxItems"
       />
 
       <div class="recipe-hero__info">
@@ -127,7 +128,7 @@
           class="recipe-hero__description"
         />
 
-        <div v-if="stats.length || showRating" class="recipe-hero__stats">
+        <div v-if="stats.length || showRating || owner" class="recipe-hero__stats">
           <div v-for="stat in stats" :key="stat.label" class="recipe-hero__stat">
             <span class="recipe-hero__stat-label">{{ stat.label }}</span>
             <span class="recipe-hero__stat-value">{{ stat.value }}</span>
@@ -142,6 +143,13 @@
               :recipe-id="recipe.id!"
               :slug="recipe.slug!"
             />
+          </div>
+          <div v-if="owner" class="recipe-hero__stat">
+            <span class="recipe-hero__stat-label">{{ $t("general.owner") }}</span>
+            <span class="recipe-hero__stat-value recipe-hero__owner">
+              <UserAvatar :user-id="owner.id" :tooltip="false" size="22" />
+              {{ owner.fullName }}
+            </span>
           </div>
         </div>
 
@@ -177,20 +185,23 @@
 <script setup lang="ts">
 import RecipeContextMenuContent from "~/components/Domain/Recipe/RecipeContextMenu/RecipeContextMenuContent.vue";
 import RecipeImageLightbox from "~/components/Domain/Recipe/RecipeImageLightbox.vue";
+import { useRecipeLightboxItems } from "~/composables/recipe-page/use-recipe-lightbox-items";
 import RecipeLastMade from "~/components/Domain/Recipe/RecipeLastMade.vue";
 import RecipeRating from "~/components/Domain/Recipe/RecipeRating.vue";
 import RecipeTimelineBadge from "~/components/Domain/Recipe/RecipeTimelineBadge.vue";
+import UserAvatar from "~/components/Domain/User/UserAvatar.vue";
+import { useUserStore } from "~/composables/store/use-user-store";
+import type { UserSummary } from "~/lib/api/types/user";
 import { useStaticRoutes, useUserApi } from "~/composables/api";
 import { useRecipePermissions, useRecipeTime } from "~/composables/recipes";
 import { PageMode, usePageState, usePageUser } from "~/composables/recipe-page/shared-state";
 import { useLoggedInState } from "~/composables/use-logged-in-state";
 import { useUserSelfRatings } from "~/composables/use-users";
 import type { HouseholdSummary } from "~/lib/api/types/household";
-import type { NoUndefinedField } from "~/lib/api/types/non-generated";
-import type { Recipe } from "~/lib/api/types/recipe";
+import type { RecipeOut } from "~/lib/api/types/recipe";
 
 interface Props {
-  recipe: NoUndefinedField<Recipe>;
+  recipe: RecipeOut;
   scale?: number;
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -202,6 +213,10 @@ const auth = useMealieAuth();
 const route = useRoute();
 const display = useDisplay();
 const { isOwnGroup } = useLoggedInState();
+
+// who added the recipe; group members aren't visible outside the group, so don't fetch them
+const users = isOwnGroup.value ? useUserStore().store : ref<UserSummary[]>([]);
+const owner = computed(() => users.value.find(u => u.id === props.recipe.userId));
 const { user } = usePageUser();
 const { imageKey, setMode } = usePageState(props.recipe.slug);
 const { recipeImage, recipeSmallImage } = useStaticRoutes();
@@ -250,6 +265,20 @@ async function toggleFavorite() {
 /* ---------- Image ---------- */
 const imageFailed = ref(false);
 const lightboxOpen = ref(false);
+const lightboxIndex = ref(0);
+
+// the photo first, then the recipe's image assets, so the lightbox can page through them
+const { buildItems } = useRecipeLightboxItems();
+const lightboxItems = computed(() => buildItems(props.recipe.id, {
+  heroUrl: recipeFullImageUrl.value,
+  heroAlt: props.recipe.name,
+  assets: props.recipe.assets,
+}));
+
+function openLightbox() {
+  lightboxIndex.value = 0;
+  lightboxOpen.value = true;
+}
 const showImage = computed(() => !!props.recipe.image && !imageFailed.value);
 const recipeFullImageUrl = computed(() => recipeImage(props.recipe.id, props.recipe.image, imageKey.value));
 const recipeImageUrl = computed(() =>
@@ -408,6 +437,12 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 .recipe-hero__stat:first-child {
   padding-left: 0;
   border-left: 0;
+}
+
+.recipe-hero__owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .recipe-hero__stat-label {

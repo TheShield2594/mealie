@@ -12,6 +12,7 @@
       :submit-text="$t('general.save')"
       :submit-disabled="!editTarget.queryFilterString"
       can-submit
+      disable-submit-on-enter
       @submit="editCookbook"
     >
       <v-card-text>
@@ -33,16 +34,21 @@
           <h1 class="mealie-page__title">
             {{ book.name }}
           </h1>
-          <p v-if="book.description" class="cookbook-description">
-            {{ book.description }}
-          </p>
+          <SafeMarkdown v-if="book.description" :source="book.description" class="cookbook-description" />
         </div>
-        <div v-if="canEdit" class="mealie-page__actions">
-          <button type="button" class="mealie-pill" @click="handleEditCookbook">
+        <div v-if="headerButtons.length" class="mealie-page__actions">
+          <button
+            v-for="btn in headerButtons"
+            :key="btn.event"
+            type="button"
+            class="mealie-pill"
+            :disabled="btn.loading"
+            @click="btn.event === 'edit' ? handleEditCookbook() : downloadPdf()"
+          >
             <v-icon size="16">
-              {{ $globals.icons.edit }}
+              {{ btn.icon }}
             </v-icon>
-            {{ $t("general.edit") }}
+            {{ btn.text }}
           </button>
         </div>
       </header>
@@ -75,8 +81,12 @@ import RecipeCardSection from "@/components/Domain/Recipe/RecipeCardSection.vue"
 import { useCookbookStore } from "~/composables/store/use-cookbook-store";
 import { useCookbook } from "~/composables/use-group-cookbooks";
 import { useLoggedInState } from "~/composables/use-logged-in-state";
-import type { ReadCookBook } from "~/lib/api/types/cookbook";
+import type { CookBookOut } from "~/lib/api/types/cookbook";
 import CookbookEditor from "~/components/Domain/Cookbook/CookbookEditor.vue";
+import type { ButtonOption } from "~/components/global/BaseMenu.vue";
+import { useDownloader } from "~/composables/api/use-downloader";
+import { loader } from "~/composables/use-toast";
+import { useUserApi } from "~/composables/api";
 
 const auth = useMealieAuth();
 const { isOwnGroup } = useLoggedInState();
@@ -101,11 +111,46 @@ const isOwnHousehold = computed(() => {
 });
 const canEdit = computed(() => isOwnGroup.value && isOwnHousehold.value);
 
+const api = useUserApi();
+const download = useDownloader();
+const i18n = useI18n();
+const { $globals } = useNuxtApp();
+
+const downloadingPdf = ref(false);
+
+const headerButtons = computed<ButtonOption[]>(() => [
+  ...(isOwnGroup.value
+    ? [{
+        icon: $globals.icons.download,
+        text: downloadingPdf.value ? i18n.t("recipe.preparing-pdf") : i18n.t("recipe.download-pdf"),
+        event: "download-pdf",
+        loading: downloadingPdf.value,
+      }]
+    : []),
+  ...(canEdit.value ? [{ icon: $globals.icons.edit, text: i18n.t("general.edit"), event: "edit" }] : []),
+]);
+
+async function downloadPdf() {
+  if (!book.value || downloadingPdf.value) {
+    return;
+  }
+  downloadingPdf.value = true;
+  // A big cookbook takes a while to render, and the browser shows nothing until the file arrives.
+  loader.info(i18n.t("recipe.preparing-pdf"));
+  try {
+    await download(api.cookbooks.getPdfUrl(book.value.id), `${book.value.slug}.pdf`);
+  }
+  finally {
+    downloadingPdf.value = false;
+    loader.close();
+  }
+}
+
 const dialogStates = reactive({
   edit: false,
 });
 
-const editTarget = ref<ReadCookBook | null>(null);
+const editTarget = ref<CookBookOut | null>(null);
 function handleEditCookbook() {
   dialogStates.edit = true;
   editTarget.value = book.value;

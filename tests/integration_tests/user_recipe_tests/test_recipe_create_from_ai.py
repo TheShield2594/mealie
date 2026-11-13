@@ -22,7 +22,7 @@ from mealie.schema.openai.recipe import (
     OpenAIRecipeNotes,
     OpenAIRecipeNutrition,
 )
-from mealie.schema.recipe.recipe_category import TagSave
+from mealie.schema.recipe.recipe_organizers import TagSave
 from mealie.services.openai import OpenAINotEnabledException, OpenAIService
 from mealie.services.recipe.organizer_resolver import OrganizerResolver
 from mealie.services.recipe.recipe_data_service import RecipeDataService
@@ -209,6 +209,8 @@ def test_create_from_images(
     assert ai.requested_schemas[:2] == ["OpenAICompiledSource", "OpenAIRecipe"]
 
     recipe = api_client.get(api_routes.recipes_slug(slug), headers=unique_user.token).json()
+    # the uploaded image is the recipe's cover, not just a file on disk
+    assert recipe["image"]
     r = api_client.get(
         api_routes.media_recipes_recipe_id_images_file_name(recipe["id"], "original.webp"),
         headers=unique_user.token,

@@ -11,7 +11,7 @@ from mealie.db.models.household import HouseholdPantryItem
 from mealie.db.models.recipe import IngredientFoodModel, IngredientFoodSubstitutionModel, IngredientUnitModel
 from mealie.schema._mealie import MealieModel
 from mealie.schema._mealie.mealie_model import UpdatedAtField
-from mealie.schema.recipe.recipe_ingredient import IngredientFood, IngredientUnit
+from mealie.schema.recipe.recipe_ingredient import IngredientFoodOut, IngredientUnitOut
 from mealie.schema.response.pagination import PaginationBase
 
 # ==================================================================================================================
@@ -51,8 +51,8 @@ class PantryItemSave(PantryItemCreate):
 
 class PantryItemOut(PantryItemSave):
     id: UUID4
-    food: IngredientFood
-    unit: IngredientUnit | None = None
+    food: IngredientFoodOut
+    unit: IngredientUnitOut | None = None
 
     created_at: datetime | None = None
     updated_at: datetime | None = UpdatedAtField(None)
@@ -116,9 +116,9 @@ class PantryUsageStatus(StrEnum):
 
 class PantryUsageItemOut(MealieModel):
     ingredient_reference_id: UUID4 | None = None
-    food: IngredientFood
+    food: IngredientFoodOut
     required_quantity: float | None = None
-    required_unit: IngredientUnit | None = None
+    required_unit: IngredientUnitOut | None = None
     pantry_item: PantryItemOut | None = None
     quantity: float | None = None
     """How much to take from the pantry item, in its own unit"""

@@ -30,11 +30,11 @@
 
 <script setup lang="ts">
 import { useStaticRoutes, useUserApi } from "~/composables/api";
-import type { ReadCookBook } from "~/lib/api/types/cookbook";
+import type { CookBookOut } from "~/lib/api/types/cookbook";
 import type { RecipeSummary } from "~/lib/api/types/recipe";
 
 interface Props {
-  cookbook: ReadCookBook;
+  cookbook: CookBookOut;
   to: string;
   color: string;
 }

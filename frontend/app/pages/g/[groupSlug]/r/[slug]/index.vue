@@ -65,7 +65,7 @@ import { useAsyncKey } from "~/composables/use-utils";
 import RecipePage from "~/components/Domain/Recipe/RecipePage/RecipePage.vue";
 import { usePublicExploreApi } from "~/composables/api/api-client";
 import { useRecipe } from "~/composables/recipes";
-import type { Recipe } from "~/lib/api/types/recipe";
+import type { RecipeOut } from "~/lib/api/types/recipe";
 
 const auth = useMealieAuth();
 const { isOwnGroup } = useLoggedInState();
@@ -78,7 +78,7 @@ const slug = route.params.slug as string;
 
 const groupSlug = computed(() => route.params.groupSlug as string || auth.user.value?.groupSlug || "");
 
-const recipe = ref<Recipe | null>(null);
+const recipe = ref<RecipeOut | null>(null);
 const notFound = ref(false);
 function loadRecipe() {
   const { recipe: data, loading } = useRecipe(slug);
