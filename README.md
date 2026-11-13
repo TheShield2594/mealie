@@ -33,7 +33,7 @@
 
 # About This Fork
 
-This is a fork of [Mealie](https://github.com/mealie-recipes/mealie), the self-hosted recipe manager, meal planner and shopping list. It tracks upstream **v3.29.0** and replaces the Material styling of the web app with a quieter, Apple-inspired design: a warm neutral palette, the system font and a terracotta accent, in light and dark mode.
+This is a fork of [Mealie](https://github.com/mealie-recipes/mealie), the self-hosted recipe manager, meal planner and shopping list. It tracks upstream **v3.31.0** and replaces the Material styling of the web app with a quieter, Apple-inspired design: a warm neutral palette, the system font and a terracotta accent, in light and dark mode.
 
 The backend, API, database and import tools are upstream Mealie. Apart from the default theme colours, nothing behaves differently on the server, so existing data and integrations keep working.
 
@@ -144,7 +144,7 @@ Mealie is created and maintained by [Hayden](https://github.com/hay-kot) and the
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [latest-release-shield]: https://img.shields.io/github/v/release/TheShield2594/mealie?style=flat-square&label=latest%20release
 [latest-release-url]: https://github.com/TheShield2594/mealie/releases
-[upstream-version-shield]: https://img.shields.io/badge/based%20on-Mealie%20v3.29.0-C4502A?style=flat-square
+[upstream-version-shield]: https://img.shields.io/badge/based%20on-Mealie%20v3.31.0-C4502A?style=flat-square
 [upstream-url]: https://github.com/mealie-recipes/mealie
 [last-commit-shield]: https://img.shields.io/github/last-commit/TheShield2594/mealie/mealie-next?style=flat-square
 [last-commit-url]: https://github.com/TheShield2594/mealie/commits/mealie-next
