@@ -1,8 +1,29 @@
 <template>
   <div>
+    <!-- Reading view: categories and tags as one quiet row of tags, not two cards -->
+    <div
+      v-if="!isEditForm && (recipe.recipeCategory.length > 0 || recipe.tags.length > 0)"
+      class="recipe-filed-under"
+    >
+      <span class="recipe-filed-under__label">{{ $t("recipe-page.filed-under") }}</span>
+      <RecipeChips
+        v-if="recipe.recipeCategory.length > 0"
+        class="recipe-filed-under__chips"
+        :items="recipe.recipeCategory"
+        v-bind="$attrs"
+      />
+      <RecipeChips
+        v-if="recipe.tags.length > 0"
+        class="recipe-filed-under__chips"
+        :items="recipe.tags"
+        url-prefix="tags"
+        v-bind="$attrs"
+      />
+    </div>
+
     <!-- Recipe Categories -->
     <v-card
-      v-if="recipe.recipeCategory.length > 0 || isEditForm"
+      v-if="isEditForm"
       :class="{ 'mt-10': !isEditForm }"
     >
       <v-card-title class="py-2">
@@ -27,7 +48,7 @@
 
     <!-- Recipe Tags -->
     <v-card
-      v-if="recipe.tags.length > 0 || isEditForm"
+      v-if="isEditForm"
       class="mt-4"
     >
       <v-card-title class="py-2">
@@ -96,3 +117,29 @@ import RecipeAssets from "@/components/Domain/Recipe/RecipeAssets.vue";
 const recipe = defineModel<NoUndefinedField<Recipe>>({ required: true });
 const { isEditForm } = usePageState(recipe.value.slug);
 </script>
+
+<style scoped>
+.recipe-filed-under {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.recipe-filed-under__label {
+  margin-right: 4px;
+  font-size: var(--mealie-text-caption);
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mealie-ink-3);
+}
+
+.recipe-filed-under__chips {
+  display: contents;
+}
+
+.recipe-filed-under__chips :deep(.v-chip) {
+  margin: 0 !important;
+}
+</style>

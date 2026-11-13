@@ -105,10 +105,10 @@ const hasConvertibleIngredients = computed(() =>
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border: 0;
-  border-radius: 15px;
+  border-radius: 18px;
   background: var(--mealie-fill);
   color: var(--mealie-icon);
   cursor: pointer;

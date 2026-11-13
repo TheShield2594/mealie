@@ -9,6 +9,7 @@
           :rating="recipe.rating"
           :image="recipe.image"
           :recipe-id="recipe.id"
+          :meta="recipe"
           is-flat
         />
       </v-col>

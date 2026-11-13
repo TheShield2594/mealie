@@ -34,13 +34,27 @@ function isBlackListedWord(word: string) {
   return blackListedText.includes(word) || word.match(blackListedRegexMatch);
 }
 
+function wordsMatch(a: string, b: string) {
+  if (a === b) {
+    return true;
+  }
+  const [shorter, longer] = a.length < b.length ? [a, b] : [b, a];
+  return longer === `${shorter}s` || longer === `${shorter}es`;
+}
+
 export function useExtractIngredientReferences() {
   const { parseIngredientText } = useIngredientTextParser();
 
   function extractIngredientReferences(recipeIngredients: RecipeIngredient[], activeRefs: string[], text: string): Set<string> {
+    // Whole words only, allowing for a plural on either side: "onion" finds "Onions", but "pot"
+    // no longer finds "potatoes" and "oil" no longer finds "boiled"
     function ingredientMatchesWord(ingredient: RecipeIngredient, word: string) {
-      const searchText = parseIngredientText(ingredient);
-      return searchText.toLowerCase().includes(word.toLowerCase());
+      const target = word.toLowerCase();
+      const ingredientWords = parseIngredientText(ingredient)
+        .toLowerCase()
+        .split(/[^\p{L}\p{N}']+/u)
+        .filter(Boolean);
+      return ingredientWords.some(candidate => wordsMatch(candidate, target));
     }
 
     const availableIngredients = recipeIngredients

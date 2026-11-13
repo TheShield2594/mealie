@@ -207,7 +207,14 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 .tonight-hero__scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(20, 16, 12, 0.72) 0%, rgba(20, 16, 12, 0) 60%);
+  /* deep enough at the bottom that the title reads over a bright photo (eggs, cake, rice) */
+  background: linear-gradient(
+    to top,
+    rgba(20, 16, 12, 0.85) 0%,
+    rgba(20, 16, 12, 0.6) 32%,
+    rgba(20, 16, 12, 0.18) 62%,
+    rgba(20, 16, 12, 0) 80%
+  );
 }
 
 .tonight-hero__content {
@@ -239,8 +246,9 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 
 .tonight-hero__title {
   font-size: 32px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-family: var(--mealie-font-display);
+  font-weight: 560;
+  letter-spacing: -0.01em;
   line-height: 1.1;
   color: #fff;
   text-decoration: none;
@@ -262,7 +270,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 }
 
 .tonight-hero__action svg {
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
 }
 
 .week {
@@ -292,7 +300,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 
 .week__link {
   font-size: 14px;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   text-decoration: none;
 }
 
@@ -325,7 +333,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 }
 
 .week__day-name--today {
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
 }
 
 .week__meal {
@@ -340,7 +348,7 @@ watch(() => tonight.value?.entry.recipe?.id, () => {
 }
 
 a.week__meal:hover {
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
 }
 
 .week__meal--empty {
@@ -364,8 +372,9 @@ a.week__meal:hover {
 }
 
 @media (max-width: 600px) {
+  /* taller on phones: the title wraps to two or three lines and needs the dark band to sit in */
   .tonight-hero {
-    height: 240px;
+    height: 320px;
   }
 
   .tonight-hero__content {

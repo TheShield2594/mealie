@@ -115,36 +115,19 @@
       </BaseDialog>
     </div>
     <div>
-      <div v-if="lastMadeReady" class="d-flex justify-center flex-wrap">
-        <v-row no-gutters class="d-flex flex-wrap align-center" style="font-size: larger">
-          <v-tooltip location="bottom">
-            <template #activator="{ props: tooltipProps }">
-              <v-btn
-                rounded
-                variant="outlined"
-                size="large"
-                v-bind="tooltipProps"
-                class="font-weight-400"
-                style="border-color: rgb(var(--v-theme-primary));"
-                @click="madeThisDialog = true"
-              >
-                <v-icon start size="large" color="primary">
-                  {{ $globals.icons.calendar }}
-                </v-icon>
-                <span class="opacity-80">
-                  <strong>{{ $t("general.last-made") }}</strong>
-                  <br>
-                  {{ lastMade ? $d(new Date(lastMade)) : $t("general.never") }}
-                </span>
-                <v-icon end size="large" color="primary">
-                  {{ $globals.icons.createAlt }}
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>{{ $t("recipe.made-this") }}</span>
-          </v-tooltip>
-        </v-row>
-      </div>
+      <!-- one quiet line under the actions; the whole line opens the "made this" dialog -->
+      <button
+        v-if="lastMadeReady"
+        type="button"
+        class="recipe-last-made"
+        @click="madeThisDialog = true"
+      >
+        <span class="recipe-last-made__when">
+          {{ lastMade ? $t("recipe-page.last-made-on", { date: $d(new Date(lastMade)) }) : $t("recipe-page.not-made-yet") }}
+        </span>
+        <span class="recipe-last-made__sep" aria-hidden="true">·</span>
+        <span class="recipe-last-made__action">{{ $t("recipe-page.log-a-cook") }}</span>
+      </button>
     </div>
   </div>
 </template>
@@ -368,3 +351,37 @@ async function createTimelineEvent() {
   emit("eventCreated", newEvent);
 }
 </script>
+
+<style scoped>
+.recipe-last-made {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--mealie-text-meta);
+  text-align: left;
+  cursor: pointer;
+}
+
+.recipe-last-made__when,
+.recipe-last-made__sep {
+  color: var(--mealie-ink-3);
+}
+
+.recipe-last-made__action {
+  color: var(--mealie-accent-ink);
+  font-weight: var(--mealie-weight-control);
+}
+
+@media (hover: hover) {
+  .recipe-last-made:hover .recipe-last-made__action {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+</style>

@@ -460,10 +460,12 @@ async function logout() {
   }
 }
 
+/* the tint and the icon carry the accent; the label stays ink, since accent text on its own
+   tint falls just short of 4.5:1 */
 .mealie-sidebar__item--active,
 .mealie-sidebar__item--active:hover {
-  background: rgba(var(--v-theme-primary), 0.12);
-  color: rgb(var(--v-theme-primary));
+  background: var(--mealie-accent-tint);
+  color: var(--mealie-ink);
   font-weight: 600;
 }
 
@@ -485,7 +487,7 @@ async function logout() {
 }
 
 .mealie-sidebar__item--active .mealie-sidebar__icon {
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
 }
 
 .mealie-sidebar__chevron {

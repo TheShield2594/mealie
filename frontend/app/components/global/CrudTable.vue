@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-card-actions class="flex-wrap">
+  <div class="crud-table">
+    <v-card-actions class="flex-wrap crud-table__toolbar">
       <v-menu
         v-if="tableConfig.hideColumns"
         offset-y
@@ -225,7 +225,9 @@ const search = ref("");
 .clip-width {
   max-width: 400px;
 }
-.v-btn--disabled {
+/* scoped to the table: unscoped, this dimmed every disabled button in the app once a data
+   page had loaded */
+.crud-table .v-btn--disabled {
   opacity: 0.5 !important;
 }
 </style>

@@ -1,26 +1,32 @@
 <template>
   <v-img
     v-if="showImage"
+    class="recipe-card-image"
     :height="height"
     cover
     :min-height="minHeight"
     max-height="fill-height"
     :src="getImage(recipeId)"
+    :alt="name || undefined"
     @click="$emit('click')"
     @load="fallBackImage = false"
     @error="fallBackImage = true"
   >
     <slot />
   </v-img>
+  <!-- No photo: the warm placeholder with the recipe's initial in the display serif, so a missing
+       photo reads as deliberate rather than broken. Without a name, a small quiet icon instead -->
   <div
     v-else
-    class="icon-slot"
+    class="recipe-card-image recipe-card-image--empty"
+    :style="{ height: cssSize(height), minHeight: cssSize(minHeight) }"
     @click="$emit('click')"
   >
+    <span v-if="initial" class="recipe-card-image__initial" aria-hidden="true">{{ initial }}</span>
     <v-icon
-      color="primary"
-      class="icon-position"
-      :size="iconSize"
+      v-else
+      class="recipe-card-image__icon"
+      :size="Math.min(Number(iconSize) || 40, 40)"
     >
       {{ $globals.icons.primary }}
     </v-icon>
@@ -43,6 +49,8 @@ interface Props {
   imageVersion?: unknown;
   height?: number | string;
   minHeight?: number | string;
+  /** The recipe's name: its first letter stands in when there is no photo, and it is the alt text */
+  name?: string | null;
 }
 const props = withDefaults(defineProps<Props>(), {
   tiny: null,
@@ -53,6 +61,7 @@ const props = withDefaults(defineProps<Props>(), {
   imageVersion: null,
   height: "100%",
   minHeight: 125,
+  name: null,
 });
 
 defineEmits<{
@@ -62,6 +71,15 @@ defineEmits<{
 const { recipeImage, recipeSmallImage, recipeTinyImage } = useStaticRoutes();
 
 const fallBackImage = ref(false);
+
+const initial = computed(() => {
+  const first = props.name?.trim().match(/\p{L}|\p{N}/u)?.[0];
+  return first ? first.toLocaleUpperCase() : "";
+});
+
+function cssSize(size: number | string | undefined) {
+  return typeof size === "number" ? `${size}px` : size;
+}
 
 // Recipes without an image have no image version, so there is nothing to fetch.
 // Rendering the image anyway would only produce a 404 before falling back.
@@ -94,21 +112,38 @@ function getImage(recipeId: string) {
 </script>
 
 <style scoped>
-.icon-slot {
-  position: relative;
+/* the placeholder colour shows while a photo loads, so the grid never flashes white */
+.recipe-card-image {
+  background: var(--mealie-placeholder);
 }
 
-.icon-slot > div {
+.recipe-card-image--empty {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  color: var(--mealie-placeholder-ink);
+  container-type: size;
+}
+
+.recipe-card-image__initial {
+  font-family: var(--mealie-font-display);
+  font-size: clamp(22px, 32cqh, 56px);
+  font-weight: 500;
+  line-height: 1;
+  user-select: none;
+}
+
+.recipe-card-image__icon {
+  color: var(--mealie-placeholder-ink);
+  opacity: 0.7;
+}
+
+.recipe-card-image--empty > :slotted(div) {
   top: 0;
   position: absolute;
   z-index: 1;
-}
-
-.icon-position {
-  opacity: 0.8;
-  display: flex !important;
-  position: relative;
-  margin-left: auto !important;
-  margin-right: auto !important;
 }
 </style>

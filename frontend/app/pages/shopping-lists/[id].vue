@@ -206,7 +206,9 @@
           <BaseExpansionPanels v-if="hasMatches(value)" :v-model="0" start-open>
             <v-expansion-panel class="shopping-list-section">
               <!-- the label colour fills the header bar; an uncoloured (or unlabelled) header is muted instead -->
+              <!-- a list with no labels at all needs no "No Label" heading over its only group -->
               <v-expansion-panel-title
+                v-if="!onlyUnlabelled"
                 :color="getLabelColor(key)"
                 class="body-1 section-title"
                 :class="getLabelColor(key) ? '' : 'text-medium-emphasis'"
@@ -241,7 +243,7 @@
                         :recipes="recipeMap"
                         @checked="onItemChecked"
                         @save="onItemSaved"
-                        @delete="deleteListItem"
+                        @delete="deleteWithUndo"
                         @view="onItemView"
                         @edit="onItemEdit"
                       />
@@ -261,7 +263,7 @@
               <div class="flex-1-0">
                 {{ $t('shopping-list.items-checked-count', visibleCheckedCount) }}
               </div>
-              <div class="justify-end">
+              <div class="justify-end shopping-checked-actions">
                 <!-- both act on every checked item, including any the search is hiding -->
                 <BaseButtonGroup
                   :buttons="[
@@ -302,7 +304,7 @@
                   :foods="allFoods || []"
                   @checked="saveListItem"
                   @save="saveListItem"
-                  @delete="deleteListItem"
+                  @delete="deleteWithUndo"
                 />
               </div>
             </TransitionGroup>
@@ -310,8 +312,16 @@
         </v-expansion-panel>
       </v-expansion-panels>
 
+      <BaseEmptyState
+        v-if="!shoppingList.listItems?.length"
+        compact
+        :icon="$globals.icons.cartCheck"
+        :title="$t('empty-state.list-title')"
+        :description="$t('empty-state.list-description')"
+      />
+
       <v-alert
-        v-if="!hasSearchResults"
+        v-else-if="!hasSearchResults"
         type="info"
         variant="tonal"
         density="compact"
@@ -383,6 +393,22 @@
     </v-lazy>
     <WakelockSwitch />
   </div>
+  <div
+    v-else
+    class="mealie-page mealie-page--narrow"
+    aria-busy="true"
+    :aria-label="$t('empty-state.loading')"
+  >
+    <!-- while the list loads: its header and a few rows, not a blank page -->
+    <BaseSkeleton :width="70" :height="12" />
+    <BaseSkeleton class="mt-3" :width="260" :height="34" />
+    <div class="shopping-list-skeleton mealie-card">
+      <div v-for="n in 7" :key="n" class="shopping-list-skeleton__row">
+        <BaseSkeleton :width="22" :height="22" radius="pill" />
+        <BaseSkeleton :width="`${70 - (n % 4) * 12}%`" :height="14" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -434,6 +460,22 @@ function onItemView() {
   editingItem.value = undefined;
 }
 
+// Deleting an item is one tap in its row, so the toast offers it back
+function deleteWithUndo(item: ShoppingListItemOut) {
+  deleteListItem(item);
+  alert.info(
+    i18n.t("toast.removed-from-list", { item: item.food?.name || item.note || i18n.t("recipe.ingredient") }),
+    undefined,
+    {
+      timeout: 6000,
+      action: {
+        message: i18n.t("general.undo"),
+        onClick: () => restoreListItem(item),
+      },
+    },
+  );
+}
+
 function itemCheckedToast(item: ShoppingListItemOut) {
   setTimeout(() => {
     alert.info(
@@ -479,6 +521,7 @@ const {
   recipeMap,
   saveListItem,
   deleteListItem,
+  restoreListItem,
   listItems,
   openUncheckAll,
   openDeleteChecked,
@@ -499,6 +542,11 @@ const {
   hasSearchResults,
 } = shoppingListPage;
 
+const onlyUnlabelled = computed(() => {
+  const keys = Object.keys(itemsByLabel.value);
+  return keys.length === 1 && keys[0] === i18n.t("shopping-list.no-label");
+});
+
 // Expand the checked section while searching, so an item that has already been
 // checked off can be found and unchecked without expanding the section by hand.
 const checkedPanel = ref<number | undefined>(undefined);
@@ -518,7 +566,7 @@ watch(isSearching, (searching) => {
   gap: 8px;
   margin-bottom: 4px;
   font-size: 14px;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   text-decoration: none;
 }
 
@@ -623,6 +671,36 @@ watch(isSearching, (searching) => {
 
   .shopping-list-section .v-expansion-panel__shadow {
     box-shadow: none;
+  }
+}
+
+.shopping-list-skeleton {
+  margin-top: 28px;
+  padding: 8px 20px;
+}
+
+.shopping-list-skeleton__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 52px;
+  border-bottom: 1px solid var(--mealie-hairline);
+}
+
+.shopping-list-skeleton__row:last-child {
+  border-bottom: 0;
+}
+
+/* the checked bar's three actions stay on one line beside the count, even on a phone */
+.shopping-checked-actions .v-item-group {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 600px) {
+  .shopping-checked-actions .v-btn {
+    width: 40px;
+    min-width: 40px;
   }
 }
 </style>

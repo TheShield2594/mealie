@@ -61,28 +61,30 @@ defineProps({
   align-items: center;
   gap: 8px;
   margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.015em;
+  font-size: var(--mealie-text-h3);
+  font-weight: var(--mealie-weight-heading);
+  letter-spacing: -0.01em;
 }
 
 .base-section-title--medium .base-section-title__title {
-  font-size: 17px;
+  font-size: var(--mealie-text-body-lg);
 }
 
 .base-section-title--small .base-section-title__title {
-  font-size: 15px;
+  font-size: var(--mealie-text-body);
 }
 
+/* a quiet marker beside the title, not a second headline */
 .base-section-title__icon {
-  color: var(--mealie-icon);
+  color: var(--mealie-ink-3);
+  font-size: 18px;
 }
 
 .base-section-title__text {
   max-width: 680px;
   margin: 6px 0 0;
-  font-size: 14px;
+  font-size: var(--mealie-text-body);
   line-height: 1.5;
-  color: var(--mealie-text-secondary);
+  color: var(--mealie-ink-2);
 }
 </style>

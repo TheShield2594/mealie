@@ -53,7 +53,7 @@ export default defineNuxtConfig({
       ],
       script: [
         {
-          innerHTML: `(function(){try{var d=localStorage.getItem('vueuse-color-scheme');var m=d==='dark'||(d!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.style.backgroundColor=m?'#1E1E1E':'#FFFFFF'}catch(e){}})()`,
+          innerHTML: `(function(){try{var d=localStorage.getItem('vueuse-color-scheme');var m=d==='dark'||(d!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.style.backgroundColor=m?'#141311':'#FAF9F7'}catch(e){}})()`,
           type: "text/javascript",
         },
       ],
@@ -74,7 +74,13 @@ export default defineNuxtConfig({
     viewTransition: true,
   },
 
-  css: ["~/assets/main.css", "~/assets/style-overrides.scss", "~/assets/design-tokens.scss"],
+  css: [
+    "~/assets/main.css",
+    "~/assets/style-overrides.scss",
+    // the display serif for titles, bundled and self-hosted (see --mealie-font-display)
+    "@fontsource-variable/fraunces/wght.css",
+    "~/assets/design-tokens.scss",
+  ],
 
   runtimeConfig: {
     sessionPassword: process.env.SESSION_PASSWORD || "password-with-at-least-32-characters",
@@ -89,18 +95,18 @@ export default defineNuxtConfig({
       themes: {
         dark: {
           primary: process.env.THEME_DARK_PRIMARY || "#E0683C",
-          accent: process.env.THEME_DARK_ACCENT || "#007A99",
-          secondary: process.env.THEME_DARK_SECONDARY || "#E08A73",
+          accent: process.env.THEME_DARK_ACCENT || "#BDB8AF",
+          secondary: process.env.THEME_DARK_SECONDARY || "#E0683C",
           success: process.env.THEME_DARK_SUCCESS || "#4CAF50",
           info: process.env.THEME_DARK_INFO || "#5E9BD1",
           warning: process.env.THEME_DARK_WARNING || "#FF6D00",
           error: process.env.THEME_DARK_ERROR || "#F2706C",
-          background: "#161513",
+          background: "#141311",
         },
         light: {
           primary: process.env.THEME_LIGHT_PRIMARY || "#C4502A",
-          accent: process.env.THEME_LIGHT_ACCENT || "#007A99",
-          secondary: process.env.THEME_LIGHT_SECONDARY || "#973542",
+          accent: process.env.THEME_LIGHT_ACCENT || "#57534D",
+          secondary: process.env.THEME_LIGHT_SECONDARY || "#C4502A",
           success: process.env.THEME_LIGHT_SUCCESS || "#2A7531",
           info: process.env.THEME_LIGHT_INFO || "#1565C0",
           warning: process.env.THEME_LIGHT_WARNING || "#A84B0A",
@@ -239,7 +245,7 @@ export default defineNuxtConfig({
     workbox: {
       navigateFallback: "/",
       navigateFallbackAllowlist: [/^(?!\/api|\/docs)/],
-      globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
+      globPatterns: ["**/*.{js,css,html,png,svg,ico,woff2}"],
       // screenshots are only for the install prompt, which the browser fetches itself
       globIgnores: ["404.html", "200.html", "index.html", "screenshots/**"],
       cleanupOutdatedCaches: true,
@@ -271,19 +277,27 @@ export default defineNuxtConfig({
         fallback: "en-US",
       },
       defaults: {
+        // the redesign's look for Vuetify components; see assets/design-tokens.scss for the CSS half
+        // and DESIGN_AUDIT.md §8.4 for the rules. Material ripples read as stock Vuetify, so they
+        // are off; buttons and cards get a press scale from design-tokens.scss instead
+        global: {
+          ripple: false,
+        },
+        VTextField: { variant: "filled", color: "primary" },
+        VTextarea: { variant: "filled", color: "primary" },
+        VSelect: { variant: "filled", color: "primary", scrollStrategy: "close" },
+        VAutocomplete: { variant: "filled", color: "primary", scrollStrategy: "close" },
+        VCombobox: { variant: "filled", color: "primary", scrollStrategy: "close" },
+        VFileInput: { variant: "filled", color: "primary" },
+        VNumberInput: { variant: "filled", color: "primary" },
+        VCheckbox: { color: "primary" },
+        VCheckboxBtn: { color: "primary" },
+        VRadioGroup: { color: "primary" },
+        VSwitch: { color: "primary", inset: true },
         VOverlay: {
           scrollStrategy: "close",
         },
         VMenu: {
-          scrollStrategy: "close",
-        },
-        VAutocomplete: {
-          scrollStrategy: "close",
-        },
-        VCombobox: {
-          scrollStrategy: "close",
-        },
-        VSelect: {
           scrollStrategy: "close",
         },
       },

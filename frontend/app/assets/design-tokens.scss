@@ -1,62 +1,173 @@
-// Design tokens for the redesigned shell, recipe library, recipe page and cook mode.
-// Colors that follow the user's theme (primary, success, ...) still come from Vuetify; these
-// tokens cover the warm neutrals around them, which Vuetify's palette has no slot for.
+// Design tokens for the redesign. Colors that follow the user's theme (primary, success, ...)
+// still come from Vuetify; these tokens cover everything around them that Vuetify's palette has
+// no slot for. See DESIGN_AUDIT.md §8 for the rules behind each group.
+//
+// Naming: --mealie-<group>-<role>. Older names (--mealie-text-secondary, --mealie-fill-subtle,
+// ...) are kept as aliases further down so existing styles keep working.
 
 :root {
+  // ---- type ----------------------------------------------------------------------------
   --v-font-body:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --v-font-heading:
     -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mealie-font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  // titles only (page h1, recipe titles, the tonight hero, step numbers); everything read or
+  // tapped stays sans. Fraunces is bundled from npm (@fontsource-variable/fraunces, OFL-1.1) and
+  // served from Mealie's own origin: no font CDN. It covers Latin, Latin Extended and Vietnamese;
+  // other scripts fall back to the system serif
+  --mealie-font-display: "Fraunces Variable", ui-serif, Georgia, "Times New Roman", serif;
+
+  // eight sizes, each with one job
+  --mealie-text-caption: 12px; // eyebrows and labels: 600, +0.06em, uppercase
+  --mealie-text-meta: 13px; // secondary lines under a title
+  --mealie-text-body: 15px; // UI text
+  --mealie-text-body-lg: 17px; // ingredients, steps, descriptions: read from a distance
+  --mealie-text-h3: 20px; // section titles
+  --mealie-text-h2: 24px; // group titles
+  --mealie-text-h1: 34px; // page titles
+  --mealie-text-display: 44px; // recipe titles
+
+  // weights: 400 body, 550 controls, 600 emphasis, 650 headings
+  --mealie-weight-control: 550;
+  --mealie-weight-strong: 600;
+  --mealie-weight-heading: 650;
+
+  // ---- space (4px base) ----------------------------------------------------------------
+  --mealie-space-1: 4px;
+  --mealie-space-2: 8px;
+  --mealie-space-3: 12px;
+  --mealie-space-4: 16px;
+  --mealie-space-5: 24px;
+  --mealie-space-6: 32px;
+  --mealie-space-7: 48px;
+  --mealie-space-8: 64px;
+
+  // ---- radius: four steps and a pill. Nested corners: inner = outer - padding ---------------
+  --mealie-radius-xs: 6px; // checkboxes, kbd, tiny badges
+  --mealie-radius-sm: 10px; // inputs, thumbnails, menu items, list rows
+  --mealie-radius-md: 16px; // cards, panels, card images, dialogs
+  --mealie-radius-lg: 24px; // hero imagery, bottom sheets
+  --mealie-radius-pill: 999px; // buttons, chips, segmented controls
+
+  // ---- motion ----------------------------------------------------------------------------
+  --mealie-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --mealie-duration-press: 120ms;
+  --mealie-duration-hover: 180ms;
+  --mealie-duration-enter: 240ms;
+  --mealie-duration-exit: 160ms;
 }
 
 :root,
 .v-theme--light {
+  // surfaces, back to front
   --mealie-canvas: #faf9f7;
   --mealie-sidebar: #f3f1ed;
-  --mealie-surface: #ffffff;
+  --mealie-surface: #ffffff; // cards and panels
+  --mealie-raised: #ffffff; // menus, dialogs, sheets
+
+  // ink, strongest to faintest. ink-3 is the faintest that still meets 4.5:1 on the canvas and
+  // the sidebar; ink-4 falls below that, so it is for icons, rules and placeholders, never text
   --mealie-ink: #1c1b19;
-  --mealie-ink-secondary: #3a3835;
+  --mealie-ink-2: #57534d;
+  --mealie-ink-3: #6f6c66;
+  --mealie-ink-4: #a8a49c;
+  --mealie-ink-secondary: #3a3835; // sidebar labels: between ink and ink-2
   --mealie-icon: #4a4844;
-  --mealie-text-secondary: #5c5954;
-  // tertiary is the faintest grey that still meets 4.5:1 on the canvas and the sidebar;
-  // quaternary falls below that, so it is kept for icons, rules and inactive text
-  --mealie-text-tertiary: #6f6c66;
-  --mealie-text-quaternary: #a8a49c;
+
   --mealie-hairline: rgba(0, 0, 0, 0.06);
-  --mealie-hairline-strong: rgba(0, 0, 0, 0.08);
-  --mealie-fill: rgba(118, 118, 128, 0.12);
-  --mealie-fill-subtle: rgba(118, 118, 128, 0.1);
+  --mealie-hairline-strong: rgba(0, 0, 0, 0.1);
+  --mealie-fill: rgba(118, 112, 100, 0.12);
+  --mealie-fill-subtle: rgba(118, 112, 100, 0.08);
   --mealie-checkbox-ring: #c9c5bd;
   --mealie-avatar: #e6dfd4;
   --mealie-avatar-ink: #6b5f4f;
+  --mealie-placeholder: #ebe6dd;
   --mealie-placeholder-a: #e6e1d8;
   --mealie-placeholder-b: #ded9cf;
   --mealie-placeholder-ink: #8d877c;
-  --mealie-shadow-card: 0 1px 2px rgba(40, 30, 20, 0.04);
+
+  // elevation: hairline, card, overlay
+  --mealie-elevation-0: inset 0 0 0 1px var(--mealie-hairline);
+  --mealie-elevation-1: 0 1px 2px rgba(40, 30, 20, 0.05), inset 0 0 0 1px var(--mealie-hairline);
+  --mealie-elevation-2: 0 12px 32px -12px rgba(40, 30, 20, 0.22), 0 0 0 1px var(--mealie-hairline);
+  --mealie-accent-tint: rgba(var(--v-theme-primary), 0.1);
 }
 
+// Dark is its own palette, not the light one inverted: warm charcoal, and depth from lighter
+// surfaces rather than shadows, which disappear on a dark page
 .v-theme--dark {
-  --mealie-canvas: #161513;
-  --mealie-sidebar: #1c1b19;
-  --mealie-surface: #1f1e1c;
+  --mealie-canvas: #141311;
+  --mealie-sidebar: #191816;
+  --mealie-surface: #1d1c1a;
+  --mealie-raised: #262522;
+
   --mealie-ink: #f5f3ef;
+  --mealie-ink-2: #bdb8af;
+  --mealie-ink-3: #9a978f;
+  --mealie-ink-4: #6d6962;
   --mealie-ink-secondary: #dcd8d1;
   --mealie-icon: #c9c5bd;
-  --mealie-text-secondary: #a8a49c;
-  --mealie-text-tertiary: #9a978f;
-  --mealie-text-quaternary: #7d7a73;
-  --mealie-hairline: rgba(255, 255, 255, 0.06);
-  --mealie-hairline-strong: rgba(255, 255, 255, 0.1);
-  --mealie-fill: rgba(255, 255, 255, 0.1);
-  --mealie-fill-subtle: rgba(255, 255, 255, 0.08);
+
+  --mealie-hairline: rgba(255, 250, 240, 0.07);
+  --mealie-hairline-strong: rgba(255, 250, 240, 0.12);
+  --mealie-fill: rgba(255, 250, 240, 0.1);
+  --mealie-fill-subtle: rgba(255, 250, 240, 0.07);
   --mealie-checkbox-ring: #5a5751;
   --mealie-avatar: #3a3631;
   --mealie-avatar-ink: #d9cfc0;
+  --mealie-placeholder: #24221f;
   --mealie-placeholder-a: #2a2825;
   --mealie-placeholder-b: #25231f;
   --mealie-placeholder-ink: #7d7a73;
-  --mealie-shadow-card: none;
+
+  --mealie-elevation-0: inset 0 0 0 1px var(--mealie-hairline);
+  --mealie-elevation-1: inset 0 0 0 1px var(--mealie-hairline);
+  --mealie-elevation-2: 0 16px 40px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--mealie-hairline-strong);
+  --mealie-accent-tint: rgba(var(--v-theme-primary), 0.14);
+}
+
+// The accent in its roles. Declared on every theme scope, not just :root, because a custom
+// property's var() resolves where it is declared: a nested v-theme-provider (cook mode is
+// always dark) needs these recomputed from its own --v-theme-primary
+:root,
+.v-theme--light,
+.v-theme--dark {
+  --mealie-accent: rgb(var(--v-theme-primary)); // fills: the one primary action, today, selection
+  --mealie-accent-ink: rgb(var(--v-theme-primary-ink)); // as text or icon: links, eyebrows (AA)
+  --mealie-accent-wash: rgba(var(--v-theme-primary), 0.06); // large tinted areas, hint boxes
+  // --mealie-accent-tint (selected rows, timer chips, badges) is set per theme above
+  --mealie-accent-tint-strong: rgba(var(--v-theme-primary), 0.16); // pressed / active tint
+  --mealie-accent-ring: rgba(var(--v-theme-primary), 0.3); // focus halo around inputs
+}
+
+// Aliases for the names the first pass of the redesign used
+:root,
+.v-theme--light,
+.v-theme--dark {
+  --mealie-text-secondary: var(--mealie-ink-2);
+  --mealie-text-tertiary: var(--mealie-ink-3);
+  --mealie-text-quaternary: var(--mealie-ink-4);
+  --mealie-shadow-card: var(--mealie-elevation-1);
+}
+
+@media (max-width: 600px) {
+  :root {
+    --mealie-text-h1: 28px;
+    --mealie-text-display: 32px;
+  }
+}
+
+// For titles outside the components that set it themselves
+.mealie-display {
+  font-family: var(--mealie-font-display);
+  font-weight: 560;
+  letter-spacing: -0.01em;
+}
+
+// Accent as text: Vuetify's text-primary (links, text buttons, icons) uses the AA-safe ink
+.text-primary {
+  color: rgb(var(--v-theme-primary-ink)) !important;
 }
 
 // The redesigned screens set their own heading sizes and spacing
@@ -107,8 +218,9 @@
 
 .mealie-page__title {
   font-size: 34px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-family: var(--mealie-font-display);
+  font-weight: 560;
+  letter-spacing: -0.01em;
   line-height: 1.1;
 }
 
@@ -307,8 +419,8 @@
   }
 
   &--tinted {
-    background: rgba(var(--v-theme-primary), 0.1);
-    color: rgb(var(--v-theme-primary));
+    background: var(--mealie-accent-tint);
+    color: var(--mealie-accent-ink);
   }
 
   &--lg {
@@ -473,4 +585,545 @@ $mealie-moving: ":not(.v-progress-circular--indeterminate *, .v-progress-linear-
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+// ---- Vuetify components, brought onto the tokens ----------------------------------------------
+// Vuetify 4 ships its styles in cascade layers, so these unlayered rules win without !important.
+// They restyle components wherever they render (pages, dialogs, menus) without touching templates.
+
+// Text fields: one look, the sunken filled field. Upstream asks for six variants across ~150
+// call sites; filled, solo, solo-filled and underlined all become the same field here. Outlined
+// keeps its notched label (moving it would need template changes) but takes the same radius,
+// hairline and focus treatment, so the two read as one family. Plain stays plain: it is used
+// where a field sits inside something else, like a table cell.
+.v-field--variant-filled,
+.v-field--variant-solo,
+.v-field--variant-solo-filled,
+.v-field--variant-underlined {
+  --v-field-padding-start: 14px;
+  --v-field-padding-end: 14px;
+  border-radius: var(--mealie-radius-sm);
+  background: var(--mealie-fill-subtle);
+  box-shadow: none;
+  transition:
+    background-color var(--mealie-duration-hover) var(--mealie-ease),
+    box-shadow var(--mealie-duration-hover) var(--mealie-ease);
+
+  // Vuetify's own hover/focus overlay and underline give way to the background and ring below.
+  // The outline element stays: underlined fields render their floating label inside it
+  > .v-field__overlay {
+    display: none;
+  }
+
+  > .v-field__outline::before,
+  > .v-field__outline::after {
+    display: none;
+  }
+
+  &:hover {
+    background: var(--mealie-fill);
+  }
+
+  &.v-field--focused {
+    background: var(--mealie-surface);
+    box-shadow:
+      inset 0 0 0 1.5px var(--mealie-accent),
+      0 0 0 3px var(--mealie-accent-ring);
+  }
+
+  &.v-field--error:not(.v-field--disabled) {
+    box-shadow: inset 0 0 0 1.5px rgb(var(--v-theme-error));
+  }
+}
+
+// Underlined fields get the filled field's height and label position, so the two match
+.v-input--density-default .v-field--variant-underlined {
+  --v-input-control-height: 56px;
+  --v-field-padding-top: 8px;
+  --v-field-padding-bottom: 4px;
+}
+
+.v-input--density-comfortable .v-field--variant-underlined {
+  --v-input-control-height: 48px;
+  --v-field-padding-top: 8px;
+  --v-field-padding-bottom: 0px;
+}
+
+.v-input--density-compact .v-field--variant-underlined {
+  --v-input-control-height: 40px;
+  --v-field-padding-top: 8px;
+  --v-field-padding-bottom: 0px;
+}
+
+.v-field--variant-underlined .v-label.v-field-label {
+  top: var(--v-input-padding-top);
+}
+
+.v-field--variant-underlined .v-label.v-field-label--floating {
+  top: 7px;
+  margin-inline-start: var(--v-field-padding-start);
+  transform: none;
+}
+
+.v-input--density-comfortable .v-field--variant-underlined .v-label.v-field-label--floating {
+  top: 5px;
+}
+
+.v-input--density-compact .v-field--variant-underlined .v-label.v-field-label--floating {
+  top: 3px;
+}
+
+.v-field--variant-outlined {
+  border-radius: var(--mealie-radius-sm);
+
+  > .v-field__outline {
+    --v-field-border-opacity: 1;
+    color: var(--mealie-hairline-strong);
+  }
+
+  // the notched outline draws its corners in three parts
+  > .v-field__outline .v-field__outline__start {
+    border-radius: var(--mealie-radius-sm) 0 0 var(--mealie-radius-sm);
+  }
+
+  > .v-field__outline .v-field__outline__end {
+    border-radius: 0 var(--mealie-radius-sm) var(--mealie-radius-sm) 0;
+  }
+
+  &:hover > .v-field__outline {
+    color: var(--mealie-ink-4);
+  }
+
+  &.v-field--focused {
+    box-shadow: 0 0 0 3px var(--mealie-accent-ring);
+
+    > .v-field__outline {
+      --v-field-border-width: 1.5px;
+      color: rgb(var(--v-theme-primary));
+    }
+  }
+
+  &.v-field--error:not(.v-field--disabled) > .v-field__outline {
+    color: rgb(var(--v-theme-error));
+  }
+}
+
+// labels and hints on the ink scale rather than Vuetify's opacity, which can fall below AA
+.v-field .v-field-label {
+  color: var(--mealie-ink-3);
+  opacity: 1;
+}
+
+/* the focus ring carries the accent; the label stays neutral, since accent text on a field's
+   fill can fall under 4.5:1 (it measured 4.13 on the dark sign-in card) */
+.v-field--focused .v-field-label,
+.v-field .v-field-label.text-primary {
+  color: var(--mealie-ink-2) !important;
+}
+
+.v-input__details .v-messages {
+  color: var(--mealie-ink-3);
+  opacity: 1;
+}
+
+// Overlays (menus, dialogs, sheets) sit on the raised surface. In dark mode depth comes from the
+// lighter surface and a stronger hairline rather than a shadow, which a dark page would swallow
+.v-overlay__content > .v-card,
+.v-overlay__content > .v-sheet,
+.v-menu > .v-overlay__content > .v-list,
+.v-menu > .v-overlay__content > .v-card {
+  background: var(--mealie-raised);
+  box-shadow: var(--mealie-elevation-2);
+}
+
+.v-menu > .v-overlay__content > :is(.v-list, .v-card, .v-sheet) {
+  border-radius: var(--mealie-radius-md);
+  overflow: hidden;
+}
+
+// select and autocomplete menus wrap their list in a sheet; the list then carries the inset
+.v-menu > .v-overlay__content > .v-list,
+.v-menu > .v-overlay__content > .v-sheet > .v-list {
+  padding: 6px;
+  background: transparent;
+}
+
+.v-menu .v-list-item {
+  border-radius: var(--mealie-radius-sm);
+  min-height: 40px;
+}
+
+// the chosen option: a quiet tint rather than Vuetify's 12% wash of the accent
+.v-menu .v-list-item--active > .v-list-item__overlay {
+  opacity: 0.08;
+}
+
+.v-dialog > .v-overlay__content > .v-card,
+.v-dialog > .v-overlay__content > .v-sheet {
+  border-radius: var(--mealie-radius-md);
+}
+
+.v-bottom-sheet > .v-overlay__content > .v-card,
+.v-bottom-sheet > .v-overlay__content > .v-sheet {
+  border-radius: var(--mealie-radius-lg) var(--mealie-radius-lg) 0 0;
+}
+
+// Dark scrims are warm, not blue-black
+.v-overlay__scrim {
+  background: #0b0a09;
+}
+
+// Tooltips: small dark pills in both themes
+.v-tooltip > .v-overlay__content {
+  border-radius: var(--mealie-radius-xs);
+  background: #2a2826;
+  color: #f5f3ef;
+  font-size: var(--mealie-text-caption);
+  font-weight: 500;
+  padding: 5px 9px;
+}
+
+// Switches: the accent only when on, a neutral track when off
+.v-switch .v-switch__track {
+  background: var(--mealie-fill);
+  opacity: 1;
+}
+
+.v-switch .v-selection-control--dirty .v-switch__track {
+  background: rgb(var(--v-theme-primary));
+}
+
+// the thumb: white with a soft shadow in both themes, instead of Material's tinted thumb
+.v-switch .v-switch__thumb {
+  background: #fff !important;
+  color: #fff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+// Tables and data rows: hairline separators on the ink scale
+.v-table {
+  --v-border-color: var(--mealie-hairline-strong);
+  --v-border-opacity: 1;
+}
+
+// Accent and secondary are no longer brand colours (DESIGN_AUDIT.md §2.1). Their defaults are now a
+// neutral ink and the primary, and the components that filled things with them become the quiet
+// neutral styles here: tags read as neutral pills, and secondary-coloured buttons and chips (the
+// planner's "Serves 4", the unit toggle) as secondary pills, so only one thing per view is orange
+.v-chip.bg-accent,
+.v-chip.text-accent {
+  background: var(--mealie-fill) !important;
+  color: var(--mealie-ink-2) !important;
+  border-radius: var(--mealie-radius-pill) !important;
+  font-weight: var(--mealie-weight-control);
+
+  > .v-chip__overlay,
+  > .v-chip__underlay {
+    display: none;
+  }
+}
+
+.v-btn.bg-secondary:not(.v-btn--icon),
+.v-btn.bg-secondary-darken-1:not(.v-btn--icon),
+.v-chip.bg-secondary-darken-1,
+.v-card.bg-secondary-darken-1 {
+  background: var(--mealie-fill) !important;
+  color: var(--mealie-ink) !important;
+  box-shadow: none !important;
+}
+
+// the scale and yield pills ("Serves 4") are cards in upstream's markup
+.v-card.bg-secondary-darken-1 {
+  border-radius: var(--mealie-radius-pill) !important;
+  font-weight: var(--mealie-weight-control);
+
+  .v-icon {
+    color: var(--mealie-ink-3);
+  }
+}
+
+// empty rating stars in the neutral rule colour; filled ones keep the secondary (now the accent)
+.v-rating .text-secondary-lighten-3 {
+  color: var(--mealie-ink-4) !important;
+}
+
+// ---- Interaction: focus, press, page transitions ------------------------------------------------
+
+// One focus ring everywhere a keyboard lands: 2px accent, 2px off the edge. Vuetify's own is a
+// 25%-opacity border that the audit found invisible on the header and toolbar buttons
+:focus-visible {
+  outline: 2px solid var(--mealie-accent);
+  outline-offset: 2px;
+}
+
+.v-btn:focus-visible,
+.v-chip:focus-visible,
+.v-card--link:focus-visible,
+.v-list-item:focus-visible {
+  outline: 2px solid var(--mealie-accent);
+  outline-offset: 2px;
+}
+
+// rows inside a menu or list draw the ring inside themselves, where it can't be clipped
+.v-list .v-list-item:focus-visible {
+  outline-offset: -2px;
+}
+
+// fields show focus with their own ring (see the text field block), so their inner input doesn't
+.v-field input:focus-visible,
+.v-field textarea:focus-visible,
+.v-field__input:focus-visible {
+  outline: none;
+}
+
+// checkboxes, radios and switches: Vuetify hides the native input, so ring its visual stand-in
+.v-selection-control--focus-visible .v-selection-control__input {
+  border-radius: 50%;
+  outline: 2px solid var(--mealie-accent);
+  outline-offset: -4px;
+}
+
+// Press: buttons, chips and clickable cards give a little under the finger. Material ripples are
+// off (see nuxt.config.ts), so this is the only active state
+.v-btn,
+.v-chip--link,
+.v-card--link {
+  transition-property: transform, background-color, box-shadow, opacity, color;
+  transition-duration: var(--mealie-duration-press);
+  transition-timing-function: var(--mealie-ease);
+}
+
+.v-btn:not(:disabled, .v-btn--disabled):active,
+.v-chip--link:active {
+  transform: scale(0.97);
+}
+
+.v-card--link:active {
+  transform: scale(0.99);
+}
+
+// Disabled buttons: Vuetify drops their colour and greys them to 26% of the text colour on the
+// surface, which nearly vanishes in dark mode (audit E2). A flat neutral pill with ink-4 text
+// reads clearly as "not yet" in both themes
+.v-btn--disabled.v-btn--variant-elevated,
+.v-btn--disabled.v-btn--variant-flat,
+.v-btn--disabled.v-btn--variant-tonal {
+  opacity: 1;
+  background: var(--mealie-fill-subtle) !important;
+  color: var(--mealie-ink-4) !important;
+
+  > .v-btn__overlay {
+    display: none;
+  }
+}
+
+// Route changes use the View Transitions API (experimental.viewTransition in nuxt.config.ts):
+// the old page fades out quickly and the new one fades in with a short rise
+@keyframes mealie-page-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes mealie-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+::view-transition-old(root) {
+  animation: mealie-page-out var(--mealie-duration-exit) var(--mealie-ease) both;
+}
+
+::view-transition-new(root) {
+  animation: mealie-page-in var(--mealie-duration-enter) var(--mealie-ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+
+  .v-btn:active,
+  .v-chip--link:active,
+  .v-card--link:active {
+    transform: none;
+  }
+}
+
+// Ratings: stars in the accent (secondary now defaults to it) on the neutral rule colour, 18px.
+// Stars sit edge to edge, so on touch screens each gets a tall, narrow target (28 x 44): five
+// 44px squares made the row 220px wide and pushed it onto a line of its own on phones. 28px wide
+// still clears WCAG 2.5.8's 24px minimum
+.v-rating .v-rating__item .v-btn.v-btn--icon {
+  width: 28px;
+  min-width: 0;
+  height: 28px;
+}
+
+.v-rating .v-rating__item .v-icon {
+  font-size: 18px;
+}
+
+@media (pointer: coarse) {
+  .v-rating .v-rating__item .v-btn.v-btn--icon {
+    width: 28px;
+    min-width: 0;
+    height: 44px;
+    min-height: 44px;
+  }
+}
+
+// Toasts: a neutral pill at the bottom, dark on the light theme and raised on the dark one. The
+// status (success, error, ...) shows in the icon's colour, not as a full-width coloured bar, so a
+// routine "Saved" never shouts and an error reads as information. The action (Undo, View) is the
+// accent; dismissing is the quiet Close beside it
+.mealie-toast {
+  --mealie-toast-bg: #23211f;
+  --mealie-toast-ink: #f5f3ef;
+  --mealie-toast-muted: #bdb8af;
+  --mealie-toast-action: #f0a07c;
+}
+
+.v-theme--dark .mealie-toast,
+.v-theme--dark.mealie-toast {
+  --mealie-toast-bg: #2e2c29;
+}
+
+.mealie-toast .v-snackbar__wrapper {
+  min-width: min(360px, calc(100vw - 32px));
+  max-width: min(560px, calc(100vw - 32px));
+  border-radius: var(--mealie-radius-md);
+  background: var(--mealie-toast-bg) !important;
+  color: var(--mealie-toast-ink) !important;
+  box-shadow:
+    0 16px 40px -12px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 250, 240, 0.06) !important;
+}
+
+.mealie-toast .v-snackbar__content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 8px 12px 16px;
+  font-size: var(--mealie-text-body);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.mealie-toast .v-snackbar__content > .v-icon {
+  margin: 0 !important;
+  font-size: 20px;
+}
+
+.mealie-toast .v-snackbar__wrapper.bg-success .v-snackbar__content > .v-icon {
+  color: #7fcf86;
+}
+
+.mealie-toast .v-snackbar__wrapper.bg-error .v-snackbar__content > .v-icon {
+  color: #f2857f;
+}
+
+.mealie-toast .v-snackbar__wrapper.bg-warning .v-snackbar__content > .v-icon {
+  color: #f5b061;
+}
+
+.mealie-toast .v-snackbar__wrapper.bg-info .v-snackbar__content > .v-icon {
+  color: var(--mealie-toast-muted);
+}
+
+.mealie-toast .v-snackbar__actions .v-btn {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--mealie-radius-pill);
+  color: var(--mealie-toast-action) !important;
+  font-weight: 600;
+}
+
+.mealie-toast .v-progress-linear {
+  color: var(--mealie-toast-action) !important;
+}
+
+// With the tab bar on screen, the scroll-to-top button sits above it rather than on it
+.v-application:has(.mealie-tabbar) .scroll-to-top {
+  margin-bottom: calc(72px + env(safe-area-inset-bottom)) !important;
+}
+
+// Text, outlined and plain buttons coloured "info" read as stock Material blue links among the
+// warm palette ("Upload", "Manage ...", dialog actions). As text they take the accent ink;
+// filled info buttons are already the neutral secondary pill (see the .v-main block above).
+// Info alerts and chips keep their colour: there it carries meaning
+.v-btn.text-info {
+  color: var(--mealie-accent-ink) !important;
+}
+
+// Data and admin tables. Destructive actions don't shout at rest: a row's delete is quiet ink
+// that turns red on hover, and a destructive toolbar action is red text on a neutral pill
+.v-table .v-btn.text-error {
+  color: var(--mealie-ink-3) !important;
+}
+
+.v-table .v-btn.text-error:hover,
+.v-table .v-btn.text-error:focus-visible {
+  color: rgb(var(--v-theme-error)) !important;
+}
+
+// Toolbar buttons are all secondary pills: Create, Combine and the rest render alike in Mealie's
+// markup, and a row of equal orange pills gave none of them priority
+.crud-table__toolbar .v-btn:not(.v-btn--icon) {
+  background: var(--mealie-fill) !important;
+  color: var(--mealie-ink) !important;
+  box-shadow: none !important;
+}
+
+.crud-table__toolbar .v-btn.bg-error {
+  background: var(--mealie-fill) !important;
+  color: rgb(var(--v-theme-error)) !important;
+  box-shadow: none !important;
+}
+
+// links inside tables (recipe counts and the like) in the accent ink, not browser blue
+.v-table a:not(.v-btn) {
+  color: var(--mealie-accent-ink);
+  font-weight: var(--mealie-weight-control);
+  text-decoration: none;
+}
+
+.v-table a:not(.v-btn):hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+// Vuetify keeps a tooltip's overlay mounted once it has been shown (or eagerly), with its text
+// hidden inside. The empty role="tooltip" element then reads as a nameless tooltip to assistive
+// tech (axe: aria-tooltip-name). An inactive tooltip is taken out of the page entirely
+.v-overlay.v-tooltip:not(.v-overlay--active) {
+  display: none;
+}
+
+// A grouped list of settings (BaseSettingRow): one panel per group, rows divided by hairlines
+.base-setting-group {
+  border-radius: var(--mealie-radius-md);
+  background: var(--mealie-surface);
+  box-shadow: var(--mealie-elevation-1);
+  overflow: hidden;
+}
+
+.base-setting-group__title {
+  margin: var(--mealie-space-6) 0 var(--mealie-space-2);
+  font-size: var(--mealie-text-h3);
+  font-weight: var(--mealie-weight-heading);
+  letter-spacing: -0.01em;
+}
+
+.base-setting-group__title:first-child {
+  margin-top: 0;
+}
+
+.base-setting-group__intro {
+  margin: 0 0 var(--mealie-space-3);
+  font-size: var(--mealie-text-meta);
+  color: var(--mealie-ink-3);
 }

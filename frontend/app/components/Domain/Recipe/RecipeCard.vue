@@ -1,85 +1,50 @@
 <template>
-  <!-- Wrap v-hover with a div to provide a proper DOM element for the transition -->
-  <div>
-    <v-hover
-      v-slot="{ isHovering, props: hoverProps }"
-      :open-delay="50"
+  <!-- Grid card: the photo leads, then the title and one line of meta (DESIGN_AUDIT.md §8.4).
+       Rating, tags and the description live on the recipe page; the favourite sits on the photo -->
+  <div class="mealie-recipe-card-wrap">
+    <v-card
+      class="mealie-recipe-card"
+      variant="flat"
+      :style="{ cursor }"
+      :to="recipeRoute"
+      @click.self="$emit('click')"
     >
-      <v-card
-        v-bind="hoverProps"
-        class="mealie-recipe-card"
-        :class="{ 'on-hover': isHovering }"
-        :style="{ cursor }"
-        :elevation="isHovering ? 6 : 0"
-        :to="recipeRoute"
-        :min-height="imageHeight + 75"
-        @click.self="$emit('click')"
-      >
+      <div class="mealie-recipe-card__media">
         <RecipeCardImage
           small
-          :icon-size="imageHeight"
-          :height="imageHeight"
+          :name="name"
+          height="100%"
+          :min-height="0"
           :slug="slug"
           :recipe-id="recipeId"
           :image-version="image"
-        >
-          <v-expand-transition v-if="description">
-            <div
-              v-if="isHovering"
-              class="d-flex transition-fast-in-fast-out bg-secondary v-card--reveal"
-              style="height: 100%"
-            >
-              <v-card-text class="v-card--text-show white--text">
-                <div class="descriptionWrapper">
-                  <SafeMarkdown :source="description" />
-                </div>
-              </v-card-text>
-            </div>
-          </v-expand-transition>
-        </RecipeCardImage>
-        <v-card-title class="px-4 mealie-recipe-card__title">
-          {{ name }}
-        </v-card-title>
-
-        <div
-          class="recipe-card-footer"
-          :class="{ 'recipe-card-footer--no-tags': tags.length === 0 }"
-        >
-          <RecipeChips
-            v-if="tags.length > 0"
-            class="recipe-card-tags px-4"
-            :truncate="false"
-            :items="tags"
-            :title="false"
-            :limit="2"
-            small
-            url-prefix="tags"
-            v-bind="$attrs"
+        />
+        <v-defaults-provider :defaults="{ VBtn: { variant: 'flat' } }">
+          <RecipeFavoriteBadge
+            v-if="isOwnGroup && showRecipeContent"
+            class="mealie-recipe-card__favorite"
+            :recipe-id="recipeId"
+            show-always
           />
+        </v-defaults-provider>
+      </div>
 
-          <slot name="actions">
-            <v-card-actions
-              v-if="showRecipeContent"
-              class="recipe-card-actions px-1 py-0"
-            >
-              <RecipeFavoriteBadge
-                v-if="isOwnGroup"
-                :recipe-id="recipeId"
-                show-always
-              />
-              <div v-else class="px-1" /> <!-- Empty div to keep the layout consistent -->
-
-              <RecipeCardRating
-                :model-value="rating"
-                :recipe-id="recipeId"
-              />
-              <v-spacer />
+      <div class="mealie-recipe-card__body">
+        <h3 class="mealie-recipe-card__title">
+          {{ name }}
+        </h3>
+        <div class="mealie-recipe-card__meta-row">
+          <span v-if="metaText" class="mealie-recipe-card__meta">{{ metaText }}</span>
+          <v-spacer />
+          <!-- quiet text buttons, as v-card-actions used to provide -->
+          <v-defaults-provider :defaults="{ VBtn: { variant: 'text' } }">
+            <slot name="actions">
               <!-- If we're not logged-in, no items display, so we hide this menu -->
               <RecipeContextMenu
                 v-if="isOwnGroup && showRecipeContent"
-                color="grey-darken-2"
+                class="mealie-recipe-card__menu"
                 :slug="slug"
-                :menu-icon="$globals.icons.dotsVertical"
+                :menu-icon="$globals.icons.dotsHorizontal"
                 :name="name"
                 :recipe-id="recipeId"
                 :use-items="{
@@ -94,22 +59,21 @@
                 }"
                 @deleted="$emit('delete', slug)"
               />
-            </v-card-actions>
-          </slot>
+            </slot>
+          </v-defaults-provider>
         </div>
-        <slot />
-      </v-card>
-    </v-hover>
+      </div>
+      <slot />
+    </v-card>
   </div>
 </template>
 
 <script setup lang="ts">
 import RecipeFavoriteBadge from "./RecipeFavoriteBadge.vue";
-import RecipeChips from "./RecipeChips.vue";
 import RecipeContextMenu from "./RecipeContextMenu/RecipeContextMenu.vue";
 import RecipeCardImage from "./RecipeCardImage.vue";
-import RecipeCardRating from "./RecipeCardRating.vue";
 import { useLoggedInState } from "~/composables/use-logged-in-state";
+import { useRecipeCardMeta, type RecipeCardMeta } from "~/composables/recipes/use-recipe-card-meta";
 
 interface Props {
   name: string;
@@ -120,6 +84,9 @@ interface Props {
   image?: string;
   tags?: Array<any>;
   recipeId: string;
+  /** The recipe's times and categories, for the "35 min · Dinner" line under the title */
+  meta?: RecipeCardMeta | null;
+  // Kept so existing callers still type-check; the redesigned card no longer shows these
   imageHeight?: number;
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -128,6 +95,7 @@ const props = withDefaults(defineProps<Props>(), {
   ratingColor: "secondary",
   image: undefined,
   tags: () => [],
+  meta: null,
   imageHeight: 200,
 });
 
@@ -146,79 +114,105 @@ const recipeRoute = computed<string>(() => {
   return showRecipeContent.value ? `/g/${groupSlug.value}/r/${props.slug}` : "";
 });
 const cursor = computed(() => showRecipeContent.value ? "pointer" : "auto");
+
+const { recipeCardMeta } = useRecipeCardMeta();
+const metaText = computed(() => recipeCardMeta(props.meta));
 </script>
 
-<style>
-.v-card--reveal {
-  align-items: center;
-  bottom: 0;
-  justify-content: center;
-  opacity: 0.8;
-  position: absolute;
-  width: 100%;
+<style scoped>
+.mealie-recipe-card {
+  background: transparent !important;
+  border-radius: var(--mealie-radius-md) !important;
+  box-shadow: none !important;
+  overflow: visible;
 }
-.v-card--text-show {
-  opacity: 1 !important;
-}
-.headerClass {
-  white-space: nowrap;
-  word-break: normal;
+
+/* the photo: 4:3 everywhere, so grids line up whatever the upload's shape */
+.mealie-recipe-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--mealie-radius-md);
   overflow: hidden;
-  text-overflow: ellipsis;
+  background: var(--mealie-placeholder);
+  isolation: isolate;
 }
-.descriptionWrapper {
+
+.mealie-recipe-card__media :deep(.v-img__img) {
+  transition: transform var(--mealie-duration-enter) var(--mealie-ease);
+}
+
+@media (hover: hover) {
+  .mealie-recipe-card:hover .mealie-recipe-card__media :deep(.v-img__img) {
+    transform: scale(1.03);
+  }
+}
+
+.mealie-recipe-card__media :deep(.mealie-recipe-card__favorite) {
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 34px !important;
+  height: 34px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(6px);
+}
+
+.mealie-recipe-card__media :deep(.mealie-recipe-card__favorite .v-icon) {
+  font-size: 18px;
+}
+
+.mealie-recipe-card__body {
+  padding: 12px 2px 0;
+}
+
+.mealie-recipe-card__title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 8;
-  line-clamp: 8;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
+  margin: 0;
+  font-size: var(--mealie-text-body);
+  font-weight: var(--mealie-weight-strong);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  color: var(--mealie-ink);
   overflow-wrap: anywhere;
 }
-.recipe-card-footer {
+
+.mealie-recipe-card__meta-row {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-height: 84px;
+  align-items: center;
+  min-height: 32px;
+  margin-top: 2px;
 }
-.recipe-card-footer--no-tags {
-  justify-content: center;
-}
-.recipe-card-tags {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 4px;
+
+.mealie-recipe-card__meta {
   min-width: 0;
-  overflow: hidden;
-}
-.recipe-card-tags .v-chip {
-  flex: 0 1 auto;
-  margin: 0 !important;
-}
-.recipe-card-tags .v-chip__content {
-  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: var(--mealie-text-meta);
+  color: var(--mealie-ink-3);
 }
-.recipe-card-actions {
-  width: 100%;
+
+.mealie-recipe-card__meta-row :deep(.mealie-recipe-card__menu) {
+  margin-right: -6px;
 }
-.mealie-recipe-card {
-  border-radius: 18px !important;
-  box-shadow: inset 0 0 0 1px var(--mealie-hairline) !important;
-  transition:
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
+
+.mealie-recipe-card__meta-row :deep(.mealie-recipe-card__menu .v-btn) {
+  width: 32px;
+  height: 32px;
+  color: var(--mealie-ink-3);
 }
-.mealie-recipe-card.on-hover {
-  box-shadow:
-    0 18px 40px -20px rgba(40, 30, 20, 0.35),
-    inset 0 0 0 1px var(--mealie-hairline) !important;
-  transform: translateY(-2px);
+
+.mealie-recipe-card__meta-row :deep(.mealie-recipe-card__menu .v-btn .v-icon) {
+  color: inherit !important;
 }
-.mealie-recipe-card__title {
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+
+/* the card's own link focus ring hugs the photo */
+.mealie-recipe-card:focus-visible {
+  outline-offset: 4px;
 }
 </style>

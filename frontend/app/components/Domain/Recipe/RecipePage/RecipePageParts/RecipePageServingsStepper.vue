@@ -66,20 +66,20 @@ function step(direction: 1 | -1) {
 .servings-stepper {
   display: inline-flex;
   align-items: center;
-  height: 30px;
-  border-radius: 15px;
+  height: 36px;
+  border-radius: 18px;
   background: var(--mealie-fill);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .servings-stepper__btn {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border: 0;
-  border-radius: 15px;
+  border-radius: 18px;
   background: transparent;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   font: inherit;
   font-size: 18px;
   line-height: 1;
@@ -105,7 +105,8 @@ function step(direction: 1 | -1) {
   padding: 0 2px;
   color: var(--mealie-ink);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--mealie-text-meta);
+  font-variant-numeric: tabular-nums;
   font-weight: 600;
   cursor: pointer;
 }

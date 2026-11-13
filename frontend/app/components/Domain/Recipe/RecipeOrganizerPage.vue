@@ -84,41 +84,45 @@
       <div v-if="!Object.keys(itemsSorted).length" class="organizer-empty mealie-card">
         {{ $t("search.no-results") }}
       </div>
-      <section
-        v-for="(itms, key, idx) in itemsSorted"
-        :key="'header' + idx"
-        class="organizer-section"
-      >
-        <h2 v-if="isTitle(key)" class="organizer-section__letter">
-          {{ key }}
-        </h2>
-        <div class="organizer-grid">
-          <template v-for="(item, index) in itms" :key="'cat' + index">
-            <div v-if="item" class="organizer-tile">
-              <!-- the link and the menu are siblings; the link's ::after covers the tile -->
-              <RouterLink
-                class="organizer-tile__link"
-                :to="`/g/${groupSlug}?${itemType}=${item.id}`"
-              >
-                <span class="organizer-tile__icon">
-                  <v-icon size="18">{{ icon }}</v-icon>
-                </span>
-                <span class="organizer-tile__text">
-                  <span class="organizer-tile__name">{{ item.name }}</span>
-                  <span v-if="item.recipeCount !== undefined" class="organizer-tile__count">
-                    {{ $t("recipe-library.recipes-count", item.recipeCount) }}
+      <!-- the letters flow into columns, so a short A-Z index fills the width instead of a
+           column of single tiles -->
+      <div class="organizer-index">
+        <section
+          v-for="(itms, key, idx) in itemsSorted"
+          :key="'header' + idx"
+          class="organizer-section"
+        >
+          <h2 v-if="isTitle(key)" class="organizer-section__letter">
+            {{ key }}
+          </h2>
+          <div class="organizer-grid">
+            <template v-for="(item, index) in itms" :key="'cat' + index">
+              <div v-if="item" class="organizer-tile">
+                <!-- the link and the menu are siblings; the link's ::after covers the tile -->
+                <RouterLink
+                  class="organizer-tile__link"
+                  :to="`/g/${groupSlug}?${itemType}=${item.id}`"
+                >
+                  <span class="organizer-tile__icon">
+                    <v-icon size="18">{{ icon }}</v-icon>
                   </span>
-                </span>
-              </RouterLink>
-              <ContextMenu
-                :items="[presets.delete, presets.edit]"
-                @delete="confirmDelete(item)"
-                @edit="openUpdateDialog(item)"
-              />
-            </div>
-          </template>
-        </div>
-      </section>
+                  <span class="organizer-tile__text">
+                    <span class="organizer-tile__name">{{ item.name }}</span>
+                    <span v-if="item.recipeCount !== undefined" class="organizer-tile__count">
+                      {{ $t("recipe-library.recipes-count", item.recipeCount) }}
+                    </span>
+                  </span>
+                </RouterLink>
+                <ContextMenu
+                  :items="[presets.delete, presets.edit]"
+                  @delete="confirmDelete(item)"
+                  @edit="openUpdateDialog(item)"
+                />
+              </div>
+            </template>
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </template>
@@ -281,7 +285,7 @@ function isTitle(str: number | string) {
 }
 
 .organizer-search:focus-within {
-  box-shadow: 0 0 0 3px rgba(var(--v-theme-primary), 0.25);
+  box-shadow: 0 0 0 3px var(--mealie-accent-ring);
 }
 
 .organizer-search__icon {
@@ -304,8 +308,14 @@ function isTitle(str: number | string) {
   opacity: 1;
 }
 
-.organizer-section + .organizer-section {
-  margin-top: 24px;
+.organizer-index {
+  columns: 260px;
+  column-gap: 32px;
+}
+
+.organizer-section {
+  break-inside: avoid;
+  margin-bottom: 24px;
 }
 
 .organizer-section__letter {
@@ -320,8 +330,8 @@ function isTitle(str: number | string) {
 
 .organizer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
 }
 
 .organizer-tile {
@@ -377,8 +387,8 @@ function isTitle(str: number | string) {
   height: 36px;
   flex-shrink: 0;
   border-radius: 10px;
-  background: rgba(var(--v-theme-primary), 0.1);
-  color: rgb(var(--v-theme-primary));
+  background: var(--mealie-accent-tint);
+  color: var(--mealie-accent-ink);
 }
 
 .organizer-tile__text {

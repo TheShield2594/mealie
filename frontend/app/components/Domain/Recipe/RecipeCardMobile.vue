@@ -1,141 +1,95 @@
 <template>
-  <div :style="`height: ${height}px;`">
-    <v-expand-transition>
-      <v-card
-        :ripple="false"
-        :class="[
-          isFlat ? 'mx-auto flat' : 'mx-auto mealie-row-card',
-          { 'disable-highlight': disableHighlight },
-        ]"
-        :style="{ cursor }"
-        :elevation="0"
-        height="100%"
-        :to="$attrs.selected ? undefined : recipeRoute"
-        @click="$emit('selected')"
-      >
-        <v-img
-          v-if="vertical"
-          class="rounded-sm"
-          cover
-        >
+  <!-- Row card: thumbnail, title, one line of meta, then the favourite and menu
+       (DESIGN_AUDIT.md §8.4). Used for list views, search results, the planner and the timeline -->
+  <div
+    class="mealie-row-card-wrap"
+    :style="vertical ? undefined : { minHeight: `${height}px` }"
+  >
+    <v-card
+      variant="flat"
+      :class="[
+        isFlat ? 'flat' : 'mealie-row-card',
+        { 'mealie-row-card--vertical': vertical, 'disable-highlight': disableHighlight },
+      ]"
+      :style="{ cursor, '--row-thumb': `${thumbSize}px` }"
+      :to="$attrs.selected ? undefined : recipeRoute"
+      @click="$emit('selected')"
+    >
+      <div class="mealie-row-card__thumb">
+        <slot name="avatar">
           <RecipeCardImage
             tiny
-            :icon-size="100"
+            :name="showRecipeContent ? name : null"
+            :icon-size="28"
+            height="100%"
+            :min-height="0"
             :slug="slug"
             :recipe-id="recipeId"
             :image-version="image"
-            :height="height"
           />
-        </v-img>
-        <v-list-item
-          lines="two"
-          class="py-0"
-          :class="vertical ? 'px-2' : 'px-0'"
-          item-props
-          height="100%"
-          density="compact"
-        >
-          <template #prepend>
-            <slot
-              v-if="!vertical"
-              name="avatar"
-            >
-              <RecipeCardImage
-                tiny
-                :icon-size="100"
+        </slot>
+      </div>
+      <div class="mealie-row-card__body">
+        <div class="mealie-row-card__title">
+          {{ name }}
+        </div>
+        <div v-if="metaText" class="mealie-row-card__meta">
+          {{ metaText }}
+        </div>
+        <!-- a note-only entry (no recipe) shows its text instead -->
+        <div v-else-if="!showRecipeContent && description" class="mealie-row-card__meta mealie-row-card__meta--note">
+          {{ description }}
+        </div>
+      </div>
+      <div class="mealie-row-card__actions">
+        <!-- quiet text buttons, as v-card-actions used to provide -->
+        <v-defaults-provider :defaults="{ VBtn: { variant: 'text' } }">
+          <slot name="actions">
+            <RecipeFavoriteBadge
+              v-if="isOwnGroup && showRecipeContent && !hideFavorite"
+              class="mealie-row-card__favorite"
+              :recipe-id="recipeId"
+              show-always
+            />
+            <!-- If we're not logged-in, no items display, so we hide this menu -->
+            <slot name="context-menu">
+              <RecipeContextMenu
+                v-if="isOwnGroup && showRecipeContent"
+                class="mealie-row-card__menu"
                 :slug="slug"
+                :menu-icon="$globals.icons.dotsHorizontal"
+                :name="name"
                 :recipe-id="recipeId"
-                :image-version="image"
-                width="125"
-                :height="height"
+                :recipe-scale="scale"
+                :use-items="{
+                  delete: false,
+                  edit: false,
+                  download: true,
+                  mealplanner: true,
+                  shoppingList: true,
+                  print: false,
+                  printPreferences: false,
+                  share: true,
+                }"
+                :leading-items="contextMenuLeadingItems"
+                :append-items="contextMenuAppendItems"
+                @deleted="$emit('delete', slug)"
+                @mealplan-remove="$emit('mealplanRemove')"
+                @mealplan-edit="$emit('mealplanEdit')"
               />
             </slot>
-          </template>
-          <div class="pl-4 d-flex flex-column justify-space-between align-stretch pr-2">
-            <v-list-item-title class="mt-3 mb-1 text-top text-truncate w-100 mealie-row-card__title">
-              {{ name }}
-            </v-list-item-title>
-            <v-list-item-subtitle class="ma-0 text-top mealie-row-card__description">
-              <SafeMarkdown v-if="description" :source="description" />
-              <p v-else>
-                <br>
-                <br>
-                <br>
-              </p>
-            </v-list-item-subtitle>
-            <div
-              class="d-flex flex-nowrap justify-start ma-0 pt-2 pb-0"
-              style="overflow-x: hidden; overflow-y: hidden; white-space: nowrap;"
-            >
-              <RecipeChips
-                :truncate="true"
-                :items="tags"
-                :title="false"
-                :limit="2"
-                small
-                url-prefix="tags"
-                v-bind="$attrs"
-              />
-            </div>
-          </div>
-          <slot name="actions">
-            <v-card-actions class="w-100 my-0 px-1 py-0">
-              <RecipeFavoriteBadge
-                v-if="isOwnGroup && showRecipeContent"
-                :recipe-id="recipeId"
-                show-always
-                class="ma-0 pa-0"
-              />
-              <div v-else class="my-0 px-1 py-0" /> <!-- Empty div to keep the layout consistent -->
-              <RecipeCardRating
-                v-if="showRecipeContent"
-                :class="[{ 'pb-2': !isOwnGroup }, 'ml-n2']"
-                :model-value="rating"
-                :recipe-id="recipeId"
-              />
-
-              <!-- If we're not logged-in, no items display, so we hide this menu -->
-              <!-- We also add padding to the v-rating above to compensate -->
-              <slot name="context-menu">
-                <RecipeContextMenu
-                  v-if="isOwnGroup && showRecipeContent"
-                  :slug="slug"
-                  :menu-icon="$globals.icons.dotsHorizontal"
-                  :name="name"
-                  :recipe-id="recipeId"
-                  :recipe-scale="scale"
-                  class="ml-auto"
-                  :use-items="{
-                    delete: false,
-                    edit: false,
-                    download: true,
-                    mealplanner: true,
-                    shoppingList: true,
-                    print: false,
-                    printPreferences: false,
-                    share: true,
-                  }"
-                  :leading-items="contextMenuLeadingItems"
-                  :append-items="contextMenuAppendItems"
-                  @deleted="$emit('delete', slug)"
-                  @mealplan-remove="$emit('mealplanRemove')"
-                  @mealplan-edit="$emit('mealplanEdit')"
-                />
-              </slot>
-            </v-card-actions>
           </slot>
-        </v-list-item>
-        <slot />
-      </v-card>
-    </v-expand-transition>
+        </v-defaults-provider>
+      </div>
+      <slot />
+    </v-card>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useLoggedInState } from "~/composables/use-logged-in-state";
+import { useRecipeCardMeta, type RecipeCardMeta } from "~/composables/recipes/use-recipe-card-meta";
 import RecipeCardImage from "./RecipeCardImage.vue";
-import RecipeCardRating from "./RecipeCardRating.vue";
-import RecipeChips from "./RecipeChips.vue";
 import RecipeContextMenu from "./RecipeContextMenu/RecipeContextMenu.vue";
 import RecipeFavoriteBadge from "./RecipeFavoriteBadge.vue";
 import type { ContextMenuItem } from "./RecipeContextMenu/RecipeContextMenu.vue";
@@ -155,6 +109,10 @@ interface Props {
   contextMenuAppendItems?: ContextMenuItem[];
   contextMenuLeadingItems?: ContextMenuItem[];
   scale?: number;
+  /** The recipe's times and categories, for the "35 min · Dinner" line under the title */
+  meta?: RecipeCardMeta | null;
+  /** Leave the favourite out, e.g. on meal plan entries where the row is about the plan */
+  hideFavorite?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   rating: 0,
@@ -162,9 +120,11 @@ const props = withDefaults(defineProps<Props>(), {
   tags: () => [],
   vertical: false,
   isFlat: false,
-  height: 150,
+  height: 88,
   disableHighlight: false,
   scale: 1,
+  meta: null,
+  hideFavorite: false,
 });
 
 defineEmits<{
@@ -190,83 +150,135 @@ const recipeRoute = computed<string>(() => {
   return props.scale === 1 ? recipePath : `${recipePath}?scale=${props.scale}`;
 });
 const cursor = computed(() => showRecipeContent.value ? "pointer" : "auto");
+
+// the square thumbnail fills the row's height, less its padding
+const thumbSize = computed(() => Math.max(48, props.height - 16));
+
+const { recipeCardMeta } = useRecipeCardMeta();
+const metaText = computed(() => recipeCardMeta(props.meta));
 </script>
 
 <style scoped>
-:deep(.v-list-item__prepend) {
-  height: 100%;
-}
-.v-mobile-img {
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 0;
-}
-.v-card--reveal {
+.mealie-row-card,
+.flat {
+  display: flex !important;
   align-items: center;
-  bottom: 0;
-  justify-content: center;
-  opacity: 0.8;
-  position: absolute;
-  width: 100%;
-}
-.v-card--text-show {
-  opacity: 1 !important;
-}
-.headerClass {
-  white-space: nowrap;
-  word-break: normal;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.text-top {
-  align-self: start !important;
-}
-
-.flat,
-.theme--dark .flat {
-  box-shadow: none !important;
-  background-color: transparent !important;
+  gap: 14px;
+  height: 100%;
+  min-height: inherit;
+  padding: 8px;
+  border-radius: var(--mealie-radius-md) !important;
 }
 
 .mealie-row-card {
-  border-radius: 16px !important;
   background: var(--mealie-surface) !important;
-  box-shadow: inset 0 0 0 1px var(--mealie-hairline-strong) !important;
-  transition: box-shadow 0.2s ease;
+  box-shadow: inset 0 0 0 1px var(--mealie-hairline) !important;
+  transition:
+    box-shadow var(--mealie-duration-hover) var(--mealie-ease),
+    transform var(--mealie-duration-press) var(--mealie-ease);
 }
 
-.mealie-row-card:hover {
-  box-shadow:
-    0 12px 28px -16px rgba(40, 30, 20, 0.35),
-    inset 0 0 0 1px var(--mealie-hairline-strong) !important;
+@media (hover: hover) {
+  .mealie-row-card:hover {
+    box-shadow: inset 0 0 0 1px var(--mealie-hairline-strong) !important;
+  }
 }
 
-.mealie-row-card :deep(.v-list-item__prepend) {
-  padding: 6px 0 6px 6px;
+.flat {
+  box-shadow: none !important;
+  background-color: transparent !important;
+  padding-inline: 0;
 }
 
-.mealie-row-card :deep(.v-list-item__prepend .v-img),
-.mealie-row-card :deep(.v-list-item__prepend .v-responsive) {
-  border-radius: 12px;
+.mealie-row-card-wrap {
+  display: flex;
+}
+
+.mealie-row-card-wrap > .v-card {
+  flex: 1;
+  min-width: 0;
+}
+
+.mealie-row-card__thumb {
+  flex: none;
+  width: var(--row-thumb);
+  height: var(--row-thumb);
+  border-radius: var(--mealie-radius-sm);
   overflow: hidden;
+  background: var(--mealie-placeholder);
+}
+
+.mealie-row-card__body {
+  flex: 1;
+  min-width: 0;
 }
 
 .mealie-row-card__title {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-.mealie-row-card__description {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   overflow: hidden;
-  font-size: 13px;
-  color: var(--mealie-text-tertiary);
-  opacity: 1;
+  font-size: var(--mealie-text-body);
+  font-weight: var(--mealie-weight-strong);
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  color: var(--mealie-ink);
+  overflow-wrap: anywhere;
+}
+
+.mealie-row-card__meta {
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--mealie-text-meta);
+  color: var(--mealie-ink-3);
+}
+
+.mealie-row-card__meta--note {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+}
+
+.mealie-row-card__actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  align-self: center;
+}
+
+.mealie-row-card__actions :deep(.v-btn) {
+  width: 36px;
+  height: 36px;
+  color: var(--mealie-ink-3);
+}
+
+.mealie-row-card__actions :deep(.v-btn .v-icon) {
+  font-size: 20px;
+}
+
+.mealie-row-card__actions :deep(.mealie-row-card__menu .v-btn .v-icon) {
+  color: inherit !important;
+}
+
+/* vertical: the photo on top, as the timeline shows on phones */
+.mealie-row-card--vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.mealie-row-card--vertical .mealie-row-card__thumb {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+.mealie-row-card--vertical .mealie-row-card__actions {
+  align-self: flex-end;
 }
 
 .disable-highlight :deep(.v-card__overlay) {

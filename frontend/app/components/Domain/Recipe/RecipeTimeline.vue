@@ -63,9 +63,13 @@
       class="px-1"
       :style="maxHeight ? `max-height: ${maxHeight}; overflow-y: auto;` : ''"
     >
+      <!-- one-sided: events read down a single rail (dates on the left on wide screens) rather
+           than zigzagging from side to side -->
       <v-timeline
         :density="$vuetify.display.smAndDown ? ($vuetify.display.xs ? 'compact' : 'comfortable') : undefined"
-        justify="center"
+        side="end"
+        align="start"
+        truncate-line="both"
         class="timeline"
       >
         <RecipeTimelineItem
@@ -315,3 +319,12 @@ onMounted(
   },
 );
 </script>
+
+<style scoped>
+/* each event's cell takes the rail's full width up to 640px, so every card lines up */
+.timeline :deep(.v-timeline-item__body) {
+  justify-self: start;
+  width: 100%;
+  max-width: 640px;
+}
+</style>

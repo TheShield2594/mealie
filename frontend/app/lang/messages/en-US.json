@@ -1335,7 +1335,9 @@
     "see-all": "See All",
     "all-recipes": "All Recipes",
     "start-cooking": "Start Cooking",
-    "recipes-count": "No recipes | One recipe | {count} recipes"
+    "recipes-count": "No recipes | One recipe | {count} recipes",
+    "view-grid": "Grid",
+    "view-list": "List"
   },
   "recipe-page": {
     "prep": "Prep",
@@ -1344,7 +1346,11 @@
     "serves": "Serves",
     "servings-count": "{count} serving | {count} servings",
     "fewer-servings": "Fewer servings",
-    "more-servings": "More servings"
+    "more-servings": "More servings",
+    "last-made-on": "Last made {date}",
+    "not-made-yet": "Not made yet",
+    "log-a-cook": "Log a cook",
+    "filed-under": "Filed under"
   },
   "cook-mode": {
     "exit": "Exit",
@@ -1360,7 +1366,11 @@
     "timer-done": "Timer done",
     "stop-alarm": "Stop",
     "keyboard-hint": "Use ← → to move between steps",
-    "no-steps": "This recipe has no steps yet."
+    "no-steps": "This recipe has no steps yet.",
+    "screen-stays-on": "Screen stays on",
+    "screen-may-sleep": "Screen may sleep",
+    "screen-may-sleep-hint": "This browser didn't allow keeping the screen on. Turn up the auto-lock time if it dims while you cook.",
+    "screen-may-sleep-https": "Keeping the screen on needs Mealie to be served over HTTPS."
   },
   "recipe-edit": {
     "editing": "Editing",
@@ -1369,7 +1379,8 @@
     "details": "Details",
     "photo": "Photo",
     "organize": "Organize",
-    "more": "Notes & Nutrition"
+    "more": "Notes & Nutrition",
+    "time-text-placeholder": "Anything else, e.g. plus overnight"
   },
   "recipe-create": {
     "eyebrow": "New Recipe",
@@ -1432,5 +1443,50 @@
     "dont-restock": "Don't add them to a list",
     "pantry-updated": "Pantry updated",
     "failed-to-update-pantry": "Couldn't update the pantry"
+  },
+  "empty-state": {
+    "no-matches-title": "No recipes match",
+    "no-matches-description": "Try a different word, or clear some of the filters.",
+    "no-recipes-title": "No recipes yet",
+    "no-recipes-description": "Recipes you create or import will show up here.",
+    "cookbook-title": "This cookbook is empty",
+    "cookbook-description": "Recipes that match this cookbook's filters will show up here.",
+    "list-title": "Nothing on this list yet",
+    "list-description": "Add an item, or add a recipe's ingredients from the recipe page.",
+    "finder-title": "What's in your kitchen?",
+    "finder-description": "Choose a few ingredients you have, and the finder shows the recipes you can make with them.",
+    "finder-no-results-title": "No recipes with those ingredients",
+    "recipe-not-found-title": "This recipe isn't here",
+    "recipe-not-found-description": "It may have been deleted or renamed, or the link may be wrong.",
+    "back-to-recipes": "Back to recipes",
+    "clear-search": "Clear search and filters",
+    "loading": "Loading",
+    "page-not-found-title": "This page isn't here",
+    "page-not-found-description": "The link may be out of date, or the address mistyped.",
+    "error-title": "Something went wrong",
+    "error-description": "Try again in a moment. If it keeps happening, the server log will say why.",
+    "no-cookbooks-title": "No cookbooks yet"
+  },
+  "toast": {
+    "removed-from-plan": "Removed {name} from the plan",
+    "removed-from-list": "Removed {item}"
+  },
+  "tab-bar": {
+    "navigation": "Main",
+    "plan": "Plan",
+    "lists": "Lists",
+    "more": "More"
+  },
+  "planner": {
+    "today": "Today",
+    "shop-this-week": "Shop for this week"
+  },
+  "auth": {
+    "invite-only-hint": "ask someone in your household for an invite link"
+  },
+  "lists-overview": {
+    "remaining": "{remaining} of {total} left",
+    "all-done": "All checked off | All {total} checked off",
+    "empty": "Nothing on it yet"
   }
 }

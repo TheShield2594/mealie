@@ -1,5 +1,6 @@
 import { useLocalStorage, useOnline } from "@vueuse/core";
 import { useUserApi } from "~/composables/api";
+import { uuid4 } from "~/composables/use-utils";
 import type { ShoppingListItemOut, ShoppingListOut } from "~/lib/api/types/household";
 import type { RequestResponse } from "~/lib/api/types/non-generated";
 
@@ -150,6 +151,32 @@ export function useShoppingListItemActions(shoppingListId: string) {
     queue.delete.push(item);
   }
 
+  /**
+   * Takes back a deletion, for Undo. A deletion that hasn't been sent yet is simply cancelled and
+   * the same item returned. One that has (or an item that was never saved) comes back as a new
+   * item with the same contents, queued like any other new item, so the offline queue stays
+   * consistent either way. Returns the item to show in the list.
+   */
+  function restoreItem(item: ShoppingListItemOut): ShoppingListItemOut {
+    if (removeFromQueue(queue.delete, item)) {
+      return item;
+    }
+
+    const copy: ShoppingListItemOut = {
+      ...item,
+      id: uuid4(),
+      // the old row's recipe links belong to it; the new item gets fresh ones for the same recipes
+      recipeReferences: (item.recipeReferences || []).map(ref => ({
+        recipeId: ref.recipeId,
+        recipeQuantity: ref.recipeQuantity,
+        recipeScale: ref.recipeScale,
+        recipeNote: ref.recipeNote,
+      })) as ShoppingListItemOut["recipeReferences"],
+    };
+    createItem(copy);
+    return copy;
+  }
+
   function getQueueItems(itemQueueType: ItemQueueType) {
     return queue[itemQueueType];
   }
@@ -250,6 +277,7 @@ export function useShoppingListItemActions(shoppingListId: string) {
     createItem,
     updateItem,
     deleteItem,
+    restoreItem,
     process,
 
     __testing__: {

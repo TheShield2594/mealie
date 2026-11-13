@@ -18,11 +18,8 @@
       {{ $t("profile.household-description") }}
     </BasePageTitle>
     <v-form ref="refHouseholdEditForm" @submit.prevent="handleSubmit">
-      <v-card variant="outlined" style="border-color: lightgray;">
-        <v-card-text>
-          <HouseholdPreferencesEditor v-if="household.preferences" v-model="household.preferences" />
-        </v-card-text>
-      </v-card>
+      <!-- the editor's grouped panels are the cards; no outer card around them -->
+      <HouseholdPreferencesEditor v-if="household.preferences" v-model="household.preferences" />
       <div class="d-flex pa-2">
         <BaseButton type="submit" edit class="ml-auto">
           {{ $t("general.update") }}

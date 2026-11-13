@@ -6,7 +6,7 @@
       size="64"
     />
   </div>
-  <AppAuthShell v-else :title="$t('user.sign-in')">
+  <AppAuthShell v-else-if="startupInfoReady" :title="$t('user.sign-in')">
     <template #above>
       <div v-if="isFirstLogin" class="login-first-time">
         <p>
@@ -81,7 +81,7 @@
           size="large"
           block
         >
-          {{ $t("user.login") }}
+          {{ $t("user.sign-in") }}
         </v-btn>
       </template>
 
@@ -111,7 +111,7 @@
       >
         {{ $t("user.register") }}
       </RouterLink>
-      <span v-else>{{ $t("user.invite-only") }}</span>
+      <span v-else :title="$t('auth.invite-only-hint')">{{ $t("user.invite-only") }} · {{ $t("auth.invite-only-hint") }}</span>
     </div>
 
     <template #footer>
@@ -193,8 +193,18 @@ const form = reactive({
   remember: true,
 });
 
+// The form shows once startup info has answered, so the first-time-login hint above it doesn't
+// arrive late and push everything down (that was a 0.21 layout shift). It never waits long:
+const startupInfoReady = ref(false);
+// never hold the form back for long: a slow or failed request just means no first-time hint
+setTimeout(() => {
+  startupInfoReady.value = true;
+}, 1200);
+
 useAsyncData(useAsyncKey(), async () => {
-  const data = await $axios.get<AppStartupInfo>("/api/app/about/startup-info");
+  const data = await $axios.get<AppStartupInfo>("/api/app/about/startup-info").finally(() => {
+    startupInfoReady.value = true;
+  });
   isDemo.value = data.data.isDemo;
   isFirstLogin.value = data.data.isFirstLogin;
 
@@ -375,7 +385,7 @@ function alertOnError(error: any) {
 
 .login-form__link {
   font-size: 14px;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -411,8 +421,8 @@ function alertOnError(error: any) {
 .login-first-time {
   padding: 16px 18px;
   border-radius: 18px;
-  background: rgba(var(--v-theme-primary), 0.08);
-  box-shadow: inset 0 0 0 1px rgba(var(--v-theme-primary), 0.2);
+  background: var(--mealie-accent-wash);
+  box-shadow: inset 0 0 0 1px var(--mealie-accent-tint-strong);
   font-size: 14px;
   line-height: 1.45;
   color: var(--mealie-ink);

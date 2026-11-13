@@ -237,15 +237,15 @@ Setting the following environmental variables will change the theme of the front
 | Variables             | Default | Description                        |
 | --------------------- | :-----: | ---------------------------------- |
 | THEME_LIGHT_PRIMARY   | #C4502A | Main brand color and headers       |
-| THEME_LIGHT_ACCENT    | #007A99 | Buttons and interactive elements   |
-| THEME_LIGHT_SECONDARY | #973542 | Secondary UI elements and interactive accents |
+| THEME_LIGHT_ACCENT    | #57534D | Neutral ink for tags, dividers and quiet icons |
+| THEME_LIGHT_SECONDARY | #C4502A | Ratings and favorites (matches the primary by default) |
 | THEME_LIGHT_SUCCESS   | #2A7531 | Success messages and confirmations |
 | THEME_LIGHT_INFO      | #1565C0 | Information alerts and tooltips    |
 | THEME_LIGHT_WARNING   | #A84B0A | Warning notifications              |
 | THEME_LIGHT_ERROR     | #B3261E | Error messages and alerts          |
 | THEME_DARK_PRIMARY    | #E0683C | Main brand color and headers       |
-| THEME_DARK_ACCENT     | #007A99 | Buttons and interactive elements   |
-| THEME_DARK_SECONDARY  | #E08A73 | Secondary UI elements and interactive accents |
+| THEME_DARK_ACCENT     | #BDB8AF | Neutral ink for tags, dividers and quiet icons |
+| THEME_DARK_SECONDARY  | #E0683C | Ratings and favorites (matches the primary by default) |
 | THEME_DARK_SUCCESS    | #4CAF50 | Success messages and confirmations |
 | THEME_DARK_INFO       | #5E9BD1 | Information alerts and tooltips    |
 | THEME_DARK_WARNING    | #FF6D00 | Warning notifications              |

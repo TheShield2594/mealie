@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { contrast, readableOn, withReadableOn } from "../readable-on";
+import { contrast, readableInk, readableOn, withReadableOn } from "../readable-on";
 
 describe("readableOn", () => {
   test.each([
@@ -38,12 +38,42 @@ describe("default status colours", () => {
   // alerts and status text draw these colours as text on the page, the sidebar and cards
   test.each([
     ["light", ["#2A7531", "#1565C0", "#A84B0A", "#B3261E"], ["#FAF9F7", "#F3F1ED", "#FFFFFF"]],
-    ["dark", ["#4CAF50", "#5E9BD1", "#FF6D00", "#F2706C"], ["#161513", "#1C1B19", "#1F1E1C"]],
+    ["dark", ["#4CAF50", "#5E9BD1", "#FF6D00", "#F2706C"], ["#141311", "#191816", "#1D1C1A"]],
   ])("meet 4.5:1 as text in the %s theme", (_, colors, backgrounds) => {
     for (const color of colors) {
       for (const background of backgrounds) {
         expect(contrast(color, background)).toBeGreaterThanOrEqual(4.5);
       }
     }
+  });
+});
+
+describe("readableInk", () => {
+  const light = ["#FAF9F7", "#F3F1ED", "#FFFFFF"];
+  const dark = ["#141311", "#191816", "#1D1C1A"];
+
+  test("darkens the light theme's terracotta just enough for small text", () => {
+    const ink = readableInk("#C4502A", light, false);
+    expect(ink).not.toBe("#C4502A");
+    for (const background of light) {
+      expect(contrast(ink, background)).toBeGreaterThanOrEqual(4.6);
+    }
+    // still recognisably the accent, not near-black
+    expect(contrast(ink, "#C4502A")).toBeLessThan(1.5);
+  });
+
+  test("leaves an accent that already passes alone", () => {
+    expect(readableInk("#E0683C", dark, true)).toBe("#E0683C");
+  });
+
+  test("lightens a dark accent in the dark theme", () => {
+    const ink = readableInk("#973542", dark, true);
+    for (const background of dark) {
+      expect(contrast(ink, background)).toBeGreaterThanOrEqual(4.6);
+    }
+  });
+
+  test("returns anything that isn't a hex colour unchanged", () => {
+    expect(readableInk("rebeccapurple", light, false)).toBe("rebeccapurple");
   });
 });

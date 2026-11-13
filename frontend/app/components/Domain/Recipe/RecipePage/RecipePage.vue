@@ -104,7 +104,13 @@
       <RecipePageHero :recipe="recipe" :scale="scale" />
       <div class="recipe-view__body d-print-none">
         <div class="recipe-view__columns">
-          <div class="recipe-view__ingredients">
+          <!-- on wide screens the ingredients stay in view beside the method while it scrolls, but
+               only when the whole list fits the window: a taller sticky column would hide its end -->
+          <div
+            ref="ingredientsColumn"
+            class="recipe-view__ingredients"
+            :class="{ 'recipe-view__ingredients--sticky': stickyIngredients }"
+          >
             <RecipePageIngredientToolsView
               :recipe="displayedRecipe"
               :scale="scale"
@@ -170,7 +176,7 @@
 
 <script setup lang="ts">
 import type { ComponentPublicInstance } from "vue";
-import { invoke, until } from "@vueuse/core";
+import { invoke, until, useElementSize, useWindowSize } from "@vueuse/core";
 import type { RouteLocationNormalized } from "vue-router";
 import RecipePageFooter from "./RecipePageParts/RecipePageFooter.vue";
 import RecipePageIngredientToolsView from "./RecipePageParts/RecipePageIngredientToolsView.vue";
@@ -492,6 +498,16 @@ function chipClicked(item: RecipeTag | RecipeCategory | RecipeTool, itemType: st
 
 // expose to template
 // (all variables used in template are top-level in <script setup>)
+
+/* ---------- Sticky ingredients ---------- */
+const ingredientsColumn = ref<HTMLElement | null>(null);
+const { height: ingredientsHeight } = useElementSize(ingredientsColumn);
+const { height: windowHeight } = useWindowSize();
+const vuetifyDisplay = useDisplay();
+// 48px: the 24px it sits below the top of the window, and the same again at the bottom
+const stickyIngredients = computed(() =>
+  vuetifyDisplay.mdAndUp.value && ingredientsHeight.value > 0 && ingredientsHeight.value + 48 < windowHeight.value,
+);
 </script>
 
 <style lang="css">
@@ -605,7 +621,7 @@ function chipClicked(item: RecipeTag | RecipeCategory | RecipeTool, itemType: st
 
 .recipe-edit .v-field--variant-underlined.v-field--focused,
 .recipe-edit .v-field--variant-filled.v-field--focused {
-  box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.45);
+  box-shadow: 0 0 0 3px var(--mealie-accent-ring);
 }
 
 .recipe-edit .v-field--variant-underlined .v-field__overlay,
@@ -659,6 +675,12 @@ function chipClicked(item: RecipeTag | RecipeCategory | RecipeTool, itemType: st
   display: grid;
   grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
   gap: 56px;
+}
+
+.recipe-view__ingredients--sticky {
+  position: sticky;
+  top: 24px;
+  align-self: start;
 }
 
 @media (max-width: 960px) {

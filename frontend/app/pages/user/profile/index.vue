@@ -7,9 +7,10 @@
         :user-id="user.id"
       />
 
-      <h2 class="text-h4 text-center">
-        {{ $t('profile.welcome-user', [user.fullName]) }}
-      </h2>
+      <!-- the translations open with a waving-hand emoji; the redesign keeps emoji out of the UI -->
+      <h1 class="profile-greeting text-center">
+        {{ withoutLeadingEmoji($t('profile.welcome-user', [user.fullName])) }}
+      </h1>
       <p class="subtitle-1 mb-0 text-center">
         {{ $t('profile.description') }}
       </p>
@@ -34,9 +35,9 @@
     </section>
     <section class="my-3">
       <div>
-        <h3 class="text-h5">
+        <h2 class="profile-section-title">
           {{ $t('profile.account-summary') }}
-        </h3>
+        </h2>
         <p>{{ $t('profile.account-summary-description') }}</p>
       </div>
       <v-row tag="section">
@@ -78,9 +79,9 @@
     <v-divider class="my-7" />
     <section>
       <div>
-        <h3 class="text-h6">
+        <h2 class="profile-section-title">
           {{ $t('profile.personal') }}
-        </h3>
+        </h2>
         <p>{{ $t('profile.personal-description') }}</p>
       </div>
       <v-row tag="section">
@@ -121,9 +122,9 @@
     <v-divider class="my-7" />
     <section>
       <div>
-        <h3 class="text-h6">
+        <h2 class="profile-section-title">
           {{ $t('household.household') }}
-        </h3>
+        </h2>
         <p>{{ $t('profile.household-description') }}</p>
       </div>
       <v-row tag="section">
@@ -214,9 +215,9 @@
     <v-divider class="my-7" />
     <section v-if="user.canManage || user.canOrganize || user.advanced">
       <div>
-        <h3 class="text-h6">
+        <h2 class="profile-section-title">
           {{ $t('group.group') }}
-        </h3>
+        </h2>
         <p>{{ $t('profile.group-description') }}</p>
       </div>
       <v-row tag="section">
@@ -371,4 +372,29 @@ const statsTo = computed<{ [key: string]: string }>(() => {
 function getStatsTo(key: string) {
   return statsTo.value[key] ?? "unknown";
 }
+
+function withoutLeadingEmoji(text: string) {
+  return text.replace(/^[\p{Extended_Pictographic}\u{FE0F}\u{200D}\s]+/u, "");
+}
 </script>
+
+<style scoped>
+.profile-greeting {
+  margin-top: 16px;
+  font-family: var(--mealie-font-display);
+  font-size: var(--mealie-text-h1);
+  font-weight: 560;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.profile-section-title {
+  font-size: var(--mealie-text-h3);
+  font-weight: var(--mealie-weight-heading);
+  letter-spacing: -0.01em;
+}
+
+.profile-section-title + p {
+  color: var(--mealie-ink-3);
+}
+</style>

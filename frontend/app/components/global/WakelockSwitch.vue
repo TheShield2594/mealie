@@ -1,12 +1,14 @@
 <template>
   <div
     v-if="wakeIsSupported"
-    class="d-print-none d-flex px-2"
-    :class="$vuetify.display.smAndDown ? 'justify-center' : 'justify-end'"
+    class="d-print-none d-flex px-2 justify-end wakelock-switch"
   >
+    <!-- a small preference at the foot of the page, not a centred control competing with it -->
     <v-switch
       v-model="wakeLock"
       color="primary"
+      density="compact"
+      hide-details
       :label="$t('recipe.screen-awake')"
     />
   </div>
@@ -38,15 +40,39 @@ const wakeLock = computed({
 async function lockScreen() {
   if (wakeIsSupported) {
     console.debug("Wake Lock Requested");
-    await request("screen");
+    // the browser may refuse: always on plain HTTP, and when the page is hidden or the battery is
+    // low. That's not an error worth surfacing; the screen simply follows its normal timeout
+    try {
+      await request("screen");
+    }
+    catch (error) {
+      console.debug("Wake Lock refused", error);
+    }
   }
 }
 async function unlockScreen() {
   if (wakeIsSupported || isActive.value) {
     console.debug("Wake Lock Released");
-    await release();
+    try {
+      await release();
+    }
+    catch (error) {
+      console.debug("Wake Lock release failed", error);
+    }
   }
 }
 onMounted(() => handleLock());
 onUnmounted(() => unlockScreen());
 </script>
+
+<style scoped>
+.wakelock-switch {
+  margin-top: var(--mealie-space-4);
+}
+
+.wakelock-switch :deep(.v-label) {
+  font-size: var(--mealie-text-meta);
+  color: var(--mealie-ink-3);
+  opacity: 1;
+}
+</style>

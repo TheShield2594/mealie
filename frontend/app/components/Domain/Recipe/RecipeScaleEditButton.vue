@@ -18,13 +18,18 @@
               color="secondary-darken-1"
             >
               <template #activator="{ props: tooltipProps }">
+                <!-- a card that opens a menu: announced and operable as the button it is -->
                 <v-card
-                  class="pa-1 px-2"
+                  class="pa-1 px-2 mealie-hit-target"
                   dark
                   color="secondary-darken-1"
                   size="small"
+                  role="button"
+                  tabindex="0"
                   v-bind="{ ...activatorProps, ...tooltipProps }"
                   :style="{ cursor: canEditScale ? '' : 'default' }"
+                  @keydown.enter.prevent="menu = true"
+                  @keydown.space.prevent="menu = true"
                 >
                   <v-icon
                     v-if="canEditScale"

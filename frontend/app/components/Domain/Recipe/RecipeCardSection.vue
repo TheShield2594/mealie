@@ -12,9 +12,14 @@
         {{ displayTitleIcon }}
       </v-icon>
       <span class="recipe-card-section__title">{{ title }}</span>
+      <span
+        v-if="title && total !== null && ready"
+        class="recipe-card-section__count"
+      >{{ $t("recipe-library.recipes-count", total) }}</span>
       <v-spacer />
       <v-btn
         :icon="$vuetify.display.xs"
+        :aria-label="$vuetify.display.xs ? $t('general.random') : undefined"
         variant="text"
         :disabled="recipes.length === 0"
         @click="navigateRandom"
@@ -33,6 +38,7 @@
           <v-btn
             variant="text"
             :icon="$vuetify.display.xs"
+            :aria-label="$vuetify.display.xs ? $t('general.sort') : undefined"
             v-bind="activatorProps"
             :loading="sortLoading"
           >
@@ -101,27 +107,75 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <ContextMenu
+      <!-- grid or list: the same preference the old menu toggled, now in plain sight -->
+      <div
         v-if="!$vuetify.display.smAndDown"
-        :items="[
-          {
-            title: $t('general.toggle-view'),
-            icon: $globals.icons.eye,
-            event: 'toggle-dense-view',
-          },
-        ]"
-        @toggle-dense-view="toggleMobileCards()"
-      />
+        class="mealie-segmented ml-2"
+        role="group"
+        :aria-label="$t('general.toggle-view')"
+      >
+        <button
+          type="button"
+          class="mealie-segmented__item"
+          :class="{ 'mealie-segmented__item--active': !useMobileCards }"
+          :aria-pressed="!useMobileCards"
+          @click="useMobileCards && toggleMobileCards()"
+        >
+          {{ $t("recipe-library.view-grid") }}
+        </button>
+        <button
+          type="button"
+          class="mealie-segmented__item"
+          :class="{ 'mealie-segmented__item--active': useMobileCards }"
+          :aria-pressed="useMobileCards"
+          @click="!useMobileCards && toggleMobileCards()"
+        >
+          {{ $t("recipe-library.view-list") }}
+        </button>
+      </div>
     </v-row>
-    <div v-if="recipes && ready">
+    <!-- first load: the shape of the grid, not a spinner (later pages still use the loader) -->
+    <div
+      v-if="!ready || (loading && recipes.length === 0)"
+      class="mt-2"
+      aria-busy="true"
+      :aria-label="$t('general.loading-recipes')"
+    >
+      <v-row v-if="!useMobileCards">
+        <v-col
+          v-for="n in 8"
+          :key="n"
+          :sm="6"
+          :md="4"
+          :lg="3"
+          :xl="3"
+        >
+          <BaseSkeleton aspect-ratio="4 / 3" radius="md" />
+          <BaseSkeleton class="mt-3" width="72%" :height="14" />
+          <BaseSkeleton class="mt-2" width="40%" :height="12" />
+        </v-col>
+      </v-row>
+      <v-row v-else density="comfortable">
+        <v-col v-for="n in 6" :key="n" cols="12" :md="singleColumn ? '12' : '6'" :lg="singleColumn ? '12' : '4'">
+          <div class="recipe-row-skeleton">
+            <BaseSkeleton :width="72" :height="72" radius="sm" />
+            <div class="recipe-row-skeleton__text">
+              <BaseSkeleton width="70%" :height="14" />
+              <BaseSkeleton class="mt-2" width="40%" :height="12" />
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+    </div>
+    <div v-else-if="recipes && ready">
       <div class="mt-2">
         <v-row v-if="!useMobileCards">
           <v-col
             v-for="recipe in recipes"
             :key="recipe.id!"
             :sm="6"
-            :md="6"
-            :lg="4"
+            :md="4"
+            :lg="3"
             :xl="3"
           >
             <RecipeCard
@@ -132,6 +186,7 @@
               :image="recipe.image!"
               :tags="recipe.tags!"
               :recipe-id="recipe.id!"
+              :meta="recipe"
             />
           </v-col>
         </v-row>
@@ -156,10 +211,18 @@
               :image="recipe.image!"
               :tags="recipe.tags!"
               :recipe-id="recipe.id!"
+              :meta="recipe"
             />
           </v-col>
         </v-row>
       </div>
+      <slot v-if="!loading && recipes.length === 0" name="empty">
+        <BaseEmptyState
+          :icon="$globals.icons.silverwareForkKnife"
+          :title="$t('empty-state.no-recipes-title')"
+          :description="$t('empty-state.no-recipes-description')"
+        />
+      </slot>
       <!-- keyed so each added page gets a fresh observer: one that never stops intersecting
            (a screen taller than the list) would otherwise never report again -->
       <v-card
@@ -170,7 +233,7 @@
     </div>
     <v-fade-transition>
       <AppLoader
-        v-if="loading"
+        v-if="loading && recipes.length > 0"
         :loading="loading"
         :waiting-text="$t('general.loading-recipes')"
       />
@@ -272,7 +335,7 @@ const hasMore = ref(true);
 const ready = ref(false);
 const loading = ref(false);
 
-const { fetchMore, getRandom } = useLazyRecipes(isOwnGroup.value ? null : groupSlug.value);
+const { fetchMore, getRandom, total } = useLazyRecipes(isOwnGroup.value ? null : groupSlug.value);
 const { savePosition, getSavedPage, restorePosition } = useScrollPosition();
 const router = useRouter();
 
@@ -517,12 +580,33 @@ function toggleMobileCards() {
 
 <style>
 .recipe-card-section__title {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: var(--mealie-text-h2);
+  font-weight: var(--mealie-weight-heading);
+  letter-spacing: -0.01em;
+}
+
+.recipe-card-section__count {
+  margin-left: 10px;
+  font-size: var(--mealie-text-body);
+  font-weight: 500;
+  color: var(--mealie-ink-3);
+  font-variant-numeric: tabular-nums;
 }
 
 .transparent {
   opacity: 1;
+}
+
+.recipe-row-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px;
+  border-radius: var(--mealie-radius-md);
+  box-shadow: inset 0 0 0 1px var(--mealie-hairline);
+}
+
+.recipe-row-skeleton__text {
+  flex: 1;
 }
 </style>

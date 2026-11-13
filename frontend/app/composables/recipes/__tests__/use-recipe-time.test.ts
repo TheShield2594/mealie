@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { durationUnitLabel, formatDuration, recipeShortTime, recipeTimeDisplay } from "../use-recipe-time";
+import { durationUnitLabel, formatDuration, parseIsoDuration, recipeShortTime, recipeTimeDisplay } from "../use-recipe-time";
 
 describe("formatDuration", () => {
   test.each([
@@ -63,5 +63,32 @@ describe("recipeShortTime", () => {
 
   test("is empty without any time", () => {
     expect(recipeShortTime({}, "en-US")).toBe("");
+  });
+});
+
+describe("parseIsoDuration", () => {
+  test.each([
+    ["PT20M", 1200],
+    ["PT1H30M", 5400],
+    ["pt2h15m", 8100],
+    ["P1DT2H", 93600],
+    ["PT90S", 90],
+    ["PT1.5H", 5400],
+  ])("reads %j as %j seconds", (text, expected) => {
+    expect(parseIsoDuration(text)).toBe(expected);
+  });
+
+  test.each([["P"], ["PT"], ["20 minutes"], [""], [null], [undefined]])("ignores %j", (text) => {
+    expect(parseIsoDuration(text)).toBeNull();
+  });
+});
+
+describe("recipeShortTime with an ISO duration as text", () => {
+  test("formats it instead of showing it verbatim", () => {
+    expect(recipeShortTime({ totalTime: "PT2H15M" }, "en-US")).toBe(formatDuration(8100, "en-US", "short"));
+  });
+
+  test("still shows free text as written", () => {
+    expect(recipeShortTime({ totalTime: "overnight" }, "en-US")).toBe("overnight");
   });
 });

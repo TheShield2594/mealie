@@ -111,7 +111,7 @@ async function requestLink() {
 }
 
 .auth-back a {
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   text-decoration: none;
 }
 

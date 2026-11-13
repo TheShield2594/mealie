@@ -88,8 +88,10 @@
     </div>
 
     <!-- Hero -->
-    <div class="recipe-hero">
+    <!-- without a photo the title takes the width, rather than sitting beside an empty box -->
+    <div class="recipe-hero" :class="{ 'recipe-hero--no-photo': !showImage }">
       <button
+        v-if="showImage"
         type="button"
         class="recipe-hero__photo mealie-photo-placeholder"
         :class="{ 'recipe-hero__photo--zoom': showImage }"
@@ -130,7 +132,7 @@
             <span class="recipe-hero__stat-label">{{ stat.label }}</span>
             <span class="recipe-hero__stat-value">{{ stat.value }}</span>
           </div>
-          <div v-if="showRating" class="recipe-hero__stat">
+          <div v-if="showRating" class="recipe-hero__stat recipe-hero__stat--rating">
             <span class="recipe-hero__stat-label">{{ $t("general.rating") }}</span>
             <RecipeRating
               :key="recipe.slug"
@@ -312,7 +314,7 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
   text-decoration: none;
 }
 
@@ -328,6 +330,10 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
   gap: 44px;
   align-items: center;
   padding: 32px 48px 0;
+}
+
+.recipe-hero--no-photo {
+  grid-template-columns: minmax(0, 760px);
 }
 
 .recipe-hero__photo {
@@ -361,14 +367,15 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 .recipe-hero__eyebrow {
   font-size: 13px;
   font-weight: 600;
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
 }
 
 .recipe-hero__title {
   margin-top: 8px;
   font-size: 44px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-family: var(--mealie-font-display);
+  font-weight: 560;
+  letter-spacing: -0.01em;
   line-height: 1.05;
   color: var(--mealie-ink);
   text-wrap: balance;
@@ -432,7 +439,7 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 }
 
 .recipe-hero__cook {
-  box-shadow: 0 8px 20px rgba(var(--v-theme-primary), 0.28);
+  box-shadow: none;
 }
 
 .recipe-hero__last-made {
@@ -472,6 +479,18 @@ const showRating = computed(() => isOwnGroup.value || !!props.recipe.rating);
 
   .recipe-hero__stat {
     padding: 0 16px;
+  }
+}
+
+/* on phones the stars don't fit beside three stats; give them a row of their own, label beside */
+@media (max-width: 600px) {
+  .recipe-hero__stat--rating {
+    flex-basis: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding-left: 0;
+    border-left: 0;
   }
 }
 

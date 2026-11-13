@@ -53,7 +53,7 @@ const weekday = computed(() =>
 }
 
 .plan-day-header__weekday--today {
-  color: rgb(var(--v-theme-primary));
+  color: var(--mealie-accent-ink);
 }
 
 .plan-day-header__date {

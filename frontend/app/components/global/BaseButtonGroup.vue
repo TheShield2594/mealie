@@ -25,6 +25,7 @@
             :color="btn.color"
             :large="large"
             :disabled="btn.disabled"
+            :aria-label="btn.text"
             :style="stretch ? `width: ${maxButtonWidth};` : ''"
             variant="plain"
             v-bind="tooltipProps"

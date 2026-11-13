@@ -50,6 +50,8 @@ export const useLazyRecipes = function (publicGroupSlug: string | null = null) {
   const api = publicGroupSlug ? usePublicExploreApi(publicGroupSlug).explore : useUserApi();
 
   const recipes = ref<Recipe[]>([]);
+  /** how many recipes the last query matched in all, across every page */
+  const total = ref<number | null>(null);
 
   async function fetchMore(
     page: number,
@@ -71,6 +73,9 @@ export const useLazyRecipes = function (publicGroupSlug: string | null = null) {
       router.push(isSafeRedirectTarget(redirect) ? { path: "/login", query: { redirect } } : "/login");
     }
 
+    if (data) {
+      total.value = data.total ?? null;
+    }
     return data ? data.items : [];
   }
 
@@ -108,6 +113,7 @@ export const useLazyRecipes = function (publicGroupSlug: string | null = null) {
 
   return {
     recipes,
+    total,
     fetchMore,
     appendRecipes,
     assignSorted,

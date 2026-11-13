@@ -62,6 +62,7 @@
             :rating="recipe.rating ?? 0"
             :image="recipe.image"
             :recipe-id="recipe.id ?? ''"
+            :meta="recipe"
             v-bind="$attrs.selected ? { selected: () => handleSelect(recipe) } : {}"
           />
         </div>

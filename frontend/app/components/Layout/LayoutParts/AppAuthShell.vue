@@ -2,7 +2,10 @@
   <div class="auth-shell">
     <div class="auth-shell__column" :class="{ 'auth-shell__column--wide': wide }">
       <div class="auth-shell__brand">
-        <span class="auth-shell__mark">M</span>
+        <!-- the same mark as inside the app (or the custom logo, when one is set) -->
+        <span class="auth-shell__mark">
+          <AppBrandLogo :size="34" />
+        </span>
         <span class="auth-shell__name">{{ $appInfo.brandingName }}</span>
       </div>
 
@@ -51,7 +54,7 @@ defineProps({
   padding: 64px 16px 48px;
   box-sizing: border-box;
   background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(var(--v-theme-primary), 0.08), transparent 70%), var(--mealie-canvas);
+    radial-gradient(1200px 600px at 50% -10%, var(--mealie-accent-wash), transparent 70%), var(--mealie-canvas);
   color: var(--mealie-ink);
 }
 
@@ -80,19 +83,17 @@ defineProps({
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  background: rgb(var(--v-theme-primary));
-  box-shadow: 0 12px 28px rgba(var(--v-theme-primary), 0.3);
-  color: rgb(var(--v-theme-on-primary));
-  font-size: 28px;
-  font-weight: 700;
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: var(--mealie-surface);
+  box-shadow: var(--mealie-elevation-1);
 }
 
 .auth-shell__name {
-  font-size: 22px;
-  font-weight: 700;
+  font-family: var(--mealie-font-display);
+  font-size: 24px;
+  font-weight: 560;
   letter-spacing: -0.02em;
 }
 
@@ -157,7 +158,7 @@ defineProps({
 
 .auth-shell .v-field--variant-solo-filled.v-field--focused,
 .auth-shell .v-field--variant-filled.v-field--focused {
-  box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.45) !important;
+  box-shadow: 0 0 0 3px var(--mealie-accent-ring) !important;
 }
 
 .auth-shell .v-field__overlay {
@@ -169,16 +170,16 @@ defineProps({
   border-radius: 999px !important;
   background: rgb(var(--v-theme-primary)) !important;
   color: rgb(var(--v-theme-on-primary)) !important;
-  box-shadow: 0 8px 20px rgba(var(--v-theme-primary), 0.25) !important;
+  box-shadow: none !important;
   font-weight: 600;
   letter-spacing: 0;
 }
 
 /* BaseButton turns tonal while disabled, which would otherwise bring back its green */
-.auth-shell .v-btn--variant-tonal.text-success,
-.auth-shell .v-btn--variant-tonal.text-primary {
-  background: rgba(var(--v-theme-primary), 0.14) !important;
-  color: rgb(var(--v-theme-primary)) !important;
+.auth-shell .v-btn--variant-tonal.text-success:not(.v-btn--disabled),
+.auth-shell .v-btn--variant-tonal.text-primary:not(.v-btn--disabled) {
+  background: var(--mealie-accent-tint) !important;
+  color: var(--mealie-accent-ink) !important;
 }
 
 .auth-shell .v-btn--variant-text,

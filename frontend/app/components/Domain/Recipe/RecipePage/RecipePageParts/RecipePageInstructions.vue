@@ -1171,21 +1171,24 @@ function openImageUpload(index: number) {
   cursor: pointer;
 }
 
+/* the step number in the display serif: the eye finds "where am I" by these */
 .method-step__number {
   display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
   padding: 0;
   border: 0;
-  border-radius: 14px;
-  background: rgba(var(--v-theme-primary), 0.1);
-  color: rgb(var(--v-theme-primary));
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
+  border-radius: 18px;
+  background: transparent;
+  color: var(--mealie-accent-ink);
+  font-family: var(--mealie-font-display);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.1;
+  font-variant-numeric: lining-nums;
   cursor: pointer;
   transition:
     background-color 0.15s ease,
@@ -1198,6 +1201,10 @@ function openImageUpload(index: number) {
 }
 
 .method-step--done .method-step__number {
+  align-items: center;
+  width: 28px;
+  height: 28px;
+  margin: 2px 4px 0;
   background: rgb(var(--v-theme-primary));
   color: rgb(var(--v-theme-on-primary));
 }
@@ -1216,13 +1223,14 @@ function openImageUpload(index: number) {
 }
 
 .method-step__summary {
-  font-size: 16px;
+  font-size: var(--mealie-text-body-lg);
   font-weight: 600;
 }
 
 .method-step__text {
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: var(--mealie-text-body-lg);
+  line-height: 1.65;
+  max-width: 68ch;
   text-wrap: pretty;
   color: var(--mealie-ink);
 }

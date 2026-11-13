@@ -7,6 +7,8 @@ import { isSafeRedirectTarget } from "~/lib/validators/redirect";
 declare module "axios" {
   interface AxiosRequestConfig {
     suppressAlert?: boolean;
+    /** Skip the error toast for a 404 only, when the caller shows its own not-found state */
+    suppressNotFoundAlert?: boolean;
   }
 }
 
@@ -125,7 +127,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       }
 
       const errorMessage = getErrorDetailMessage(error?.response?.data?.detail);
-      if (errorMessage) {
+      const notFoundHandledByCaller = error?.response?.status === 404 && config?.suppressNotFoundAlert;
+      if (errorMessage && !notFoundHandledByCaller) {
         alert.error(errorMessage);
       }
 

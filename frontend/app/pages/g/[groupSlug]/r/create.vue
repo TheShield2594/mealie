@@ -130,7 +130,7 @@ const subpage = computed(() => route.path.split("/").pop() ?? "url");
 
 .create-method--active,
 .create-method--active:hover {
-  background: rgba(var(--v-theme-primary), 0.08);
+  background: var(--mealie-accent-wash);
   box-shadow: inset 0 0 0 2px rgb(var(--v-theme-primary));
 }
 
@@ -221,7 +221,7 @@ const subpage = computed(() => route.path.split("/").pop() ?? "url");
 
 .create-panel .v-field--variant-solo-filled.v-field--focused,
 .create-panel .v-field--variant-solo.v-field--focused {
-  box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.45) !important;
+  box-shadow: 0 0 0 3px var(--mealie-accent-ring) !important;
 }
 
 .create-panel .v-field--variant-solo-filled .v-field__overlay {
@@ -234,7 +234,7 @@ const subpage = computed(() => route.path.split("/").pop() ?? "url");
   background: rgb(var(--v-theme-primary)) !important;
   color: rgb(var(--v-theme-on-primary)) !important;
   border-radius: 999px !important;
-  box-shadow: 0 8px 20px rgba(var(--v-theme-primary), 0.25) !important;
+  box-shadow: none !important;
   height: 44px;
   font-size: 15px;
   font-weight: 600;
@@ -242,10 +242,10 @@ const subpage = computed(() => route.path.split("/").pop() ?? "url");
 }
 
 /* BaseButton swaps to a tonal variant while disabled, which would bring the green back */
-.create-panel .v-btn--variant-tonal.text-success,
-.create-panel .v-btn--variant-tonal.text-primary {
-  background: rgba(var(--v-theme-primary), 0.14) !important;
-  color: rgb(var(--v-theme-primary)) !important;
+.create-panel .v-btn--variant-tonal.text-success:not(.v-btn--disabled),
+.create-panel .v-btn--variant-tonal.text-primary:not(.v-btn--disabled) {
+  background: var(--mealie-accent-tint) !important;
+  color: var(--mealie-accent-ink) !important;
   border-radius: 999px !important;
   height: 44px;
   font-size: 15px;

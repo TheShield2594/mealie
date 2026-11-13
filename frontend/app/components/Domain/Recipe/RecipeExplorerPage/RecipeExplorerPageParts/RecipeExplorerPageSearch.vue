@@ -46,6 +46,7 @@
               variant="flat"
               rounded="pill"
               class="mealie-filter-btn"
+              :aria-label="$vuetify.display.xs ? sortText : undefined"
               v-bind="props"
             >
               <v-icon :start="!$vuetify.display.xs">
@@ -234,6 +235,7 @@ defineExpose({
   passedQueryWithSeed,
   filterItems,
   hasActiveFilters,
+  reset,
 });
 
 onMounted(async () => {
@@ -310,6 +312,38 @@ async function setRandomOrderByWrapper() {
 
 .search-row__spacer {
   flex: 1;
+}
+
+/* phones: one row that scrolls sideways, running to the screen edges, instead of four
+   wrapped lines that push the first recipe below the fold */
+@media (max-width: 600px) {
+  .search-row {
+    flex-wrap: nowrap;
+    margin: 0 -16px;
+    padding: 2px 16px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 16px;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 12px, #000 calc(100% - 24px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 12px, #000 calc(100% - 24px), transparent 100%);
+  }
+
+  .search-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .search-row > * {
+    flex-shrink: 0;
+  }
+
+  /* a hairline between the quick filters and the menus, in place of the stretching spacer */
+  .search-row__spacer {
+    flex: 0 0 1px;
+    align-self: stretch;
+    margin: 6px 2px;
+    background: var(--mealie-hairline-strong);
+  }
 }
 
 .search-box {

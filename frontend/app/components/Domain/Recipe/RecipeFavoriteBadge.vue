@@ -13,6 +13,8 @@
         size="small"
         :color="buttonStyle ? 'info' : 'secondary'"
         :fab="buttonStyle"
+        :aria-label="isFavorite ? $t('recipe.remove-from-favorites') : $t('recipe.add-to-favorites')"
+        :aria-pressed="isFavorite"
         v-bind="{ ...tooltipProps, ...$attrs }"
         @click.prevent="toggleFavorite"
       >
@@ -31,6 +33,9 @@
 <script setup lang="ts">
 import { useUserSelfRatings } from "~/composables/use-users";
 import { useUserApi } from "~/composables/api";
+
+// $attrs go to the button (bound explicitly below), not also to the tooltip around it
+defineOptions({ inheritAttrs: false });
 
 interface Props {
   recipeId?: string;
