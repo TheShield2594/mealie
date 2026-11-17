@@ -114,6 +114,7 @@ nav:
           - Database Changes: "contributors/developers-guide/database-changes.md"
           - Maintainers Guide: "contributors/developers-guide/maintainers.md"
           - Migration Guide: "contributors/developers-guide/migration-guide.md"
+          - iOS App: "contributors/developers-guide/ios-app.md"
       - Guides:
           - Improving Ingredient Parser: "contributors/guides/ingredient-parser.md"
 

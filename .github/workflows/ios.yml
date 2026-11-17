@@ -1,0 +1,65 @@
+name: iOS App Build
+
+# Compiles the iOS app on a macOS runner, unsigned, to prove the Xcode project builds. Nobody on the
+# project needs a Mac for this. Signing and the TestFlight upload come later, in a separate job that
+# needs the App Store Connect API key as a secret.
+#
+# macOS minutes count 10x against the free allowance on a private repository, so this only runs when
+# the frontend changes, or by hand.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/ios.yml"
+  push:
+    branches:
+      - mealie-next
+    paths:
+      - "frontend/**"
+      - ".github/workflows/ios.yml"
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
+        with:
+          tools: node pnpm
+          cache-pnpm-store: true
+
+      - name: Install dependencies 👨🏻‍💻
+        run: pnpm install --frozen-lockfile --prefer-offline
+        working-directory: frontend
+
+      - name: Build the bundled frontend and sync it into the Xcode project 📦
+        run: pnpm generate:ios
+        working-directory: frontend
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build for the iOS simulator 🍎
+        working-directory: frontend/ios/App
+        run: |
+          xcodebuild build \
+            -project App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO

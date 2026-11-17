@@ -2,6 +2,7 @@ import { ref, computed, watch } from "vue";
 import type { UserOut } from "~/lib/api/types/user";
 import { clearAllStores } from "~/composables/store";
 import { clearComposableCaches } from "~/composables/use-clear-composable-caches";
+import { isNativeApp, setNativeToken } from "~/lib/native/server";
 import { getTokenCookieOptions, getTokenExpiry, nextRefreshDelay, readTokenCookie } from "~/composables/use-token-cookie";
 
 interface AuthData {
@@ -90,6 +91,11 @@ export const useAuthBackend = function (): AuthState {
   }
 
   function setToken(token: string | null) {
+    if (isNativeApp()) {
+      // No cookie in the app: the token is stored on the device and sent as a bearer header
+      setNativeToken(token);
+    }
+
     if (!token) {
       accessToken.value = null;
       clearScheduledRefresh();

@@ -3,6 +3,10 @@ import { defineNuxtConfig } from "nuxt/config";
 
 const AUTH_TOKEN = "mealie.access_token";
 
+// `pnpm generate:ios` builds the copy bundled into the iOS app (see capacitor.config.ts). The app loads
+// it from disk, so it has no use for the service worker or the server-served web manifest.
+const isNativeBuild = process.env.MEALIE_NATIVE === "true";
+
 export default defineNuxtConfig({
   // Global page headers: https://go.nuxtjs.dev/config-head
   // target: "static",
@@ -63,7 +67,7 @@ export default defineNuxtConfig({
         { key: "shortcut-icon", rel: "shortcut icon", type: "image/png", href: "/icons/icon-x64.png" },
         { key: "apple-touch-icon", rel: "apple-touch-icon", type: "image/png", href: "/icons/apple-touch-icon.png" },
         { rel: "mask-icon", href: "/icons/safari-pinned-tab.svg" },
-        { rel: "manifest", href: "/manifest.webmanifest", crossorigin: "use-credentials" },
+        ...(isNativeBuild ? [] : [{ rel: "manifest", href: "/manifest.webmanifest", crossorigin: "use-credentials" as const }]),
       ],
     },
 
@@ -237,6 +241,7 @@ export default defineNuxtConfig({
 
   // PWA module configuration: https://vite-pwa-org.netlify.app/frameworks/nuxt.html
   pwa: {
+    disable: isNativeBuild,
     registerType: "autoUpdate",
     devOptions: {
       enabled: false,

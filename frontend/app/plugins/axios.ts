@@ -2,6 +2,7 @@ import axios from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
 import { alert } from "~/composables/use-toast";
 import { readTokenCookie } from "~/composables/use-token-cookie";
+import { getServerOrigin, isNativeApp } from "~/lib/native/server";
 import { isSafeRedirectTarget } from "~/lib/validators/redirect";
 
 declare module "axios" {
@@ -73,8 +74,10 @@ export default defineNuxtPlugin((nuxtApp) => {
   const tokenName = useRuntimeConfig().public.AUTH_TOKEN;
   const axiosInstance = axios.create({
     // timeout removed to allow backend to handle timeouts
-    baseURL: "/", // api calls already pass with /api
-    withCredentials: true,
+    // api calls already pass with /api. The iOS app prefixes the server it was pointed at.
+    baseURL: getServerOrigin() || "/",
+    // The app authenticates with the bearer header alone; a cookie from another origin would be noise
+    withCredentials: !isNativeApp(),
   });
 
   axiosInstance.interceptors.request.use(

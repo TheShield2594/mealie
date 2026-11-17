@@ -121,13 +121,24 @@ app.add_middleware(SessionMiddleware, secret_key=settings.SESSION_SECRET)
 app.add_middleware(LocaleContextMiddleware)
 app.add_middleware(BodySizeLimitMiddleware, max_body_size=settings.MAX_UPLOAD_SIZE_MB * 1024**2)
 
-if not settings.PRODUCTION:
-    allowed_origins = ["http://localhost:3000"]
+# The iOS app serves its bundled frontend from this origin and calls the API cross-origin with a bearer
+# token. A page from another origin can't read anything through this: it would need that token. Apps on
+# the same phone don't share a cookie jar with it, so credentials stay off for it.
+NATIVE_APP_ORIGINS = ["capacitor://localhost"]
 
+if not settings.PRODUCTION:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=allowed_origins,
+        allow_origins=["http://localhost:3000", *NATIVE_APP_ORIGINS],
         allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=NATIVE_APP_ORIGINS,
+        allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
     )

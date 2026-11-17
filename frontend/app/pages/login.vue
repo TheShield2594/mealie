@@ -86,13 +86,13 @@
       </template>
 
       <div
-        v-if="$appInfo.enableOidc && $appInfo.allowPasswordLogin"
+        v-if="showOidc && $appInfo.allowPasswordLogin"
         class="login-form__or"
       >
         <span>{{ $t("user.or") }}</span>
       </div>
       <v-btn
-        v-if="$appInfo.enableOidc"
+        v-if="showOidc"
         :loading="oidcLoggingIn"
         size="large"
         variant="tonal"
@@ -112,6 +112,12 @@
         {{ $t("user.register") }}
       </RouterLink>
       <span v-else :title="$t('auth.invite-only-hint')">{{ $t("user.invite-only") }} · {{ $t("auth.invite-only-hint") }}</span>
+    </div>
+
+    <div v-if="nativeServerHost" class="login-signup">
+      <span>{{ $t("user.connected-to-server", { server: nativeServerHost }) }}</span>
+      ·
+      <a href="#" class="login-form__link" @click.prevent="changeServer">{{ $t("user.change-server") }}</a>
     </div>
 
     <template #footer>
@@ -158,6 +164,7 @@ import { useAsyncKey } from "~/composables/use-utils";
 import { isSafeRedirectTarget } from "~/lib/validators/redirect";
 import type { AppStartupInfo } from "~/lib/api/types/admin";
 import { useUserActivityPreferences } from "~/composables/use-users/preferences";
+import { clearServerOrigin, getServerOrigin, isNativeApp } from "~/lib/native/server";
 
 definePageMeta({
   layout: "blank",
@@ -174,6 +181,17 @@ const isDemo = ref(false);
 const isFirstLogin = ref(false);
 const activityPreferences = useUserActivityPreferences();
 const { getDefaultActivityRoute } = useDefaultActivity();
+
+// The iOS app can't finish the web OIDC redirect yet: the callback lands in Safari, not the app
+const showOidc = computed(() => $appInfo.enableOidc && !isNativeApp());
+
+// In the iOS app, which server this is and a way to pick another
+const nativeServerHost = isNativeApp() ? getServerOrigin().replace(/^https?:\/\//, "") : "";
+async function changeServer() {
+  await clearServerOrigin();
+  // A reload starts the app over, and the boot plugin asks for a server again
+  window.location.href = "/";
+}
 
 // Survives the page reload that happens during OIDC redirect
 const pendingShareRedirect = useSessionStorage<string | null>("pwa_share_redirect", null);

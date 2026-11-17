@@ -1,10 +1,13 @@
+import { getServerOrigin } from "~/lib/native/server";
+
 function UnknownToString(ukn: string | unknown) {
   return typeof ukn === "string" ? ukn : "";
 }
 
 export const useStaticRoutes = () => {
   const { $config } = useNuxtApp();
-  const prefix = `${$config.public.SUB_PATH}/api`.replace("//", "/");
+  // getServerOrigin() is empty on the web; the iOS app needs absolute URLs to load images from the server
+  const prefix = getServerOrigin() + `${$config.public.SUB_PATH}/api`.replace("//", "/");
 
   // Methods to Generate reference urls for assets/images *
   function recipeImage(recipeId: string, version: string | unknown = "", key: string | number = 1) {

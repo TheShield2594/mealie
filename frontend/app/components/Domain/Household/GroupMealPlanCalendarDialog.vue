@@ -149,6 +149,7 @@
 </template>
 
 <script setup lang="ts">
+import { getServerOrigin } from "~/lib/native/server";
 import { whenever } from "@vueuse/core";
 import { useUserApi } from "~/composables/api";
 import { useGlobalI18n } from "~/composables/use-global-i18n";
@@ -215,7 +216,8 @@ const feedUrl = computed(() => {
   }
 
   const query = params.toString();
-  return `${window.location.origin}/api/households/mealplans/ical/${token.value}${query ? `?${query}` : ""}`;
+  // in the iOS app the page origin is capacitor://localhost, so the server has to be named
+  return `${getServerOrigin() || window.location.origin}/api/households/mealplans/ical/${token.value}${query ? `?${query}` : ""}`;
 });
 
 async function refreshToken() {

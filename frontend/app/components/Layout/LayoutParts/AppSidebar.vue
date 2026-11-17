@@ -232,6 +232,7 @@
 </template>
 
 <script setup lang="ts">
+import { serverUrl } from "~/lib/native/server";
 import { useLoggedInState } from "~/composables/use-logged-in-state";
 import type { SideBarLink, SidebarLinks } from "~/types/application-types";
 import AnnouncementDialog from "~/components/Domain/Announcement/AnnouncementDialog.vue";
@@ -287,7 +288,7 @@ const initials = computed(() => {
 const avatarFailed = ref(false);
 const avatarUrl = computed(() => {
   const user = sessionUser.value;
-  return user ? `/api/media/users/${user.id}/profile.webp?cacheKey=${user.cacheKey ?? ""}` : "";
+  return user ? serverUrl(`/api/media/users/${user.id}/profile.webp?cacheKey=${user.cacheKey ?? ""}`) : "";
 });
 watch(avatarUrl, () => {
   avatarFailed.value = false;

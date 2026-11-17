@@ -1,3 +1,5 @@
+import { serverUrl } from "~/lib/native/server";
+
 /**
  * URLs for the icons generated from a custom logo dropped into the server's data folder.
  * Without one, `brandingUrl` returns null and callers fall back to the built-in Mealie icons.
@@ -8,7 +10,7 @@ export function useBranding() {
 
   function brandingUrl(filename: string): string | null {
     // the version changes with the logo, which lets the server cache these forever
-    return version ? `/api/app/about/branding/${filename}?v=${version}` : null;
+    return version ? serverUrl(`/api/app/about/branding/${filename}?v=${version}`) : null;
   }
 
   // a logo in the data folder wins over one set with BRANDING_LOGO_PATH

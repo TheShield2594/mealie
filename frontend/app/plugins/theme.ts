@@ -1,3 +1,4 @@
+import { serverUrl } from "~/lib/native/server";
 import { readableInk, withReadableOn } from "~/lib/theme/readable-on";
 
 // filled components in these colours get a label colour that meets 4.5:1 against them
@@ -30,7 +31,7 @@ async function fetchTheme(): Promise<ThemeConfig | undefined> {
   const route = "/api/app/about/theme";
 
   try {
-    const response = await fetch(route);
+    const response = await fetch(serverUrl(route));
     const data = await response.json();
     return data as ThemeConfig;
   }

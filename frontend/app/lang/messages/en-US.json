@@ -921,7 +921,9 @@
   "user": {
     "admin": "Admin",
     "auth-method": "Auth Method",
+    "change-server": "Change Server",
     "confirm-password": "Confirm Password",
+    "connected-to-server": "Connected to {server}",
     "current-password": "Current Password",
     "edit-user": "Edit User",
     "email": "Email",

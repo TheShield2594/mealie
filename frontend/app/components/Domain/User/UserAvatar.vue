@@ -36,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import { serverUrl } from "~/lib/native/server";
 import { useUserStore } from "~/composables/store/use-user-store";
 
 // the root element is the tooltip, so forward class/style/etc. to the avatar instead
@@ -72,6 +73,6 @@ const imageURL = computed(() => {
   // Note: auth.user is a ref now
   const authUser = auth.user.value;
   const key = authUser?.cacheKey ?? "";
-  return `/api/media/users/${props.userId}/profile.webp?cacheKey=${key}`;
+  return serverUrl(`/api/media/users/${props.userId}/profile.webp?cacheKey=${key}`);
 });
 </script>

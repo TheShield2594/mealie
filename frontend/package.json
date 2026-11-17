@@ -7,6 +7,7 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate --spa",
+    "generate:ios": "MEALIE_NATIVE=true nuxt generate --spa && cap sync ios",
     "lint:js": "eslint .",
     "lint:security": "node eslint-rules/check-security-rules.mjs",
     "lint": "pnpm lint:security && pnpm lint:js",
@@ -21,6 +22,12 @@
     "*.{ts,js,vue}": "eslint"
   },
   "dependencies": {
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "8.6.2",
+    "@capacitor/ios": "8.6.2",
+    "@capacitor/preferences": "8.0.1",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4",
     "@fontsource-variable/fraunces": "^5.3.0",
     "@mdi/js": "^7.4.47",
     "@nuxt/fonts": "^0.11.4",
@@ -46,6 +53,7 @@
     "vuetify-nuxt-module": "^1.0.0-rc.5"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.6.2",
     "@nuxt/eslint": "^1.2.0",
     "@stylistic/eslint-plugin": "^5.4.0",
     "@types/node": "^25.5.2",

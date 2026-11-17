@@ -1,3 +1,5 @@
+import { getNativeToken, isNativeApp } from "~/lib/native/server";
+
 /**
  * Cookie options used to clear the session token.
  *
@@ -55,6 +57,11 @@ export function getTokenExpiry(token: string): number | null {
  * hot paths like the axios request interceptor that only ever need the current value.
  */
 export function readTokenCookie(name: string): string | null {
+  // The iOS app keeps the token itself (see lib/native/server.ts)
+  if (isNativeApp()) {
+    return getNativeToken();
+  }
+
   if (typeof document === "undefined") {
     return null;
   }
