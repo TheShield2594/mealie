@@ -13,10 +13,16 @@ name: Fork Release
 #
 # The tag must match the package version, with `-` in place of `+`.
 
+# A tag push doesn't always start a run on this repo, so publishing a release
+# for the tag, or "Run workflow" with the tag picked under "Use workflow from",
+# starts it too. The version check below rejects anything but a release tag.
 on:
   push:
     tags:
       - "v*-redesign.*"
+  release:
+    types: [published]
+  workflow_dispatch:
 
 concurrency:
   group: fork-release-${{ github.ref }}
